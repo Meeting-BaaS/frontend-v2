@@ -1,0 +1,47 @@
+import * as motion from "motion/react-client";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
+import { AnimationWrapper } from "@/components/auth/animation-wrapper";
+import { GitHubRepoButton } from "@/components/header/github-repo-button";
+import HeroSection from "@/components/hero";
+import { opacityVariant } from "@/lib/animations/opacity";
+import { axiosGetInstance } from "@/lib/api-client";
+import { GET_SESSION } from "@/lib/api-routes";
+import {
+  type SessionResponse,
+  sessionResponseSchema,
+} from "@/lib/schemas/session";
+
+export default async function AuthLayout({
+  children,
+}: Readonly<{
+  children: ReactNode;
+}>) {
+  // Redirect if user is already logged in
+  const cookieStore = await cookies();
+  const session = await axiosGetInstance<SessionResponse>(
+    GET_SESSION,
+    sessionResponseSchema,
+    {
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+    },
+  );
+  if (session) {
+    return redirect("/bots");
+  }
+
+  return (
+    <>
+      <div className="container relative mx-auto grid h-dvh grid-cols-1 flex-col items-center justify-center lg:max-w-none lg:grid-cols-5 lg:px-0">
+        <AnimationWrapper>{children}</AnimationWrapper>
+        <HeroSection />
+      </div>
+      <motion.div {...opacityVariant(1)} className="absolute top-0 left-0 m-4">
+        <GitHubRepoButton />
+      </motion.div>
+    </>
+  );
+}
