@@ -4,7 +4,6 @@ import {
   Bot,
   Calendar,
   ChartColumn,
-  FlaskConical,
   KeyRound,
   Logs,
   Settings,
@@ -59,11 +58,6 @@ const items = [
     title: "API Keys",
     url: "/api-keys",
     icon: KeyRound,
-  },
-  {
-    title: "Playground",
-    url: "/playground",
-    icon: FlaskConical,
   },
   {
     title: "Settings",

@@ -62,7 +62,9 @@ export function NavUser({ user, teamDetails }: NavUserProps) {
       toast.error(genericError);
       return;
     }
-    window.location.href = `/sign-in?redirectTo=${pathname}`;
+    const redirectSearchParams = new URLSearchParams();
+    redirectSearchParams.set("redirectTo", pathname);
+    window.location.href = `/sign-in?${redirectSearchParams.toString()}`;
   };
 
   const handleChangeTheme = async (theme: Theme) => {

@@ -20,6 +20,8 @@ interface ApiKeyDetailsPageProps {
 export default async function ApiKeyDetailsPage({
   params,
 }: ApiKeyDetailsPageProps) {
+  const { slug } = await params;
+
   // Redirect if user is not logged in
   // It is recommended to verify session on each page
   const cookieStore = await cookies();
@@ -32,11 +34,11 @@ export default async function ApiKeyDetailsPage({
       },
     },
   );
+  const redirectSearchParams = new URLSearchParams();
+  redirectSearchParams.set("redirectTo", `/api-keys/${slug}`);
   if (!session) {
-    return redirect("/sign-in");
+    return redirect(`/sign-in?${redirectSearchParams.toString()}`);
   }
-
-  const { slug } = await params;
 
   // Parse and validate the slug
   const parsed = parseApiKeySlug(slug);

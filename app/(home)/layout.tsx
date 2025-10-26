@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
@@ -39,7 +38,11 @@ export default async function HomeLayout({
     },
   );
   if (!session) {
-    return redirect("/sign-in");
+    // Important: This is allowed to pass through
+    // Because the expectation is that each individual page will handle the redirection
+    // And will have a session check on the page itself
+    // As per Next.js, that is the correct approach
+    return children;
   }
 
   const teamDetails = await axiosGetInstance<TeamDetailsResponse>(

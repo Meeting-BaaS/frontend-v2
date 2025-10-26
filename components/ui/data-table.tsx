@@ -89,7 +89,7 @@ export function DataTable<TData>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="h-8 !bg-secondary dark:!bg-input/30 border-b border-t border-input first:rounded-l-md first:border-l last:rounded-r-md last:border-r text-muted-foreground"
+                      className="h-8 !bg-secondary dark:!bg-input/30 border-b border-t border-input first:rounded-l-md first:border-l last:rounded-r-md last:border-r last:text-right text-muted-foreground"
                     >
                       {header.isPlaceholder
                         ? null
@@ -114,7 +114,7 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="py-3 h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-3 text-sm"
+                      className="py-3 h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-3 text-sm last:text-right"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
