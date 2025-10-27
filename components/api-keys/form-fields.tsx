@@ -37,12 +37,15 @@ export function FormFields({ loading }: FormFieldsProps) {
         control={form.control}
         name="name"
         render={({ field, fieldState }) => (
-          <Field>
-            <FieldLabel>Name</FieldLabel>
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>Name</FieldLabel>
             <FieldContent>
               <FormControl>
                 <Input
                   {...field}
+                  id={field.name}
+                  autoComplete="off"
+                  aria-invalid={fieldState.invalid}
                   placeholder="Your API Key name"
                   aria-label="Your API Key name"
                   maxLength={50}
@@ -61,8 +64,11 @@ export function FormFields({ loading }: FormFieldsProps) {
         control={form.control}
         name="permissions"
         render={({ field, fieldState }) => (
-          <Field>
-            <FieldLabel className="flex items-center gap-2">
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel
+              htmlFor={field.name}
+              className="flex items-center gap-2"
+            >
               Permission
               <TooltipProvider>
                 <Tooltip>
@@ -91,7 +97,7 @@ export function FormFields({ loading }: FormFieldsProps) {
                   onValueChange={field.onChange}
                   disabled={loading}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full" id={field.name}>
                     <SelectValue placeholder="Select permissions" />
                   </SelectTrigger>
                   <SelectContent>

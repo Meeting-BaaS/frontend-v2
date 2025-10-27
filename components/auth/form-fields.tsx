@@ -50,7 +50,7 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
               control={form.control}
               name="name"
               render={({ field, fieldState }) => (
-                <Field>
+                <Field data-invalid={fieldState.invalid}>
                   <FieldContent>
                     <FormControl>
                       <Input
@@ -73,7 +73,10 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
             control={form.control}
             name="email"
             render={({ field, fieldState }) => (
-              <Field className={cn(formType === "reset-password" && "hidden")}>
+              <Field
+                data-invalid={fieldState.invalid}
+                className={cn(formType === "reset-password" && "hidden")}
+              >
                 <FieldContent>
                   <FormControl>
                     <Input

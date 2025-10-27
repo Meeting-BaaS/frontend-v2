@@ -74,3 +74,40 @@ export async function axiosPutInstance<TRequest, TResponse>(
 
   return parsed.data;
 }
+
+export async function axiosPatchInstance<TRequest, TResponse>(
+  url: string,
+  data: TRequest,
+  schema?: ZodType<TResponse>,
+  options?: AxiosRequestConfig,
+): Promise<TResponse | null> {
+  const response = await api.patch(url, data, options);
+
+  // To do: remove before production
+  console.log(url, "Response:", JSON.stringify(response.data, null, 2));
+
+  // If no schema is provided (response is not expected), return null
+  if (!schema) {
+    return null;
+  }
+
+  const parsed = schema.safeParse(response.data);
+  if (!parsed.success) {
+    console.error("Invalid API response:", parsed.error);
+    throw new Error("API response validation failed");
+  }
+
+  return parsed.data;
+}
+
+export async function axiosDeleteInstance(
+  url: string,
+  options?: AxiosRequestConfig,
+): Promise<null> {
+  const response = await api.delete(url, options);
+
+  // To do: remove before production
+  console.log(url, "Response:", JSON.stringify(response.data, null, 2));
+
+  return null;
+}

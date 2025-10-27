@@ -1,6 +1,4 @@
 import { Lock, Plus } from "lucide-react";
-import { columns } from "@/components/api-keys/columns";
-import { PermissionFilter } from "@/components/api-keys/permission-filter";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import {
@@ -12,51 +10,49 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { GradientIcon } from "@/components/ui/gradient-icon";
+import { columns } from "@/components/webhooks/columns";
 import { useDataTable } from "@/hooks/use-data-table";
-import type { ApiKeyListResponse } from "@/lib/schemas/api-keys";
+import type { WebhookEndpoint } from "@/lib/schemas/webhooks";
 
-interface ApiKeysTableProps {
-  apiKeys: ApiKeyListResponse;
+interface WebhooksTableProps {
+  webhookEndpoints: WebhookEndpoint[];
   onAddButtonClick: () => void;
 }
 
-export function ApiKeysTable({ apiKeys, onAddButtonClick }: ApiKeysTableProps) {
+export function WebhooksTable({
+  webhookEndpoints,
+  onAddButtonClick,
+}: WebhooksTableProps) {
   const { table } = useDataTable({
-    data: apiKeys || [],
+    data: webhookEndpoints || [],
     columns,
     initialSorting: [{ id: "createdAt", desc: true }],
-    getRowId: (row) => row.id,
+    getRowId: (row) => row.uuid,
   });
 
-  if (!apiKeys || apiKeys.length === 0) {
+  if (!webhookEndpoints || webhookEndpoints.length === 0) {
     return (
       <Empty className="border rounded-lg mt-8">
         <EmptyHeader>
           <EmptyMedia>
-            <GradientIcon color="var(--color-orange-300)" size="lg">
+            <GradientIcon color="var(--color-green-300)" size="lg">
               <Lock className="text-white" />
             </GradientIcon>
           </EmptyMedia>
-          <EmptyTitle>No API keys yet</EmptyTitle>
+          <EmptyTitle>No webhooks yet</EmptyTitle>
           <EmptyDescription>
-            Generate an API key to authenticate requests and send bots through
-            the API.
+            Configure a webhook to receive real-time event updates for bots or
+            calendar changes.
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <Button size="sm" className="font-medium" onClick={onAddButtonClick}>
-            <Plus /> Create API Key
+            <Plus /> Add webhook
           </Button>
         </EmptyContent>
       </Empty>
     );
   }
 
-  return (
-    <DataTable
-      table={table}
-      searchColumn="name"
-      additionalFilters={<PermissionFilter table={table} />}
-    />
-  );
+  return <DataTable table={table} enableSearch={false} />;
 }

@@ -76,7 +76,7 @@ export function AppSidebar({ user, teamDetails }: AppSidebarProps) {
   const { open, isMobile } = useSidebar();
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="z-30">
       <SidebarHeader>
         <TeamSwitcher teamDetails={teamDetails} />
       </SidebarHeader>

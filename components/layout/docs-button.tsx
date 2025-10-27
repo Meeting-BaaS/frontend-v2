@@ -26,7 +26,7 @@ export function DocsButton({
   href = DOCS_URL,
   keyBinding = "A",
   name = "API",
-  className,
+  className = "grow-1 sm:grow-0",
   size = "sm",
   variant = "outline",
 }: DocsButtonProps) {

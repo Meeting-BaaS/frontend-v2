@@ -3,19 +3,27 @@
 import { Plus } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { CreateAPIKeyDialog } from "@/components/api-keys/create";
-import { ApiKeysTable } from "@/components/api-keys/table";
 import { DocsButton } from "@/components/layout/docs-button";
 import { PageHeading } from "@/components/layout/page-heading";
 import { Button } from "@/components/ui/button";
-import type { ApiKeyListResponse } from "@/lib/schemas/api-keys";
+import { CreateWebhookDialog } from "@/components/webhooks/create";
+import { WebhooksTable } from "@/components/webhooks/table";
+import type {
+  ListWebhookEndpointsResponse,
+  ListWebhookEventsResponse,
+} from "@/lib/schemas/webhooks";
 
-interface ApiKeysViewProps {
-  apiKeys: ApiKeyListResponse;
+interface WebhooksViewProps {
+  webhookEndpoints: ListWebhookEndpointsResponse;
+  webhookEvents: ListWebhookEventsResponse;
   newKey?: boolean;
 }
 
-export function ApiKeysView({ apiKeys, newKey }: ApiKeysViewProps) {
+export function WebhooksView({
+  webhookEndpoints,
+  webhookEvents,
+  newKey,
+}: WebhooksViewProps) {
   const [open, setOpen] = useState(newKey ?? false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -35,23 +43,27 @@ export function ApiKeysView({ apiKeys, newKey }: ApiKeysViewProps) {
   return (
     <>
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
-        <PageHeading title="API Keys" containerClassName="md:flex-1" />
+        <PageHeading title="Webhooks" containerClassName="md:flex-1" />
         <div className="flex w-full sm:w-auto flex-col gap-2 sm:flex-row sm:items-center">
           <Button
             size="sm"
             className="w-full sm:w-auto font-medium"
             onClick={handleCreateButtonClick}
           >
-            <Plus /> Create API Key
+            <Plus /> Add webhook
           </Button>
           <DocsButton />
         </div>
       </div>
-      <ApiKeysTable
-        apiKeys={apiKeys}
+      <WebhooksTable
+        webhookEndpoints={webhookEndpoints.data || []}
         onAddButtonClick={handleCreateButtonClick}
       />
-      <CreateAPIKeyDialog open={open} onOpenChange={setOpen} />
+      <CreateWebhookDialog
+        open={open}
+        onOpenChange={setOpen}
+        allEventTypes={webhookEvents.data}
+      />
     </>
   );
 }

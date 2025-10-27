@@ -34,7 +34,7 @@ export const PasswordField = ({
       control={form.control}
       name={name}
       render={({ field, fieldState }) => (
-        <Field>
+        <Field data-invalid={fieldState.invalid}>
           <FieldContent>
             <FormControl>
               <InputGroup>
