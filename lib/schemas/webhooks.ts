@@ -5,10 +5,11 @@ import {
   number,
   object,
   type output,
+  record,
   string,
-  unknown,
   url,
   uuid,
+  unknown as zodUnknown,
 } from "zod";
 
 const webhookIdSchema = uuid().min(1, "Endpoint ID is required");
@@ -85,25 +86,30 @@ export const createWebhookEndpointResponseSchema = object({
 export const webhookMessage = object({
   id: string(),
   eventType: string().optional(),
-  status: string(), // MessageStatus from svix
+  status: number(), // MessageStatus from svix
   createdAt: iso.datetime(),
 });
 
 export const listWebhookMessagesResponseSchema = object({
   success: boolean(),
   data: array(webhookMessage).nullable(),
+  prevIterator: string().nullable(),
+  nextIterator: string().nullable(),
 });
 
-export const messageDetails = object({
+export const webhookMessageDetails = object({
   id: string(),
   eventType: string(),
-  payload: unknown(), // Record<string, unknown>
+  payload: object({
+    data: record(string(), zodUnknown()),
+    event: string(),
+  }).nullable(),
   timestamp: iso.datetime(),
 });
 
-export const getMessageDetailsResponseSchema = object({
+export const getWebhookMessageDetailsResponseSchema = object({
   success: boolean(),
-  data: messageDetails,
+  data: webhookMessageDetails,
 });
 
 // Type exports
@@ -129,9 +135,9 @@ export type WebhookMessage = output<typeof webhookMessage>;
 export type ListWebhookMessagesResponse = output<
   typeof listWebhookMessagesResponseSchema
 >;
-export type MessageDetails = output<typeof messageDetails>;
-export type GetMessageDetailsResponse = output<
-  typeof getMessageDetailsResponseSchema
+export type WebhookMessageDetails = output<typeof webhookMessageDetails>;
+export type GetWebhookMessageDetailsResponse = output<
+  typeof getWebhookMessageDetailsResponseSchema
 >;
 export type DisableWebhookEndpointData = output<
   typeof disableWebhookEndpointSchema

@@ -33,13 +33,18 @@ export async function axiosGetInstance<T>(
 export async function axiosPostInstance<TRequest, TResponse>(
   url: string,
   data: TRequest,
-  schema: ZodType<TResponse>,
+  schema?: ZodType<TResponse>,
   options?: AxiosRequestConfig,
-): Promise<TResponse> {
+): Promise<TResponse | null> {
   const response = await api.post(url, data, options);
 
   // To do: remove before production
   console.log(url, "Response:", JSON.stringify(response.data, null, 2));
+
+  // If no schema is provided (response is not expected), return null
+  if (!schema) {
+    return null;
+  }
 
   const parsed = schema.safeParse(response.data);
   if (!parsed.success) {

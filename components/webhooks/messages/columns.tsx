@@ -1,11 +1,35 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import type { VariantProps } from "class-variance-authority";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type badgeVariants } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatRelativeDate } from "@/lib/date-helpers";
 import type { WebhookMessage } from "@/lib/schemas/webhooks";
+
+// Message Status Map from SVIX (https://api.svix.com/docs#tag/Message-Attempt/operation/v1.message-attempt.list-by-endpoint.query.status)
+const statusMap: Record<
+  number,
+  { label: string; variant: VariantProps<typeof badgeVariants>["variant"] }
+> = {
+  0: {
+    label: "Delivered",
+    variant: "success",
+  },
+  1: {
+    label: "Pending",
+    variant: "secondary",
+  },
+  2: {
+    label: "Failed",
+    variant: "destructive",
+  },
+  3: {
+    label: "Sending",
+    variant: "outline",
+  },
+};
 
 export const columns = (endpointId: string): ColumnDef<WebhookMessage>[] => [
   {
@@ -13,11 +37,15 @@ export const columns = (endpointId: string): ColumnDef<WebhookMessage>[] => [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      if (row.original.status === "delivered") {
-        return <Badge variant="success">Delivered</Badge>;
-      } else {
-        return <Badge variant="disabled">Failed</Badge>;
-      }
+      return (
+        <Badge
+          variant={
+            statusMap[row.original.status as keyof typeof statusMap].variant
+          }
+        >
+          {statusMap[row.original.status as keyof typeof statusMap].label}
+        </Badge>
+      );
     },
   },
   {

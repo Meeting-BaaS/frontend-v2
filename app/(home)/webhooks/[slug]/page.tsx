@@ -23,12 +23,15 @@ import {
 
 interface WebhookDetailsPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ iterator?: string }>;
 }
 
 export default async function WebhookDetailsPage({
   params,
+  searchParams,
 }: WebhookDetailsPageProps) {
   const { slug } = await params;
+  const { iterator } = await searchParams;
 
   // Redirect if user is not logged in
   // It is recommended to verify session on each page
@@ -67,7 +70,7 @@ export default async function WebhookDetailsPage({
       listWebhookMessagesResponseSchema,
       {
         headers: { Cookie: cookieStore.toString() },
-        params: { endpointId: slug },
+        params: { endpointId: slug, iterator: iterator ?? null },
       },
     ),
   ]);
@@ -77,6 +80,8 @@ export default async function WebhookDetailsPage({
       webhookEndpoint={webhookDetails.data}
       allWebhookEvents={webhookEvents.data}
       webhookMessages={webhookMessages.data || []}
+      prevIterator={webhookMessages.prevIterator}
+      nextIterator={webhookMessages.nextIterator}
     />
   );
 }

@@ -31,12 +31,16 @@ interface WebhookDetailsProps {
   webhookEndpoint: WebhookEndpointWithSecret;
   allWebhookEvents: string[];
   webhookMessages: WebhookMessage[];
+  prevIterator: string | null;
+  nextIterator: string | null;
 }
 
 export function ViewWebhookDetails({
   webhookEndpoint,
   allWebhookEvents,
   webhookMessages,
+  prevIterator,
+  nextIterator,
 }: WebhookDetailsProps) {
   const [show, setShow] = useState(false);
   const eventCount = webhookEndpoint.events.length;
@@ -143,6 +147,8 @@ export function ViewWebhookDetails({
       <MessagesTable
         endpointId={webhookEndpoint.uuid}
         webhookMessages={webhookMessages}
+        prevIterator={prevIterator}
+        nextIterator={nextIterator}
       />
     </section>
   );

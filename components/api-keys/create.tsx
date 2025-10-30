@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { Spinner } from "@/components/ui/spinner";
-import { useUser } from "@/hooks/use-user";
 import { axiosPostInstance } from "@/lib/api-client";
 import { CREATE_API_KEY } from "@/lib/api-routes";
 import { genericError } from "@/lib/errors";
@@ -44,7 +43,6 @@ export function CreateAPIKeyDialog({
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const { session, teamDetails } = useUser();
   const form = useForm<CreateAPIKeyFormData>({
     resolver: zodResolver(createAPIKeyFormSchema),
     defaultValues: {
@@ -58,22 +56,17 @@ export function CreateAPIKeyDialog({
 
   const onSubmit = async (data: CreateAPIKeyFormData) => {
     if (loading) return;
-    const body = {
-      ...data,
-      metadata: {
-        teamId: session.activeOrganizationId,
-        rateLimit:
-          teamDetails.find((team) => team.id === session.activeOrganizationId)
-            ?.rateLimit || 1,
-      },
-    };
     try {
       setLoading(true);
       const response = await axiosPostInstance<
         CreateAPIKeyFormData,
         CreateApiKeyResponse
-      >(CREATE_API_KEY, body, createApiKeyResponseSchema);
+      >(CREATE_API_KEY, data, createApiKeyResponseSchema);
 
+      if (!response || !response.success) {
+        console.error("Failed to create API key", response);
+        throw new Error("Failed to create API key");
+      }
       // Set API key to the state, open success dialog and close the create dialog
       setApiKey(response.data.key);
       setSuccessOpen(true);

@@ -2,6 +2,7 @@
 
 import { flexRender, type Table } from "@tanstack/react-table";
 import { Search } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import {
   TableRow,
   Table as UITable,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData> {
   table: Table<TData>;
@@ -25,6 +27,10 @@ interface DataTableProps<TData> {
   searchColumn?: string;
   searchPlaceholder?: string;
   additionalFilters?: React.ReactNode;
+  serverSidePagination?: boolean;
+  prevIteratorLink?: string | null;
+  nextIteratorLink?: string | null;
+  rowCellClassName?: string;
 }
 
 export function DataTable<TData>({
@@ -33,6 +39,10 @@ export function DataTable<TData>({
   searchColumn = "email",
   searchPlaceholder = "Search...",
   additionalFilters,
+  serverSidePagination = false,
+  prevIteratorLink,
+  nextIteratorLink,
+  rowCellClassName,
 }: DataTableProps<TData>) {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -114,7 +124,10 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="py-3 h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-3 text-sm last:text-right"
+                      className={cn(
+                        "py-3 h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-3 text-sm last:text-right",
+                        rowCellClassName,
+                      )}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -138,24 +151,61 @@ export function DataTable<TData>({
         </UITable>
       </div>
       <div className="flex items-center md:justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-1/2 md:w-auto"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-1/2 md:w-auto"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+        {serverSidePagination ? (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-1/2 md:w-auto"
+              asChild={Boolean(prevIteratorLink)}
+              disabled={!prevIteratorLink}
+            >
+              {prevIteratorLink ? (
+                <Link href={prevIteratorLink} prefetch={true}>
+                  Previous
+                </Link>
+              ) : (
+                "Previous"
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-1/2 md:w-auto"
+              asChild={Boolean(nextIteratorLink)}
+              disabled={!nextIteratorLink}
+            >
+              {nextIteratorLink ? (
+                <Link href={nextIteratorLink} prefetch={true}>
+                  Next
+                </Link>
+              ) : (
+                "Next"
+              )}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-1/2 md:w-auto"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-1/2 md:w-auto"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
