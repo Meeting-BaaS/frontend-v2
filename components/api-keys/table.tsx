@@ -34,7 +34,7 @@ export function ApiKeysTable({ apiKeys, onAddButtonClick }: ApiKeysTableProps) {
         <EmptyHeader>
           <EmptyMedia>
             <GradientIcon color="var(--color-orange-300)" size="lg">
-              <Lock className="text-white" />
+              <Lock />
             </GradientIcon>
           </EmptyMedia>
           <EmptyTitle>No API keys yet</EmptyTitle>

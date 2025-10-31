@@ -57,6 +57,7 @@ export const columns = (endpointId: string): ColumnDef<WebhookMessage>[] => [
         <Button variant="link" asChild className="p-0">
           <Link
             href={`/webhooks/${endpointId}/${row.original.id}`}
+            prefetch={false} // Disable prefetching for these links to save on server-side requests
             className="flex gap-3 items-center decoration-dashed underline hover:decoration-baas-primary-500 hover:decoration-solid"
           >
             {row.original.eventType}

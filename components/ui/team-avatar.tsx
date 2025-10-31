@@ -19,9 +19,7 @@ export function TeamAvatar({
 
   return (
     <GradientIcon size={size} className={className} color={color}>
-      <span className="font-bold uppercase text-white dark:text-gray-a9">
-        {initial}
-      </span>
+      <span className="font-bold uppercase">{initial}</span>
     </GradientIcon>
   );
 }

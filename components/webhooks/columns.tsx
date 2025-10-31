@@ -30,7 +30,7 @@ export const columns: ColumnDef<WebhookEndpoint>[] = [
                     : "var(--color-gray-300)"
                 }
               >
-                <Webhook className="dark:text-foreground/60 text-white" />
+                <Webhook />
               </GradientIcon>
               {row.original.url}
             </Link>

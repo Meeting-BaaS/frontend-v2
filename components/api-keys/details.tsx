@@ -31,7 +31,7 @@ export function ViewApiKeyDetails({ apiKeyDetails }: ApiKeyDetailsProps) {
           containerClassName="md:flex-1"
           gradientIcon={
             <GradientIcon color="var(--color-orange-300)" size="xl">
-              <KeyRound className="text-white" size={32} />
+              <KeyRound size={32} />
             </GradientIcon>
           }
         />

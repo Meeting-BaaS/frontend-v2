@@ -56,7 +56,7 @@ export function ViewWebhookMessageDetails({
           containerClassName="md:flex-1"
           gradientIcon={
             <GradientIcon color="var(--color-purple-300)" size="xl">
-              <Mail className="text-white" size={32} />
+              <Mail size={32} />
             </GradientIcon>
           }
         />

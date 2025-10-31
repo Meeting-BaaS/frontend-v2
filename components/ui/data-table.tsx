@@ -61,6 +61,14 @@ export function DataTable<TData>({
 
   return (
     <div>
+      {serverSidePagination && (
+        // Hidden links are rendered at the top of the page so that NextJS can prefetch the next and previous pages
+        <div className="hidden">
+          <Link href={prevIteratorLink ?? ""}>Previous</Link>
+
+          <Link href={nextIteratorLink ?? ""}>Next</Link>
+        </div>
+      )}
       <div className="flex mt-4 sm:mt-0 gap-2 w-full flex-col md:flex-row items-center py-4">
         {enableSearch && (
           <InputGroup className="flex-1">
@@ -161,9 +169,7 @@ export function DataTable<TData>({
               disabled={!prevIteratorLink}
             >
               {prevIteratorLink ? (
-                <Link href={prevIteratorLink} prefetch={true}>
-                  Previous
-                </Link>
+                <Link href={prevIteratorLink}>Previous</Link>
               ) : (
                 "Previous"
               )}
@@ -176,9 +182,7 @@ export function DataTable<TData>({
               disabled={!nextIteratorLink}
             >
               {nextIteratorLink ? (
-                <Link href={nextIteratorLink} prefetch={true}>
-                  Next
-                </Link>
+                <Link href={nextIteratorLink}>Next</Link>
               ) : (
                 "Next"
               )}

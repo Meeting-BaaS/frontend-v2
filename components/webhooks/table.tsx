@@ -36,7 +36,7 @@ export function WebhooksTable({
         <EmptyHeader>
           <EmptyMedia>
             <GradientIcon color="var(--color-green-300)" size="lg">
-              <Lock className="text-white" />
+              <Lock />
             </GradientIcon>
           </EmptyMedia>
           <EmptyTitle>No webhooks yet</EmptyTitle>

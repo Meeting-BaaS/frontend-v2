@@ -61,7 +61,7 @@ export function ViewWebhookDetails({
               }
               size="xl"
             >
-              <Webhook className="text-white" size={32} />
+              <Webhook size={32} />
             </GradientIcon>
           }
         />

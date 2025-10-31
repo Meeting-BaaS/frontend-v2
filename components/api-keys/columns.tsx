@@ -38,7 +38,7 @@ export const columns: ColumnDef<ApiKey>[] = [
               className="flex gap-3 items-center decoration-dashed underline group-hover:decoration-baas-primary-500 group-hover:decoration-solid"
             >
               <GradientIcon color="var(--color-orange-300)">
-                <KeyRound className="dark:text-foreground/60 text-white" />
+                <KeyRound />
               </GradientIcon>
               {row.original.name}
             </Link>

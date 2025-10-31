@@ -42,7 +42,12 @@ export function GradientIcon({
         >
           <title>Gradient background</title>
           <g clipPath="url(#gradient-icon-clip)">
-            <rect width="20" height="20" fill="#000" rx="5.5" />
+            <rect
+              width="20"
+              height="20"
+              fill="var(--color-gradient-fill)"
+              rx="5.5"
+            />
             <rect
               width="20"
               height="20"
@@ -162,7 +167,7 @@ export function GradientIcon({
             </clipPath>
           </defs>
         </svg>
-        <div className="absolute z-10 flex items-center justify-center w-full h-full">
+        <div className="absolute z-10 flex items-center text-foreground/60 justify-center w-full h-full">
           {children}
         </div>
       </div>
