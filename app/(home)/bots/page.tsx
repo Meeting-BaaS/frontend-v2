@@ -6,6 +6,7 @@ import { GET_SESSION, LIST_BOTS } from "@/lib/api-routes";
 import {
   type BotsListResponse,
   botsListResponseSchema,
+  ListBotsRequestQuerySchema,
 } from "@/lib/schemas/bots";
 import {
   type SessionResponse,
@@ -13,14 +14,19 @@ import {
 } from "@/lib/schemas/session";
 
 interface BotsPageProps {
-  searchParams: Promise<{ cursor?: string | string[] | undefined }>;
+  searchParams: Promise<{
+    cursor?: string | string[] | undefined;
+    botUuid?: string | string[] | undefined;
+    createdBefore?: string | string[] | undefined;
+    createdAfter?: string | string[] | undefined;
+    meetingPlatform?: string | string[] | undefined;
+    status?: string | string[] | undefined;
+  }>;
 }
 
 export default async function BotsPage({ searchParams }: BotsPageProps) {
-  const { cursor } = await searchParams;
-  if (cursor && Array.isArray(cursor)) {
-    throw new Error("Cursor cannot be an array");
-  }
+  const params = await searchParams;
+
   // Redirect if user is not logged in
   // It is recommended to verify session on each page
   const cookieStore = await cookies();
@@ -39,6 +45,14 @@ export default async function BotsPage({ searchParams }: BotsPageProps) {
     return redirect(`/sign-in?${redirectSearchParams.toString()}`);
   }
 
+  const { success, data: validatedParams } =
+    ListBotsRequestQuerySchema.safeParse(params);
+
+  if (!success) {
+    // If params aren't valid, return bots without any filtering/pagination
+    return redirect("/bots");
+  }
+
   const botList = await axiosGetInstance<BotsListResponse>(
     LIST_BOTS,
     botsListResponseSchema,
@@ -47,14 +61,19 @@ export default async function BotsPage({ searchParams }: BotsPageProps) {
         Cookie: cookieStore.toString(),
       },
       params: {
-        cursor: cursor ?? null,
+        cursor: validatedParams?.cursor ?? null,
+        botUuid: validatedParams?.botUuid ?? null,
+        createdBefore: validatedParams?.createdBefore ?? null,
+        createdAfter: validatedParams?.createdAfter ?? null,
+        meetingPlatform: validatedParams?.meetingPlatform?.join(",") ?? null,
+        status: validatedParams?.status?.join(",") ?? null,
       },
     },
   );
 
   return (
     <section>
-      <BotsView botList={botList} />
+      <BotsView botList={botList} params={validatedParams ?? null} />
     </section>
   );
 }

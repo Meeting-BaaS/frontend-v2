@@ -69,7 +69,6 @@ export function MessagesTable({
   return (
     <DataTable
       table={table}
-      enableSearch={false}
       serverSidePagination
       rowCellClassName="py-1"
       prevIteratorLink={prevIteratorLink}

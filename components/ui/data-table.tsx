@@ -23,11 +23,12 @@ import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData> {
   table: Table<TData>;
-  enableSearch?: boolean;
+  clientSideSearch?: boolean;
   searchColumn?: string;
   searchPlaceholder?: string;
-  additionalFilters?: React.ReactNode;
+  clientSideFilters?: React.ReactNode;
   serverSidePagination?: boolean;
+  serverSideFilters?: React.ReactNode;
   prevIteratorLink?: string | null;
   nextIteratorLink?: string | null;
   rowCellClassName?: string;
@@ -35,11 +36,12 @@ interface DataTableProps<TData> {
 
 export function DataTable<TData>({
   table,
-  enableSearch = true,
+  clientSideSearch = false,
   searchColumn = "email",
   searchPlaceholder = "Search...",
-  additionalFilters,
+  clientSideFilters,
   serverSidePagination = false,
+  serverSideFilters = false,
   prevIteratorLink,
   nextIteratorLink,
   rowCellClassName,
@@ -69,35 +71,39 @@ export function DataTable<TData>({
           <Link href={nextIteratorLink ?? ""}>Next</Link>
         </div>
       )}
-      <div className="flex mt-4 sm:mt-0 gap-2 w-full flex-col md:flex-row items-center py-4">
-        {enableSearch && (
-          <InputGroup className="flex-1">
-            <InputGroupInput
-              ref={searchInputRef}
-              placeholder={searchPlaceholder}
-              value={
-                (table.getColumn(searchColumn)?.getFilterValue() as string) ??
-                ""
-              }
-              onChange={(event) =>
-                table
-                  .getColumn(searchColumn)
-                  ?.setFilterValue(event.target.value)
-              }
-            />
-            <InputGroupAddon>
-              <Search />
-            </InputGroupAddon>
-            <InputGroupAddon align="inline-end">
-              <KbdGroup>
-                <Kbd>⌘</Kbd>
-                <Kbd>S</Kbd>
-              </KbdGroup>
-            </InputGroupAddon>
-          </InputGroup>
-        )}
-        {additionalFilters}
-      </div>
+      {serverSideFilters ? (
+        serverSideFilters
+      ) : (
+        <div className="flex mt-4 sm:mt-0 gap-2 w-full flex-col md:flex-row items-center py-4">
+          {clientSideSearch && searchColumn && (
+            <InputGroup className="flex-1">
+              <InputGroupInput
+                ref={searchInputRef}
+                placeholder={searchPlaceholder}
+                value={
+                  (table.getColumn(searchColumn)?.getFilterValue() as string) ??
+                  ""
+                }
+                onChange={(event) =>
+                  table
+                    .getColumn(searchColumn)
+                    ?.setFilterValue(event.target.value)
+                }
+              />
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+              <InputGroupAddon align="inline-end">
+                <KbdGroup>
+                  <Kbd>⌘</Kbd>
+                  <Kbd>S</Kbd>
+                </KbdGroup>
+              </InputGroupAddon>
+            </InputGroup>
+          )}
+          {clientSideFilters}
+        </div>
+      )}
       <div className="overflow-hidden">
         <UITable className="m-0 w-max min-w-full border-separate border-spacing-0 border-none p-0 text-left md:w-full">
           <TableHeader>

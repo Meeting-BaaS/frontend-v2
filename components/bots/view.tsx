@@ -3,13 +3,17 @@
 import { BotsTable } from "@/components/bots/table";
 import { DocsButton } from "@/components/layout/docs-button";
 import { PageHeading } from "@/components/layout/page-heading";
-import type { BotsListResponse } from "@/lib/schemas/bots";
+import type {
+  BotsListResponse,
+  ListBotsRequestQueryParams,
+} from "@/lib/schemas/bots";
 
 interface BotsViewProps {
   botList: BotsListResponse;
+  params: ListBotsRequestQueryParams | null;
 }
 
-export function BotsView({ botList }: BotsViewProps) {
+export function BotsView({ botList, params }: BotsViewProps) {
   return (
     <>
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
@@ -22,6 +26,7 @@ export function BotsView({ botList }: BotsViewProps) {
         bots={botList.data}
         prevCursor={botList.prevCursor}
         nextCursor={botList.cursor}
+        params={params}
       />
     </>
   );

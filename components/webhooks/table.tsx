@@ -54,5 +54,5 @@ export function WebhooksTable({
     );
   }
 
-  return <DataTable table={table} enableSearch={false} />;
+  return <DataTable table={table} />;
 }

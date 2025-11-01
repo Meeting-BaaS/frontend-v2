@@ -15,18 +15,31 @@ import {
 } from "@/components/ui/empty";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { useDataTable } from "@/hooks/use-data-table";
-import type { BotListEntry } from "@/lib/schemas/bots";
+import type {
+  BotListEntry,
+  ListBotsRequestQueryParams,
+} from "@/lib/schemas/bots";
+import { DateRangeFilter } from "./filters/date-range-filter";
+import { PlatformFilter } from "./filters/platform-filter";
+import { SearchFilter } from "./filters/search-filter";
+import { StatusFilter } from "./filters/status-filter";
 
 interface BotsTableProps {
   bots: BotListEntry[];
   prevCursor: string | null;
   nextCursor: string | null;
+  params: ListBotsRequestQueryParams | null;
 }
 
-export function BotsTable({ bots, prevCursor, nextCursor }: BotsTableProps) {
+export function BotsTable({
+  bots,
+  prevCursor,
+  nextCursor,
+  params,
+}: BotsTableProps) {
   // const router = useRouter();
   const searchParams = useSearchParams();
-  const cursor = searchParams.get("cursor") ?? null;
+  const cursor = params?.cursor ?? null;
   const { table } = useDataTable({
     data: bots || [],
     columns: columns,
@@ -54,7 +67,7 @@ export function BotsTable({ bots, prevCursor, nextCursor }: BotsTableProps) {
     return null;
   }, [nextCursor, searchParams]);
 
-  if (!bots || bots.length === 0) {
+  if (!searchParams.toString() && (!bots || bots.length === 0)) {
     return (
       <Empty className="border rounded-lg mt-8">
         <EmptyHeader>
@@ -83,10 +96,20 @@ export function BotsTable({ bots, prevCursor, nextCursor }: BotsTableProps) {
   return (
     <DataTable
       table={table}
-      enableSearch={false}
       serverSidePagination
       prevIteratorLink={prevCursorLink}
       nextIteratorLink={nextCursorLink}
+      serverSideFilters={
+        <div className="flex mt-4 sm:mt-0 gap-2 w-full flex-col md:flex-row items-center py-4">
+          <SearchFilter botUuid={params?.botUuid} />
+          <DateRangeFilter
+            createdBefore={params?.createdBefore}
+            createdAfter={params?.createdAfter}
+          />
+          <PlatformFilter meetingPlatform={params?.meetingPlatform} />
+          <StatusFilter status={params?.status} />
+        </div>
+      }
     />
   );
 }

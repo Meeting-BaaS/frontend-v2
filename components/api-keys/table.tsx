@@ -55,8 +55,9 @@ export function ApiKeysTable({ apiKeys, onAddButtonClick }: ApiKeysTableProps) {
   return (
     <DataTable
       table={table}
+      clientSideSearch
       searchColumn="name"
-      additionalFilters={<PermissionFilter table={table} />}
+      clientSideFilters={<PermissionFilter table={table} />}
     />
   );
 }

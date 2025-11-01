@@ -1,4 +1,11 @@
-import { formatDistanceToNow, intervalToDuration, parseISO } from "date-fns";
+import {
+  format,
+  formatDistanceToNow,
+  intervalToDuration,
+  isBefore,
+  isThisISOWeek,
+  parseISO,
+} from "date-fns";
 
 /**
  * Safely parses a date string using date-fns parseISO for consistent behavior
@@ -17,8 +24,27 @@ export function parseDateString(dateString: string): Date {
 export function formatRelativeDate(isoString: string): string {
   const date = parseISO(isoString);
 
-  // Always show relative time
-  return formatDistanceToNow(date, { addSuffix: true });
+  if (isThisISOWeek(date)) {
+    return formatDistanceToNow(date, { addSuffix: true });
+  }
+
+  // Show locale date if it's not this week, otherwise show relative time
+  return format(date, "MMM d, yyyy hh:mm a");
+}
+
+/**
+ * Check if the first date string is before the second date string
+ * @param dateString1 - The first ISO date string to compare
+ * @param dateString2 - The second ISO date string to compare
+ * @returns true if dateString1 is before dateString2, false otherwise
+ */
+export function isDateBefore(
+  dateString1: string,
+  dateString2: string,
+): boolean {
+  const date1 = new Date(dateString1);
+  const date2 = new Date(dateString2);
+  return isBefore(date1, date2);
 }
 
 /**
