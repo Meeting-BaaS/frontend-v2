@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ItemHeading } from "@/components/layout/item-heading";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { NameValuePair } from "@/components/ui/name-value-pair";
 import { Spinner } from "@/components/ui/spinner";
@@ -89,7 +90,17 @@ export function ViewWebhookMessageDetails({
       </div>
       <div className="mt-10 flex flex-col gap-2">
         <div className="text-muted-foreground text-xs uppercase">Payload</div>
-        <pre className="text-xs border border-dashed rounded-md p-4">
+        <pre className="text-xs border border-dashed rounded-md p-4 relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="absolute top-0 right-0 m-1"
+          >
+            <CopyButton
+              text={JSON.stringify(webhookMessage.payload, null, 2)}
+            />
+          </Button>
           {JSON.stringify(webhookMessage.payload, null, 2)}
         </pre>
       </div>

@@ -20,6 +20,15 @@ import {
   Table as UITable,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "./empty";
+
+// Extend ColumnMeta type to include className
+declare module "@tanstack/react-table" {
+  // biome-ignore lint/correctness/noUnusedVariables: We need to extend the ColumnMeta type to include className
+  interface ColumnMeta<TData, TValue> {
+    className?: string;
+  }
+}
 
 interface DataTableProps<TData> {
   table: Table<TData>;
@@ -28,10 +37,11 @@ interface DataTableProps<TData> {
   searchPlaceholder?: string;
   clientSideFilters?: React.ReactNode;
   serverSidePagination?: boolean;
-  serverSideFilters?: React.ReactNode;
+  serverSideFilters?: boolean;
   prevIteratorLink?: string | null;
   nextIteratorLink?: string | null;
   rowCellClassName?: string;
+  tableContainerClassName?: string;
 }
 
 export function DataTable<TData>({
@@ -45,6 +55,7 @@ export function DataTable<TData>({
   prevIteratorLink,
   nextIteratorLink,
   rowCellClassName,
+  tableContainerClassName,
 }: DataTableProps<TData>) {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,6 +72,19 @@ export function DataTable<TData>({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  if (table.getRowModel().rows?.length === 0) {
+    return (
+      <Empty className="border rounded-lg">
+        <EmptyHeader>
+          <EmptyTitle>No results found</EmptyTitle>
+          <EmptyDescription>
+            Try adjusting your filters, date range or search query
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+
   return (
     <div>
       {serverSidePagination && (
@@ -71,13 +95,12 @@ export function DataTable<TData>({
           <Link href={nextIteratorLink ?? ""}>Next</Link>
         </div>
       )}
-      {serverSideFilters ? (
-        serverSideFilters
-      ) : (
+      {!serverSideFilters && (
         <div className="flex mt-4 sm:mt-0 gap-2 w-full flex-col md:flex-row items-center py-4">
           {clientSideSearch && searchColumn && (
             <InputGroup className="flex-1">
               <InputGroupInput
+                name={searchColumn ?? "search"}
                 ref={searchInputRef}
                 placeholder={searchPlaceholder}
                 value={
@@ -104,8 +127,8 @@ export function DataTable<TData>({
           {clientSideFilters}
         </div>
       )}
-      <div className="overflow-hidden">
-        <UITable className="m-0 w-max min-w-full border-separate border-spacing-0 border-none p-0 text-left md:w-full">
+      <div className={cn("overflow-hidden", tableContainerClassName)}>
+        <UITable className="m-0 w-full table-fixed border-separate border-spacing-0 border-none p-0 text-left">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
@@ -113,7 +136,10 @@ export function DataTable<TData>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="h-8 !bg-secondary dark:!bg-input/30 border-b border-t border-input first:rounded-l-md first:border-l last:rounded-r-md last:border-r last:text-right text-muted-foreground"
+                      className={cn(
+                        "h-8 px-3 !bg-secondary dark:!bg-input/30 border-b border-t border-input first:rounded-l-md first:border-l last:rounded-r-md last:border-r last:text-right text-muted-foreground",
+                        header.column.columnDef.meta?.className,
+                      )}
                     >
                       {header.isPlaceholder
                         ? null
@@ -128,7 +154,7 @@ export function DataTable<TData>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows?.length > 0 &&
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -140,6 +166,7 @@ export function DataTable<TData>({
                       key={cell.id}
                       className={cn(
                         "py-3 h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-3 text-sm last:text-right",
+                        cell.column.columnDef.meta?.className,
                         rowCellClassName,
                       )}
                     >
@@ -150,17 +177,7 @@ export function DataTable<TData>({
                     </TableCell>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={table.getAllColumns().length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
+              ))}
           </TableBody>
         </UITable>
       </div>

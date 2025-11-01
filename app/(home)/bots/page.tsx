@@ -2,12 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { BotsView } from "@/components/bots/view";
 import { axiosGetInstance } from "@/lib/api-client";
-import { GET_SESSION, LIST_BOTS } from "@/lib/api-routes";
-import {
-  type BotsListResponse,
-  botsListResponseSchema,
-  ListBotsRequestQuerySchema,
-} from "@/lib/schemas/bots";
+import { GET_SESSION } from "@/lib/api-routes";
+import { ListBotsRequestQuerySchema } from "@/lib/schemas/bots";
 import {
   type SessionResponse,
   sessionResponseSchema,
@@ -53,27 +49,9 @@ export default async function BotsPage({ searchParams }: BotsPageProps) {
     return redirect("/bots");
   }
 
-  const botList = await axiosGetInstance<BotsListResponse>(
-    LIST_BOTS,
-    botsListResponseSchema,
-    {
-      headers: {
-        Cookie: cookieStore.toString(),
-      },
-      params: {
-        cursor: validatedParams?.cursor ?? null,
-        botUuid: validatedParams?.botUuid ?? null,
-        createdBefore: validatedParams?.createdBefore ?? null,
-        createdAfter: validatedParams?.createdAfter ?? null,
-        meetingPlatform: validatedParams?.meetingPlatform?.join(",") ?? null,
-        status: validatedParams?.status?.join(",") ?? null,
-      },
-    },
-  );
-
   return (
     <section>
-      <BotsView botList={botList} params={validatedParams ?? null} />
+      <BotsView params={validatedParams ?? null} />
     </section>
   );
 }

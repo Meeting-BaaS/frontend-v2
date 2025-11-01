@@ -24,11 +24,6 @@ export function SearchFilter({ botUuid }: SearchFilterProps) {
   // Local state for immediate UI updates (optimistic UI)
   const [localValue, setLocalValue] = useState(botUuid ?? "");
 
-  // Sync local state when prop changes (from server)
-  useEffect(() => {
-    setLocalValue(botUuid ?? "");
-  }, [botUuid]);
-
   // Debounced function to update URL params
   const updateSearchParams = useRef(
     debounce((value: string) => {
@@ -44,7 +39,7 @@ export function SearchFilter({ botUuid }: SearchFilterProps) {
       }
 
       router.replace(`${pathname}?${newSearchParams.toString()}`);
-    }, 500),
+    }, 300),
   ).current;
 
   const handleChange = (value: string) => {
@@ -75,10 +70,11 @@ export function SearchFilter({ botUuid }: SearchFilterProps) {
   }, [updateSearchParams]);
 
   return (
-    <InputGroup className="flex-1">
+    <InputGroup className="col-span-1 xl:col-span-2">
       <InputGroupInput
         ref={searchInputRef}
         placeholder="Search by bot UUID..."
+        name="botUuid"
         value={localValue}
         onChange={(event) => handleChange(event.target.value)}
       />

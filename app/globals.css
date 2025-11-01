@@ -54,6 +54,9 @@
   /* External Brand Colors */
   --color-google-blue: var(--google-blue);
   --color-github-green: var(--github-green);
+  --color-zoom-blue: var(--zoom-blue);
+  --color-teams-purple: var(--teams-purple);
+  --color-google-meet-green: var(--google-meet-green);
 }
 
 :root {
@@ -102,6 +105,9 @@
   /* Brand Logo colors */
   --google-blue: oklch(0.63 0.1803 259.76);
   --github-green: oklch(0.55 0.147 146.41);
+  --zoom-blue: oklch(0.6562 0.183 261.28);
+  --teams-purple: oklch(0.6279 0.1226 279.59);
+  --google-meet-green: oklch(0.7227 0.192 149.58);
 }
 
 .dark {
@@ -151,15 +157,15 @@
 @media (prefers-reduced-motion: no-preference) {
   @supports (view-transition-name: none) {
     ::view-transition-new(theme-transition) {
-      clip-path: inset(0 0 100% 0);
-      animation: slide-in-from-top 0.65s forwards cubic-bezier(0.65, 0, 0.35, 1);
+      clip-path: inset(0 0 0 100%);
+      animation: slide-in-from-right 0.65s forwards cubic-bezier(0.65, 0, 0.35, 1);
     }
 
     ::view-transition-old(theme-transition) {
       animation: none;
     }
 
-    @keyframes slide-in-from-top {
+    @keyframes slide-in-from-right {
       to {
         clip-path: inset(0 0 0 0);
       }

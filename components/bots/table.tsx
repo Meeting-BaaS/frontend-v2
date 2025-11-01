@@ -1,3 +1,5 @@
+"use client";
+
 import { Bot, ListCheck } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -19,10 +21,6 @@ import type {
   BotListEntry,
   ListBotsRequestQueryParams,
 } from "@/lib/schemas/bots";
-import { DateRangeFilter } from "./filters/date-range-filter";
-import { PlatformFilter } from "./filters/platform-filter";
-import { SearchFilter } from "./filters/search-filter";
-import { StatusFilter } from "./filters/status-filter";
 
 interface BotsTableProps {
   bots: BotListEntry[];
@@ -37,7 +35,6 @@ export function BotsTable({
   nextCursor,
   params,
 }: BotsTableProps) {
-  // const router = useRouter();
   const searchParams = useSearchParams();
   const cursor = params?.cursor ?? null;
   const { table } = useDataTable({
@@ -99,17 +96,7 @@ export function BotsTable({
       serverSidePagination
       prevIteratorLink={prevCursorLink}
       nextIteratorLink={nextCursorLink}
-      serverSideFilters={
-        <div className="flex mt-4 sm:mt-0 gap-2 w-full flex-col md:flex-row items-center py-4">
-          <SearchFilter botUuid={params?.botUuid} />
-          <DateRangeFilter
-            createdBefore={params?.createdBefore}
-            createdAfter={params?.createdAfter}
-          />
-          <PlatformFilter meetingPlatform={params?.meetingPlatform} />
-          <StatusFilter status={params?.status} />
-        </div>
-      }
+      serverSideFilters
     />
   );
 }
