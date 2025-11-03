@@ -11,6 +11,7 @@ import {
   uuid,
   unknown as zodUnknown,
 } from "zod";
+import { slugSchema } from "./common";
 
 const webhookIdSchema = uuid().min(1, "Endpoint ID is required");
 
@@ -107,6 +108,11 @@ export const webhookMessageDetails = object({
   timestamp: iso.datetime(),
 });
 
+export const getWebhookMessageDetailsRequestParamsSchema = object({
+  slug: slugSchema,
+  message: string().refine((value) => value.startsWith("msg_")),
+});
+
 export const getWebhookMessageDetailsResponseSchema = object({
   success: boolean(),
   data: webhookMessageDetails,
@@ -134,6 +140,9 @@ export type CreateWebhookEndpointResponse = output<
 export type WebhookMessage = output<typeof webhookMessage>;
 export type ListWebhookMessagesResponse = output<
   typeof listWebhookMessagesResponseSchema
+>;
+export type GetWebhookMessageDetailsRequestParams = output<
+  typeof getWebhookMessageDetailsRequestParamsSchema
 >;
 export type WebhookMessageDetails = output<typeof webhookMessageDetails>;
 export type GetWebhookMessageDetailsResponse = output<

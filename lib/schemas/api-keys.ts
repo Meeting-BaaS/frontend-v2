@@ -5,6 +5,7 @@ import {
   number,
   object,
   type output,
+  preprocess,
   string,
   enum as zodEnum,
 } from "zod";
@@ -62,6 +63,29 @@ export const apiKeyDetails = apiKey
     metadata: true,
   });
 
+// API Key slug utility
+// The slug is a combination of the timestamp and the id of the API key separated by an "A" character
+// This is done to avoid exposing API key ID which is incremented sequentially
+// Just a redundancy, as the endpoint is protected.
+export const getApiKeyDetailsRequestParamsSchema = object({
+  slug: preprocess(
+    (value) => {
+      if (typeof value !== "string") return value;
+
+      const parts = value.split("A");
+      if (parts.length !== 2) return value;
+
+      const id = Number.parseInt(parts[0], 10);
+      const timestamp = Number.parseInt(parts[1], 10);
+      return { id, timestamp };
+    },
+    object({
+      id: number().int().positive(),
+      timestamp: number().int().positive(),
+    }),
+  ),
+});
+
 export const getApiKeyDetailsResponseSchema = object({
   success: boolean(),
   data: apiKeyDetails,
@@ -72,6 +96,9 @@ export type ApiKey = output<typeof apiKey>;
 export type ApiKeyListResponse = output<typeof apiKeyListResponseSchema>;
 export type CreateApiKeyResponse = output<typeof createApiKeyResponseSchema>;
 export type ApiKeyDetails = output<typeof apiKeyDetails>;
+export type GetApiKeyDetailsRequestParams = output<
+  typeof getApiKeyDetailsRequestParamsSchema
+>;
 export type GetApiKeyDetailsResponse = output<
   typeof getApiKeyDetailsResponseSchema
 >;

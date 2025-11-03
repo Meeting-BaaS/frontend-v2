@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 const tableHeaders = [
   {
     label: "Bot UUID",
-    width: "min-w-[280px] w-[35%]",
+    width: "min-w-[320px] w-[40%]",
   },
   {
     label: "Status",
@@ -22,7 +22,7 @@ const tableHeaders = [
   },
   {
     label: "Bot Name",
-    width: "min-w-[160px] w-[20%]",
+    width: "min-w-[160px] w-[18%]",
   },
   {
     label: "Duration",
@@ -30,7 +30,7 @@ const tableHeaders = [
   },
   {
     label: "Created At",
-    width: "min-w-[140px] w-[18%]",
+    width: "min-w-[140px] w-[15%]",
   },
 ] as const;
 

@@ -30,3 +30,4 @@ export const RESEND_WEBHOOK_MESSAGE = `${BASE_PATH}/webhooks/resend`;
 
 // Bots routes
 export const LIST_BOTS = `${BASE_PATH}/bots/list`;
+export const GET_BOT_DETAILS = `${BASE_PATH}/bots/details`;

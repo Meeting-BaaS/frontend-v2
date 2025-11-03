@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ViewWebhookDetails } from "@/components/webhooks/details";
 import { axiosGetInstance } from "@/lib/api-client";
 import {
@@ -8,6 +8,7 @@ import {
   LIST_WEBHOOK_EVENTS,
   LIST_WEBHOOK_MESSAGES,
 } from "@/lib/api-routes";
+import { slugRequestParamsSchema } from "@/lib/schemas/common";
 import {
   type SessionResponse,
   sessionResponseSchema,
@@ -30,7 +31,7 @@ export default async function WebhookDetailsPage({
   params,
   searchParams,
 }: WebhookDetailsPageProps) {
-  const { slug } = await params;
+  const requestParams = await params;
   const { iterator } = await searchParams;
 
   // Redirect if user is not logged in
@@ -46,9 +47,17 @@ export default async function WebhookDetailsPage({
     },
   );
   const redirectSearchParams = new URLSearchParams();
-  redirectSearchParams.set("redirectTo", `/webhooks/${slug}`);
+  // We haven't validated the request params yet, so we shouldn't redirect to the specific webhook details page
+  redirectSearchParams.set("redirectTo", `/webhooks`);
   if (!session) {
     return redirect(`/sign-in?${redirectSearchParams.toString()}`);
+  }
+
+  // Parse and validate the request params
+  const { success, data: validatedParams } =
+    slugRequestParamsSchema.safeParse(requestParams);
+  if (!success) {
+    return notFound();
   }
 
   const [webhookDetails, webhookEvents, webhookMessages] = await Promise.all([
@@ -57,7 +66,7 @@ export default async function WebhookDetailsPage({
       getWebhookEndpointDetailsResponseSchema,
       {
         headers: { Cookie: cookieStore.toString() },
-        params: { endpointId: slug },
+        params: { endpointId: validatedParams.slug },
       },
     ),
     axiosGetInstance<ListWebhookEventsResponse>(
@@ -70,7 +79,10 @@ export default async function WebhookDetailsPage({
       listWebhookMessagesResponseSchema,
       {
         headers: { Cookie: cookieStore.toString() },
-        params: { endpointId: slug, iterator: iterator ?? null },
+        params: {
+          endpointId: validatedParams.slug,
+          iterator: iterator ?? null,
+        },
       },
     ),
   ]);

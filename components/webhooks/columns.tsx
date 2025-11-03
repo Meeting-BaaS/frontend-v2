@@ -10,11 +10,21 @@ import { GradientIcon } from "@/components/ui/gradient-icon";
 import { formatRelativeDate } from "@/lib/date-helpers";
 import type { WebhookEndpoint } from "@/lib/schemas/webhooks";
 
+// Column width configuration
+export const columnWidths = {
+  url: "min-w-[300px] max-w-[620px] w-[62%]",
+  status: "min-w-[120px] max-w-[150px] w-[15%]",
+  createdAt: "min-w-[140px] max-w-[230px] w-[23%]",
+} as const;
+
 export const columns: ColumnDef<WebhookEndpoint>[] = [
   {
     id: "url",
     accessorKey: "url",
     header: "Endpoint",
+    meta: {
+      className: columnWidths.url,
+    },
     cell: ({ row }) => {
       return (
         <div className="flex gap-1 items-center group">
@@ -32,17 +42,19 @@ export const columns: ColumnDef<WebhookEndpoint>[] = [
               >
                 <Webhook />
               </GradientIcon>
-              {row.original.url}
+              <span className="truncate max-w-lg">{row.original.url}</span>
             </Link>
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            className="opacity-0 -translate-x-2 delay-200 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
-          >
-            <CopyButton text={row.original.url} />
-          </Button>
+          <div>
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              className="opacity-0 -translate-x-2 delay-200 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
+            >
+              <CopyButton text={row.original.url} />
+            </Button>
+          </div>
         </div>
       );
     },
@@ -51,6 +63,9 @@ export const columns: ColumnDef<WebhookEndpoint>[] = [
     id: "status",
     accessorKey: "status",
     header: "Status",
+    meta: {
+      className: columnWidths.status,
+    },
     cell: ({ row }) => {
       if (row.original.enabled) {
         return <Badge variant="success">Enabled</Badge>;
@@ -63,6 +78,9 @@ export const columns: ColumnDef<WebhookEndpoint>[] = [
     id: "createdAt",
     accessorKey: "createdAt",
     header: "Created At",
+    meta: {
+      className: columnWidths.createdAt,
+    },
     cell: ({ row }) => (
       <div className="capitalize">
         {formatRelativeDate(row.original.createdAt)}

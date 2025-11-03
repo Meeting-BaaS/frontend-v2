@@ -18,7 +18,7 @@ export const botColorVariants = cva("", {
   variants: {
     status: {
       // Waiting/Initial states - Gray
-      pending: "bg-slate-500/10 text-slate-500 fill-slate-500",
+      queued: "bg-slate-500/10 text-slate-500 fill-slate-500",
       joining_call: "bg-slate-500/10 text-slate-500 fill-slate-500",
       in_waiting_room: "bg-slate-500/10 text-slate-500 fill-slate-500",
 
@@ -53,17 +53,17 @@ export const botColorVariants = cva("", {
     },
   },
   defaultVariants: {
-    status: "pending",
+    status: "queued",
   },
 });
 
 // Column width configuration shared between columns and skeleton
 export const columnWidths = {
-  botUuid: "min-w-[280px] w-[35%]",
-  status: "min-w-[120px] w-[15%]",
-  botName: "min-w-[160px] w-[20%]",
-  duration: "min-w-[100px] w-[12%]",
-  createdAt: "min-w-[140px] w-[18%]",
+  botUuid: "min-w-[320px] max-w-[400px] w-[40%]",
+  status: "min-w-[120px] max-w-[150px] w-[15%]",
+  botName: "min-w-[160px] max-w-[180px] w-[18%]",
+  duration: "min-w-[100px] max-w-[120px] w-[12%]",
+  createdAt: "min-w-[140px] max-w-[150px] w-[15%]",
 } as const;
 
 export const columns: ColumnDef<BotListEntry>[] = [
@@ -92,7 +92,7 @@ export const columns: ColumnDef<BotListEntry>[] = [
                   <MicrosoftTeamsLogo />
                 )}
               </GradientIcon>
-              {row.original.botUuid}
+              <span className="truncate max-w-sm">{row.original.botUuid}</span>
             </Link>
           </Button>
           <Button

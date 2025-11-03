@@ -128,7 +128,7 @@ export function DataTable<TData>({
         </div>
       )}
       <div className={cn("overflow-hidden", tableContainerClassName)}>
-        <UITable className="m-0 w-full table-fixed border-separate border-spacing-0 border-none p-0 text-left">
+        <UITable className="m-0 border-separate border-spacing-0 border-none p-0 text-left">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">

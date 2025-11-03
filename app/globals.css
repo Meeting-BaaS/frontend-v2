@@ -93,6 +93,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --gradient-fill: oklch(0.97 0 0);
+  --dots: oklch(0.145 0 0 / 10%);
 
   /* Meeting BaaS Colors */
   --baas-primary-500: oklch(0.8 0.140647 186.3213);
@@ -143,6 +144,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --gradient-fill: oklch(0.145 0 0);
+  --dots: oklch(0.269 0 0/ 40%);
 }
 
 @layer base {
@@ -154,18 +156,26 @@
   }
 }
 
+@layer utilities {
+.bg-dots {
+    background-image: radial-gradient(var(--dots) 1px, transparent 1px);
+    background-position: 10 10;
+    background-size: 10px 10px;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   @supports (view-transition-name: none) {
     ::view-transition-new(theme-transition) {
-      clip-path: inset(0 0 0 100%);
-      animation: slide-in-from-right 0.65s forwards cubic-bezier(0.65, 0, 0.35, 1);
+      clip-path: inset(0 0 100% 0);
+      animation: slide-in-from-top 0.65s forwards cubic-bezier(0.65, 0, 0.35, 1);
     }
 
     ::view-transition-old(theme-transition) {
       animation: none;
     }
 
-    @keyframes slide-in-from-right {
+    @keyframes slide-in-from-top {
       to {
         clip-path: inset(0 0 0 0);
       }

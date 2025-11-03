@@ -31,11 +31,22 @@ const statusMap: Record<
   },
 };
 
+// Column width configuration
+export const columnWidths = {
+  status: "min-w-[120px] max-w-[150px] w-[14%]",
+  eventType: "min-w-[160px] max-w-[280px] w-[28%]",
+  messageId: "min-w-[200px] max-w-[320px] w-[32%]",
+  createdAt: "min-w-[140px] max-w-[260px] w-[26%]",
+} as const;
+
 export const columns = (endpointId: string): ColumnDef<WebhookMessage>[] => [
   {
     id: "status",
     accessorKey: "status",
     header: "Status",
+    meta: {
+      className: columnWidths.status,
+    },
     cell: ({ row }) => {
       return (
         <Badge
@@ -52,6 +63,9 @@ export const columns = (endpointId: string): ColumnDef<WebhookMessage>[] => [
     id: "eventType",
     accessorKey: "eventType",
     header: "Event type",
+    meta: {
+      className: columnWidths.eventType,
+    },
     cell: ({ row }) => {
       return (
         <Button variant="link" asChild className="p-0">
@@ -70,11 +84,17 @@ export const columns = (endpointId: string): ColumnDef<WebhookMessage>[] => [
     id: "messageId",
     accessorKey: "id",
     header: "Message ID",
+    meta: {
+      className: columnWidths.messageId,
+    },
   },
   {
     id: "createdAt",
     accessorKey: "createdAt",
     header: "Created At",
+    meta: {
+      className: columnWidths.createdAt,
+    },
     cell: ({ row }) => (
       <div className="capitalize">
         {formatRelativeDate(row.original.createdAt)}

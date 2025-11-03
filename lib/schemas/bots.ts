@@ -8,16 +8,27 @@ import {
   preprocess,
   record,
   string,
+  url,
   enum as zodEnum,
   unknown as zodUnknown,
 } from "zod";
 import { isDateBefore } from "@/lib/date-helpers";
 
 export const meetingPlatformSchema = zodEnum(["zoom", "meet", "teams"]);
+export const recordingModeSchema = zodEnum([
+  "audioOnly",
+  "speakerView",
+  "galleryView",
+]);
+export const speechToTextProviderSchema = zodEnum([
+  "gladia",
+  "assembly",
+  "none",
+]);
 
 // All possible bot statuses
 export const botStatusSchema = zodEnum([
-  "pending",
+  "queued",
   "joining_call",
   "in_waiting_room",
   "in_call_not_recording",
@@ -131,10 +142,59 @@ export const botsListResponseSchema = object({
   prevCursor: string().nullable(),
 });
 
+export const botStatusHistoryEntry = object({
+  status: botStatusSchema,
+  updatedAt: iso.datetime(),
+  message: string().nullish(),
+});
+
+export const botDetailsSchema = object({
+  name: string(),
+  meetingUrl: string(),
+  meetingPlatform: meetingPlatformSchema,
+  recordingMode: recordingModeSchema,
+  speechToTextProvider: speechToTextProviderSchema,
+  extra: record(string(), zodUnknown()).nullable(),
+  totalTokens: string().nullable(),
+  duration: string().nullable(),
+  createdAt: iso.datetime(),
+  endedAt: iso.datetime().nullable(),
+  joinedAt: iso.datetime().nullable(),
+  exitedAt: iso.datetime().nullable(),
+  latestStatus: botStatusSchema,
+  statusHistory: array(botStatusHistoryEntry),
+  diarizationV2: boolean(),
+  transcriptionFailures: number(),
+  diarizationFailures: number(),
+  videoUploadFailures: number(),
+  audioUploadFailures: number(),
+  logsUploadFailures: number(),
+  artifacts: record(string(), zodUnknown()).nullable(),
+  artifactsDeleted: boolean(),
+  errors: record(string(), zodUnknown()).nullable(),
+  updatedAt: iso.datetime(),
+  transcriptionId: string().nullish(),
+  videoUrl: url().nullish(),
+  audioUrl: url().nullish(),
+  diarizationUrl: url().nullish(),
+  transcriptUrl: url().nullish(),
+  rawTranscriptUrl: url().nullish(),
+});
+
+export const botDetailsResponseSchema = object({
+  data: botDetailsSchema,
+  success: boolean(),
+});
+
 export type MeetingPlatform = output<typeof meetingPlatformSchema>;
+export type RecordingMode = output<typeof recordingModeSchema>;
+export type SpeechToTextProvider = output<typeof speechToTextProviderSchema>;
 export type BotStatus = output<typeof botStatusSchema>;
 export type ListBotsRequestQueryParams = output<
   typeof ListBotsRequestQuerySchema
 >;
 export type BotListEntry = output<typeof botListEntry>;
 export type BotsListResponse = output<typeof botsListResponseSchema>;
+export type BotDetails = output<typeof botDetailsSchema>;
+export type BotStatusHistoryEntry = output<typeof botStatusHistoryEntry>;
+export type BotDetailsResponse = output<typeof botDetailsResponseSchema>;

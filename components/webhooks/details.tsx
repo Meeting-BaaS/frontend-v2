@@ -94,9 +94,9 @@ export function ViewWebhookDetails({
         <NameValuePair
           title="Linked Events"
           value={
-            <HoverCard>
+            <HoverCard openDelay={0}>
               <HoverCardTrigger asChild>
-                <Badge variant="secondary" className="cursor-pointer">
+                <Badge variant="secondary" className="cursor-default">
                   {eventCount} {eventCount === 1 ? "event" : "events"}
                 </Badge>
               </HoverCardTrigger>
