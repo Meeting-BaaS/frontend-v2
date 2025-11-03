@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { UsageContent } from "@/components/settings/usage-content";
+import { UsageContent } from "@/components/settings/usage/content";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_USAGE_STATS } from "@/lib/api-routes";
 import {

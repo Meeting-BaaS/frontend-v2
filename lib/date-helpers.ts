@@ -17,6 +17,21 @@ export function parseDateString(dateString: string): Date {
 }
 
 /**
+ * Formats a date to show locale date (e.g., "Oct 23, 2025")
+ * @param timestamp - UNIX timestamp (e.g., 1719158745)
+ * @returns Formatted relative date string
+ */
+export function formatUNIXDate(
+  timestamp: number,
+  formatString = "MMM d, yyyy",
+): string {
+  const date = new Date(timestamp * 1000);
+
+  // Show date
+  return format(date, formatString);
+}
+
+/**
  * Formats a date to show relative time (e.g., "2 hours ago", "3 days ago")
  * @param isoString - ISO timestamp string (e.g., "2025-10-23T13:05:45.961Z")
  * @returns Formatted relative date string

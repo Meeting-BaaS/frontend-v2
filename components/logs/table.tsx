@@ -93,7 +93,6 @@ export function LogsTable({
       serverSidePagination
       prevIteratorLink={prevCursorLink}
       nextIteratorLink={nextCursorLink}
-      serverSideFilters
     />
   );
 }

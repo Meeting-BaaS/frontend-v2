@@ -37,7 +37,6 @@ interface DataTableProps<TData> {
   searchPlaceholder?: string;
   clientSideFilters?: React.ReactNode;
   serverSidePagination?: boolean;
-  serverSideFilters?: boolean;
   prevIteratorLink?: string | null;
   nextIteratorLink?: string | null;
   rowCellClassName?: string;
@@ -51,7 +50,6 @@ export function DataTable<TData>({
   searchPlaceholder = "Search...",
   clientSideFilters,
   serverSidePagination = false,
-  serverSideFilters = false,
   prevIteratorLink,
   nextIteratorLink,
   rowCellClassName,
@@ -95,7 +93,7 @@ export function DataTable<TData>({
           <Link href={nextIteratorLink ?? ""}>Next</Link>
         </div>
       )}
-      {!serverSideFilters && (
+      {(clientSideSearch || clientSideFilters) && (
         <div className="flex mt-4 sm:mt-0 gap-2 w-full flex-col md:flex-row items-center py-4">
           {clientSideSearch && searchColumn && (
             <InputGroup className="flex-1">

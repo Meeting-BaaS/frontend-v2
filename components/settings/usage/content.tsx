@@ -146,7 +146,7 @@ export function UsageContent({ usageStats }: UsageContentProps) {
               <span className="text-sm">Last Token Purchase</span>
             </div>
             <div>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-muted-foreground capitalize">
                 {formatRelativeDate(usageStats.lastTokenPurchase.createdAt)}
               </span>
             </div>
@@ -190,7 +190,9 @@ export function UsageContent({ usageStats }: UsageContentProps) {
               <span className="text-sm">Available Tokens</span>
             </div>
             <div>
-              <span className="text-sm">{usageStats.tokens.available}</span>
+              <span className="text-sm">
+                {usageStats.tokens.available.toFixed(2)}
+              </span>
             </div>
           </div>
         </div>

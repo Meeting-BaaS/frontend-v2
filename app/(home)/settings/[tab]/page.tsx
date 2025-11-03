@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
-import { UsageTab } from "@/components/settings/usage-tab";
+import { BillingTab } from "@/components/settings/billing/tab-server";
+import { UsageTab } from "@/components/settings/usage/tab-server";
 import { Spinner } from "@/components/ui/spinner";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_SESSION } from "@/lib/api-routes";
@@ -51,6 +52,8 @@ export default async function SettingsTabPage({
       TabContent = <UsageTab />;
       break;
     case "billing":
+      TabContent = <BillingTab />;
+      break;
     case "team":
     case "emails":
     case "integrations":

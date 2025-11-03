@@ -1,5 +1,7 @@
 import {
+  array,
   boolean,
+  email,
   iso,
   number,
   object,
@@ -59,8 +61,64 @@ export const usageStatsResponseSchema = object({
   data: usageStatsSchema,
 });
 
+// Billing schemas
+export const subscriptionSchema = object({
+  id: string(),
+  status: string(),
+  currentPeriodEnd: number(),
+  cancelAtPeriodEnd: boolean(),
+  plan: object({
+    name: string(),
+    amount: number(),
+    currency: string(),
+    interval: string(),
+  }),
+});
+
+export const invoiceSchema = object({
+  id: string(),
+  number: string().nullable(),
+  status: string().nullable(),
+  amountDue: number(),
+  amountPaid: number(),
+  currency: string(),
+  created: number(),
+  invoicePdf: string().nullable(),
+  hostedInvoiceUrl: string().nullable(),
+});
+
+export const billingInfoSchema = object({
+  billingEmail: string().nullable(),
+  subscription: subscriptionSchema,
+  invoices: array(invoiceSchema),
+});
+
+export const billingInfoResponseSchema = object({
+  success: boolean(),
+  data: billingInfoSchema,
+});
+
+export const updateBillingEmailSchema = object({
+  email: email("Invalid email address"),
+});
+
+export const customerPortalUrlResponseSchema = object({
+  success: boolean(),
+  data: object({
+    url: string(),
+  }),
+});
+
 export type PlanType = output<typeof planTypeSchema>;
 export type SettingsPageTabs = output<typeof settingsPageTabsSchema>;
 export type SettingsPageQuery = output<typeof settingsPageQuerySchema>;
 export type UsageStats = output<typeof usageStatsSchema>;
 export type UsageStatsResponse = output<typeof usageStatsResponseSchema>;
+export type Subscription = output<typeof subscriptionSchema>;
+export type Invoice = output<typeof invoiceSchema>;
+export type BillingInfo = output<typeof billingInfoSchema>;
+export type BillingInfoResponse = output<typeof billingInfoResponseSchema>;
+export type UpdateBillingEmail = output<typeof updateBillingEmailSchema>;
+export type CustomerPortalUrlResponse = output<
+  typeof customerPortalUrlResponseSchema
+>;

@@ -96,7 +96,6 @@ export function BotsTable({
       serverSidePagination
       prevIteratorLink={prevCursorLink}
       nextIteratorLink={nextCursorLink}
-      serverSideFilters
     />
   );
 }

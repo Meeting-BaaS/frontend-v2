@@ -61,7 +61,7 @@ const items = [
   },
   {
     title: "Settings",
-    url: "/settings/usage",
+    url: "/settings",
     icon: Settings,
   },
 ];

@@ -11,7 +11,7 @@ export function SettingsTabs() {
 
   return (
     <Tabs value={currentTab}>
-      <TabsList className="gap-3">
+      <TabsList className="gap-3 max-w-[90svw] overflow-x-auto">
         <TabsTrigger value="usage" className="gap-2" asChild>
           <Link href="/settings/usage">
             <BarChart3 className="size-4" />
