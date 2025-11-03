@@ -1,6 +1,7 @@
 "use client";
 
 import { Info } from "lucide-react";
+import { TokenUsageRatesSheet } from "@/components/settings/usage/token-usage-rates-sheet";
 import { Button } from "@/components/ui/button";
 import {
   ButtonGroup,
@@ -121,18 +122,19 @@ export function UsageContent({ usageStats }: UsageContentProps) {
         <div className="flex flex-col gap-1">
           <h3 className="text-lg md:text-xl font-semibold">Tokens</h3>
           <p className="text-sm text-muted-foreground max-w-md">
-            Turn on auto-purchase to make sure you never run out of tokens.
+            Turn on auto-purchase to make sure you never run out of tokens.{" "}
+            <TokenUsageRatesSheet />
           </p>
           <div className="mt-2">
             <ButtonGroup>
               <Button variant="secondary" size="sm">
                 {usageStats.plan.autoPurchaseEnabled
-                  ? "Manage Auto-Purchase"
-                  : "Enable Auto-Purchase"}
+                  ? "Manage auto-purchase"
+                  : "Enable auto-purchase"}
               </Button>
               <ButtonGroupSeparator />
               <Button variant="secondary" size="sm">
-                Buy Tokens
+                Buy tokens
               </Button>
             </ButtonGroup>
           </div>
@@ -156,7 +158,7 @@ export function UsageContent({ usageStats }: UsageContentProps) {
               <span className="text-sm">Tokens Consumed</span>
             </div>
             <div>
-              <span className="text-sm">
+              <span className="text-sm text-muted-foreground">
                 {usageStats.tokens.totalUsed.toFixed(2)}
               </span>
             </div>
@@ -180,7 +182,7 @@ export function UsageContent({ usageStats }: UsageContentProps) {
               </TooltipProvider>
             </div>
             <div>
-              <span className="text-sm">
+              <span className="text-sm text-muted-foreground">
                 {usageStats.tokens.reserved.toFixed(2)}
               </span>
             </div>

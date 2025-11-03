@@ -42,7 +42,7 @@ export function ApiKeysView({ apiKeys, newKey }: ApiKeysViewProps) {
             className="w-full sm:w-auto font-medium"
             onClick={handleCreateButtonClick}
           >
-            <Plus /> Create API Key
+            <Plus /> Create API key
           </Button>
           <DocsButton />
         </div>
