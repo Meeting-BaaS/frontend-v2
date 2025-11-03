@@ -61,7 +61,7 @@ export const columns: ColumnDef<ApiLogListEntry>[] = [
           <Button variant="link" asChild className="p-0">
             <Link
               href={`/logs/${row.original.id}`}
-              prefetch={false}
+              prefetch={false} // We don't need to prefetch the log details page
               className="flex gap-3 items-center decoration-dashed underline group-hover:decoration-baas-primary-500 group-hover:decoration-solid"
             >
               <GradientIcon color={variants.color}>

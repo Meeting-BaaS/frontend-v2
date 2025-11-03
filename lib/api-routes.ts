@@ -35,3 +35,6 @@ export const GET_BOT_DETAILS = `${BASE_PATH}/bots/details`;
 // API logs routes
 export const LIST_API_LOGS = `${BASE_PATH}/api-logs/list`;
 export const GET_API_LOG_DETAILS = `${BASE_PATH}/api-logs/details`;
+
+// Settings routes
+export const GET_USAGE_STATS = `${BASE_PATH}/settings/usage/stats`;

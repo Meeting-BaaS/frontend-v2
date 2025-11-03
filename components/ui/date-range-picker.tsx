@@ -142,7 +142,7 @@ export function DateRangePicker({
             )}
           >
             {buttonLabel}
-            <ChevronDown />
+            <ChevronDown className="opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent

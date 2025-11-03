@@ -61,7 +61,7 @@ const items = [
   },
   {
     title: "Settings",
-    url: "/settings",
+    url: "/settings?tab=usage",
     icon: Settings,
   },
 ];
