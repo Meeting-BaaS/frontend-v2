@@ -16,11 +16,11 @@ import {
 import { formatRelativeDate } from "@/lib/date-helpers";
 import type { UsageStats } from "@/lib/schemas/settings";
 
-interface UsageTabProps {
+interface UsageContentProps {
   usageStats: UsageStats;
 }
 
-export function UsageTab({ usageStats }: UsageTabProps) {
+export function UsageContent({ usageStats }: UsageContentProps) {
   const planName =
     usageStats.plan.name === "PAYG" ? "Pay as You Go" : usageStats.plan.name;
   // const isEnterprise = usageStats.plan.type === "Enterprise";
