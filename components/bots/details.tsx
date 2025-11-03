@@ -49,7 +49,7 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
         </div>
       </div>
 
-      <div className="grid mt-10 md:mt-12 space-y-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid mt-10 md:mt-12 md:space-y-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <NameValuePair title="Meeting URL" value={botDetails.meetingUrl} />
         <NameValuePair
           title="Recording Mode"

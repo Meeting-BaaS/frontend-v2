@@ -172,10 +172,12 @@ export function StatusHistory({ statusHistory }: StatusHistoryProps) {
     <TooltipProvider>
       <ScrollArea className="w-full rounded-md border border-dashed bg-dots">
         <div className="relative flex w-max gap-12 p-8 z-10">
-          <span
-            className="pointer-events-none absolute left-16 top-1/2 mt-[0.30rem] h-0.5 w-[calc(100%-8rem)] -translate-y-8 select-none bg-muted"
-            aria-hidden="true"
-          />
+          {statusHistory.length > 1 && (
+            <span
+              className="pointer-events-none absolute left-16 top-1/2 mt-[0.30rem] h-0.5 w-[calc(100%-9rem)] -translate-y-8 select-none bg-muted"
+              aria-hidden="true"
+            />
+          )}
           {statusHistory.map((entry, index) => {
             const config = statusConfigMap[entry.status as BotStatus];
             if (!config) return null;

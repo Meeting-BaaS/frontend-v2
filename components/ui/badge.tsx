@@ -13,6 +13,8 @@ const badgeVariants = cva(
           "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
         success:
           "border-transparent bg-green-500/10 text-green-500 [a&]:hover:bg-green-500/90",
+        warning:
+          "border-transparent bg-yellow-500/10 text-yellow-500 [a&]:hover:bg-yellow-500/90",
         disabled:
           "border-transparent bg-gray-500/10 text-gray-400 [a&]:hover:bg-gray-500/90",
         secondary:
