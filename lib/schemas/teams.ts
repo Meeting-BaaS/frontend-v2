@@ -1,12 +1,5 @@
-import {
-  array,
-  boolean,
-  number,
-  object,
-  type output,
-  string,
-  enum as zodEnum,
-} from "zod";
+import { array, boolean, number, object, type output, string } from "zod";
+import { planTypeSchema } from "@/lib/schemas/settings";
 
 export const teamDetails = array(
   object({
@@ -14,7 +7,7 @@ export const teamDetails = array(
     name: string(),
     logo: string().nullable(),
     region: string().nullable(),
-    plan: zodEnum(["PAYG", "Pro", "Scale", "Enterprise"]),
+    plan: planTypeSchema,
     isActive: boolean(),
     rateLimit: number(),
   }),

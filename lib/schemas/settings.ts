@@ -10,7 +10,7 @@ import {
   enum as zodEnum,
 } from "zod";
 
-export const planTypeSchema = zodEnum(["PAYG", "Pro", "Scale", "Enterprise"]);
+export const planTypeSchema = zodEnum(["payg", "pro", "scale", "enterprise"]);
 export const settingsPageTabsSchema = zodEnum([
   "usage",
   "billing",
@@ -65,7 +65,7 @@ export const usageStatsResponseSchema = object({
 export const subscriptionSchema = object({
   id: string(),
   status: string(),
-  currentPeriodEnd: number(),
+  currentPeriodEnd: iso.datetime().nullable(),
   cancelAtPeriodEnd: boolean(),
   plan: object({
     name: string(),

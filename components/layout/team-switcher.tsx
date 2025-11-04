@@ -101,8 +101,10 @@ export function TeamSwitcher({ teamDetails }: TeamSwitcherProps) {
                   <TeamAvatar name={team.name} size="sm" className="size-6" />
                 )}
                 {team.name}
-                {team.plan !== "PAYG" && (
-                  <Badge variant="outline">{team.plan}</Badge>
+                {team.plan !== "payg" && (
+                  <Badge variant="outline" className="capitalize">
+                    {team.plan}
+                  </Badge>
                 )}
                 {team.isActive && <Check className="ml-auto size-4" />}
               </DropdownMenuItem>

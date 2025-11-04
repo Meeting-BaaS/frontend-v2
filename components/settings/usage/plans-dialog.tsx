@@ -38,8 +38,8 @@ export function PlansDialog({ children }: PlansDialogProps) {
 
   const handleSelectPlan = async (plan: PlanInfo) => {
     const isCurrentPlan = currentPlan === plan.type;
-    const isPAYG = plan.type === "PAYG";
-    const isEnterprise = plan.type === "Enterprise";
+    const isPayg = plan.type === "payg";
+    const isEnterprise = plan.type === "enterprise";
 
     // Skip if Enterprise (handled by mailto link)
     if (isEnterprise) {
@@ -47,16 +47,16 @@ export function PlansDialog({ children }: PlansDialogProps) {
     }
 
     // Skip if disabled states
-    if (isPAYG && currentPlan !== "PAYG") {
+    if (isPayg && currentPlan !== "payg") {
       return;
     }
 
-    if (isCurrentPlan && isPAYG) {
+    if (isCurrentPlan && isPayg) {
       return;
     }
 
     // If cancelling current plan, show cancel dialog
-    if (isCurrentPlan && !isPAYG) {
+    if (isCurrentPlan && !isPayg) {
       setSelectedPlan(plan);
       setCancelDialogOpen(true);
       return;

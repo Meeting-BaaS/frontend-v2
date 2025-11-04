@@ -28,7 +28,7 @@ interface PlansProviderProps {
 
 export function PlansProvider({ children }: PlansProviderProps) {
   const [plans, setPlans] = useState<PlanInfo[]>([]);
-  const [currentPlan, setCurrentPlan] = useState<string>("PAYG");
+  const [currentPlan, setCurrentPlan] = useState<string>("payg");
   const [currentSubscriptionId, setCurrentSubscriptionId] = useState<
     string | null
   >(null);

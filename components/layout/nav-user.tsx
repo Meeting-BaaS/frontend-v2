@@ -43,10 +43,10 @@ interface NavUserProps {
 }
 
 const higherPlanMap: Record<TeamDetails[number]["plan"], string | null> = {
-  PAYG: "Pro",
-  Pro: "Scale",
-  Scale: "Enterprise",
-  Enterprise: null,
+  payg: "pro",
+  pro: "scale",
+  scale: "enterprise",
+  enterprise: null,
 };
 
 export function NavUser({ user, teamDetails }: NavUserProps) {
@@ -123,11 +123,11 @@ export function NavUser({ user, teamDetails }: NavUserProps) {
                   <DropdownMenuShortcut>M</DropdownMenuShortcut>
                 </Link>
               </DropdownMenuItem>
-              {activeTeam?.plan !== "Enterprise" && (
+              {activeTeam?.plan !== "enterprise" && (
                 <DropdownMenuItem asChild>
                   <Link href="/settings?page=upgrade">
                     <Sparkles />
-                    Upgrade to {higherPlanMap[activeTeam?.plan ?? "Pro"]}
+                    Upgrade to {higherPlanMap[activeTeam?.plan ?? "pro"]}
                     <DropdownMenuShortcut>U</DropdownMenuShortcut>
                   </Link>
                 </DropdownMenuItem>

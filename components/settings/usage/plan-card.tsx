@@ -16,19 +16,19 @@ interface PlanCardProps {
 
 // Plan order for comparison
 const PLAN_ORDER: Record<string, number> = {
-  PAYG: 0,
-  Pro: 1,
-  Scale: 2,
-  Enterprise: 3,
+  payg: 0,
+  pro: 1,
+  scale: 2,
+  enterprise: 3,
 };
 
 export function PlanCard({ plan, currentPlan, onSelectPlan }: PlanCardProps) {
   const isCurrentPlan = currentPlan === plan.type;
-  const isEnterprise = plan.type === "Enterprise";
-  const isPAYG = plan.type === "PAYG";
-  const currentPlanIsNotPAYG = currentPlan !== "PAYG";
+  const isEnterprise = plan.type === "enterprise";
+  const isPayg = plan.type === "payg";
+  const currentPlanIsNotPayg = currentPlan !== "payg";
   const isDowngrade =
-    PLAN_ORDER[plan.type] < PLAN_ORDER[currentPlan] && !isPAYG;
+    PLAN_ORDER[plan.type] < PLAN_ORDER[currentPlan] && !isPayg;
 
   // Determine button state
   let buttonText = "Upgrade";
@@ -38,11 +38,11 @@ export function PlanCard({ plan, currentPlan, onSelectPlan }: PlanCardProps) {
   if (isEnterprise) {
     buttonText = "Contact us";
     buttonVariant = "link";
-  } else if (isPAYG && currentPlanIsNotPAYG) {
+  } else if (isPayg && currentPlanIsNotPayg) {
     buttonText = "Activated upon cancellation";
     buttonVariant = "outline";
     buttonDisabled = true;
-  } else if (isCurrentPlan && isPAYG) {
+  } else if (isCurrentPlan && isPayg) {
     buttonText = "Selected";
     buttonVariant = "outline";
     buttonDisabled = true;
@@ -54,7 +54,7 @@ export function PlanCard({ plan, currentPlan, onSelectPlan }: PlanCardProps) {
     buttonVariant = "outline";
   }
 
-  const isPopular = plan.type === "Scale";
+  const isPopular = plan.type === "scale";
 
   return (
     <div
@@ -82,8 +82,8 @@ export function PlanCard({ plan, currentPlan, onSelectPlan }: PlanCardProps) {
 
       {/* Header */}
       <div className="flex flex-col gap-2 pb-4 border-b">
-        <h3 className="text-lg font-semibold">
-          {isPAYG ? "Pay as You Go" : plan.name}
+        <h3 className="text-lg font-semibold capitalize">
+          {isPayg ? "Pay as You Go" : plan.name}
         </h3>
         <div className="flex items-baseline gap-1">
           {plan.price === null ? (

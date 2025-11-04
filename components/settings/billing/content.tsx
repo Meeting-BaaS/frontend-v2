@@ -11,7 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_CUSTOMER_PORTAL_URL } from "@/lib/api-routes";
 import { formatCurrency } from "@/lib/currency-helpers";
-import { formatUNIXDate } from "@/lib/date-helpers";
+import { formatISODateString } from "@/lib/date-helpers";
 import { genericError } from "@/lib/errors";
 import type {
   BillingInfo,
@@ -26,7 +26,7 @@ interface BillingContentProps {
 export function BillingContent({ billingInfo }: BillingContentProps) {
   const [isLoadingPortal, setIsLoadingPortal] = useState(false);
   const planName =
-    billingInfo.subscription.plan.name === "PAYG"
+    billingInfo.subscription.plan.name === "payg"
       ? "Pay as You Go"
       : billingInfo.subscription.plan.name;
 
@@ -69,7 +69,7 @@ export function BillingContent({ billingInfo }: BillingContentProps) {
           <div className="grow">
             <Badge
               variant={
-                billingInfo.subscription.plan.name === "PAYG"
+                billingInfo.subscription.plan.name === "payg"
                   ? "warning"
                   : "primary"
               }
@@ -79,15 +79,17 @@ export function BillingContent({ billingInfo }: BillingContentProps) {
             </Badge>
           </div>
           <div className="flex flex-row items-center gap-3">
-            {billingInfo.subscription.currentPeriodEnd !== 0 && (
+            {billingInfo.subscription.currentPeriodEnd ? (
               <Badge variant="secondary">
-                Renews{" "}
-                {formatUNIXDate(
+                {billingInfo.subscription.cancelAtPeriodEnd
+                  ? "Expires"
+                  : "Renews"}{" "}
+                {formatISODateString(
                   billingInfo.subscription.currentPeriodEnd,
                   "MMM d",
                 )}
               </Badge>
-            )}
+            ) : null}
             <span className="text-sm">
               {formatCurrency(
                 billingInfo.subscription.plan.amount,

@@ -17,6 +17,18 @@ export function parseDateString(dateString: string): Date {
 }
 
 /**
+ * Safely parses a date string using date-fns parseISO for consistent behavior
+ * @param dateString - ISO timestamp string (e.g., "2025-10-23T13:05:45.961Z")
+ * @returns Formatted date string
+ */
+export function formatISODateString(
+  dateString: string,
+  formatString = "MMM d, yyyy",
+): string {
+  return format(parseDateString(dateString), formatString);
+}
+
+/**
  * Formats a date to show locale date (e.g., "Oct 23, 2025")
  * @param timestamp - UNIX timestamp (e.g., 1719158745)
  * @returns Formatted relative date string

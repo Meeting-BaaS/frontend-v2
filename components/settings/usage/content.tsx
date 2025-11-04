@@ -24,7 +24,7 @@ interface UsageContentProps {
 
 export function UsageContent({ usageStats }: UsageContentProps) {
   const planName =
-    usageStats.plan.name === "PAYG" ? "Pay as You Go" : usageStats.plan.name;
+    usageStats.plan.name === "payg" ? "Pay as You Go" : usageStats.plan.name;
   // const isEnterprise = usageStats.plan.type === "Enterprise";
 
   return (
@@ -38,14 +38,16 @@ export function UsageContent({ usageStats }: UsageContentProps) {
           </p>
           <div>
             <PlansDialog>
-              <Button variant="secondary" size="sm" className="mt-2">
-                {usageStats.plan.name === "PAYG" ? "Upgrade" : "Manage"}
+              <Button variant="secondary" size="sm" className="mt-2 capitalize">
+                {usageStats.plan.name === "payg" ? "Upgrade" : "Manage"}
               </Button>
             </PlansDialog>
           </div>
         </div>
         <div className="flex flex-col md:w-md lg:w-lg xl:w-xl [&>div]:flex [&>div]:flex-row [&>div]:items-center [&>div]:gap-2 [&>div]:py-4 [&>div]:border-b [&>div:last-child]:border-0">
-          <h3 className="text-md md:text-lg font-semibold mb-4">{planName}</h3>
+          <h3 className="text-md md:text-lg font-semibold mb-4 capitalize">
+            {planName}
+          </h3>
           <div>
             <div className="flex items-center gap-2 grow">
               <CircularProgress
@@ -212,7 +214,9 @@ export function UsageContent({ usageStats }: UsageContentProps) {
           </p>
         </div>
         <div className="flex flex-col md:w-md lg:w-lg xl:w-xl [&>div]:flex [&>div]:flex-row [&>div]:items-center [&>div]:gap-2 [&>div]:py-4 [&>div]:border-b [&>div:last-child]:border-0">
-          <h3 className="text-md md:text-lg font-semibold mb-4">{planName}</h3>
+          <h3 className="text-md md:text-lg font-semibold mb-4 capitalize">
+            {planName}
+          </h3>
           <div>
             <div className="flex items-center gap-2 grow">
               <CircularProgress
