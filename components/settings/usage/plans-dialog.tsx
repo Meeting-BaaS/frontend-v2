@@ -75,11 +75,13 @@ export function PlansDialog({ children }: PlansDialogProps) {
         successUrl: string;
         cancelUrl: string;
         subscriptionId?: string;
+        returnUrl: string;
         referenceId: string;
       } = {
         plan: plan.type,
-        successUrl: `${window.location.origin}/settings/billing`,
+        successUrl: `${window.location.origin}/settings/billing?success=true`,
         cancelUrl: `${window.location.origin}/settings/usage`,
+        returnUrl: `${window.location.origin}/settings/billing`,
         referenceId: teamId?.toString() ?? "",
       };
 
