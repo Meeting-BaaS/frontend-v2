@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowUpRight, MoreHorizontal } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { BillingEmailForm } from "@/components/settings/billing/email-form";
+import { SubscriptionActions } from "@/components/settings/billing/subscription-actions";
 import { PaymentSuccessDialog } from "@/components/settings/billing/success-dialog";
 import { InvoiceTable } from "@/components/settings/billing/table";
 import { Badge } from "@/components/ui/badge";
@@ -103,9 +104,7 @@ export function BillingContent({
               )}{" "}
               / {billingInfo.subscription.plan.interval}
             </span>
-            <Button variant="ghost" size="icon">
-              <MoreHorizontal />
-            </Button>
+            <SubscriptionActions billingInfo={billingInfo} />
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { BillingTab } from "@/components/settings/billing/tab-server";
+import { IntegrationsTab } from "@/components/settings/integrations.tsx/tab-server";
 import { UsageTab } from "@/components/settings/usage/tab-server";
 import { Spinner } from "@/components/ui/spinner";
 import { axiosGetInstance } from "@/lib/api-client";
@@ -59,12 +60,14 @@ export default async function SettingsTabPage({
       break;
     case "team":
     case "emails":
-    case "integrations":
       TabContent = (
         <div className="text-muted-foreground py-10 text-center">
           {tab.charAt(0).toUpperCase() + tab.slice(1)} settings coming soon...
         </div>
       );
+      break;
+    case "integrations":
+      TabContent = <IntegrationsTab />;
       break;
     default:
       return notFound();
