@@ -73,7 +73,7 @@ export function BillingContent({ billingInfo }: BillingContentProps) {
                   ? "warning"
                   : "primary"
               }
-              className="text-sm"
+              className="text-sm capitalize"
             >
               {planName}
             </Badge>
@@ -107,8 +107,8 @@ export function BillingContent({ billingInfo }: BillingContentProps) {
         <div className="flex flex-col gap-1">
           <h3 className="text-lg md:text-xl font-semibold">Billing Email</h3>
           <p className="text-sm text-muted-foreground max-w-md">
-            Update the email address where you receive billing notifications and
-            invoices.
+            Update the email address where you want to receive billing
+            notifications and invoices.
           </p>
         </div>
         <div className="flex flex-col w-1/3">

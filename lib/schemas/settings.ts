@@ -109,6 +109,33 @@ export const customerPortalUrlResponseSchema = object({
   }),
 });
 
+// Plans schemas
+export const planInfoSchema = object({
+  type: string(),
+  name: string(),
+  price: number().nullable(),
+  interval: zodEnum(["month", "year"]),
+  features: array(string()),
+  dailyBotCap: number().nullable(),
+  rateLimitPerSecond: number().nullable(),
+  calendarIntegrationsLimit: number().nullable(),
+  dataRetentionDays: number(),
+  teamsEnabled: boolean(),
+  byokTranscriptionEnabled: boolean(),
+  tokenPackDiscount: number(),
+});
+
+export const plansDataSchema = object({
+  currentPlan: string(),
+  currentSubscriptionId: string().nullable(),
+  plans: array(planInfoSchema),
+});
+
+export const plansResponseSchema = object({
+  success: boolean(),
+  data: plansDataSchema,
+});
+
 export type PlanType = output<typeof planTypeSchema>;
 export type SettingsPageTabs = output<typeof settingsPageTabsSchema>;
 export type SettingsPageQuery = output<typeof settingsPageQuerySchema>;
@@ -122,3 +149,6 @@ export type UpdateBillingEmail = output<typeof updateBillingEmailSchema>;
 export type CustomerPortalUrlResponse = output<
   typeof customerPortalUrlResponseSchema
 >;
+export type PlanInfo = output<typeof planInfoSchema>;
+export type PlansData = output<typeof plansDataSchema>;
+export type PlansResponse = output<typeof plansResponseSchema>;

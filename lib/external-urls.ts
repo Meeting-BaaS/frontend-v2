@@ -83,3 +83,4 @@ export const getGrafanaLogsUrl = (bot_uuid?: string) =>
 
 // Webhook testing URL
 export const WEBHOOK_TEST_URL = "https://webhook.cool";
+export const BOOK_A_CALL_URL = "https://www.meetingbaas.com/en/company/contact";

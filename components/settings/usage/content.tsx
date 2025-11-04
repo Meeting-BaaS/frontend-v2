@@ -1,6 +1,7 @@
 "use client";
 
 import { Info } from "lucide-react";
+import { PlansDialog } from "@/components/settings/usage/plans-dialog";
 import { TokenUsageRatesSheet } from "@/components/settings/usage/token-usage-rates-sheet";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,9 +37,11 @@ export function UsageContent({ usageStats }: UsageContentProps) {
             Choose a plan that fits your needs.
           </p>
           <div>
-            <Button variant="secondary" size="sm" className="mt-2">
-              {usageStats.plan.name === "PAYG" ? "Upgrade" : "Manage"}
-            </Button>
+            <PlansDialog>
+              <Button variant="secondary" size="sm" className="mt-2">
+                {usageStats.plan.name === "PAYG" ? "Upgrade" : "Manage"}
+              </Button>
+            </PlansDialog>
           </div>
         </div>
         <div className="flex flex-col md:w-md lg:w-lg xl:w-xl [&>div]:flex [&>div]:flex-row [&>div]:items-center [&>div]:gap-2 [&>div]:py-4 [&>div]:border-b [&>div:last-child]:border-0">
@@ -111,7 +114,7 @@ export function UsageContent({ usageStats }: UsageContentProps) {
               <span className="text-sm">
                 {usageStats.plan.byokTranscriptionEnabled
                   ? "Enabled"
-                  : "Disabled"}
+                  : "Upgrade to enable"}
               </span>
             </div>
           </div>

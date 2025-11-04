@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { PlansProvider } from "@/contexts/plans-context";
 import { UserProvider } from "@/contexts/user-context";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_SESSION, GET_TEAM_DETAILS } from "@/lib/api-routes";
@@ -61,6 +62,7 @@ export default async function HomeLayout({
       session={session.session}
       teamDetails={teamDetails.data}
     >
+      <PlansProvider>
       <SidebarProvider
         style={
           {
@@ -76,6 +78,7 @@ export default async function HomeLayout({
           </div>
         </main>
       </SidebarProvider>
+      </PlansProvider>
     </UserProvider>
   );
 }
