@@ -15,7 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { formatRelativeDate } from "@/lib/date-helpers";
+import { formatISODateString } from "@/lib/date-helpers";
 import type { UsageStats } from "@/lib/schemas/settings";
 
 interface UsageContentProps {
@@ -127,15 +127,15 @@ export function UsageContent({ usageStats }: UsageContentProps) {
         <div className="flex flex-col gap-1">
           <h3 className="text-lg md:text-xl font-semibold">Tokens</h3>
           <p className="text-sm text-muted-foreground max-w-md">
-            Turn on auto-purchase to make sure you never run out of tokens.{" "}
+            Turn on auto-refill to make sure you never run out of tokens.{" "}
             <TokenUsageRatesSheet />
           </p>
           <div className="mt-2">
             <ButtonGroup>
               <Button variant="secondary" size="sm">
                 {usageStats.plan.autoPurchaseEnabled
-                  ? "Manage auto-purchase"
-                  : "Enable auto-purchase"}
+                  ? "Manage auto-refill"
+                  : "Enable auto-refill"}
               </Button>
               <ButtonGroupSeparator />
               <Button variant="secondary" size="sm">
@@ -154,7 +154,7 @@ export function UsageContent({ usageStats }: UsageContentProps) {
             </div>
             <div>
               <span className="text-sm text-muted-foreground capitalize">
-                {formatRelativeDate(usageStats.lastTokenPurchase.createdAt)}
+                {formatISODateString(usageStats.lastTokenPurchase.createdAt)}
               </span>
             </div>
           </div>
@@ -178,9 +178,9 @@ export function UsageContent({ usageStats }: UsageContentProps) {
                   </TooltipTrigger>
                   <TooltipContent className="max-w-sm">
                     <strong>Reserved tokens</strong> are tokens that are
-                    reserved by the active bots. Upon the creation of a bot, it
-                    reserves 0.5 tokens which is released when it completes.
-                    Please contact support if you notice reserved tokens not
+                    reserved by active bots. Upon creation of a bot, it reserves
+                    0.5 tokens which are released when it completes. Please
+                    contact support if you notice that reserved tokens are not
                     being released.
                   </TooltipContent>
                 </Tooltip>
@@ -256,10 +256,10 @@ export function UsageContent({ usageStats }: UsageContentProps) {
                       <Info className="h-4 w-4 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-sm">
-                      After the retention period, the meeting data is deleted.
-                      Please ensure that you are downloading the data before the
-                      retention period ends. You can also request for early
-                      deletion by calling the delete endpoint.
+                      Meeting data is deleted automatically after the retention
+                      period. Please ensure that you are downloading the data
+                      before the end of retention period. You can also request
+                      for early deletion by calling the delete data endpoint.
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
