@@ -15,7 +15,6 @@ import {
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { usePlans } from "@/hooks/use-plans";
 import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
 
@@ -24,7 +23,6 @@ interface CancelPlanDialogProps {
   planName: string;
   subscriptionId: string | null;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: () => void;
 }
 
 export function CancelPlanDialog({
@@ -32,11 +30,9 @@ export function CancelPlanDialog({
   planName,
   subscriptionId,
   onOpenChange,
-  onSuccess,
 }: CancelPlanDialogProps) {
   const [typedText, setTypedText] = useState("");
   const [loading, setLoading] = useState(false);
-  const { refetch } = usePlans();
 
   const handleCancel = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,15 +51,8 @@ export function CancelPlanDialog({
       if (error || !data) {
         throw new Error(error?.message || "Failed to cancel subscription");
       }
-
-      // Refetch plans to update current plan status
-      await refetch();
-
-      toast.success(
-        "Subscription will be canceled at the end of the billing period",
-      );
-      onSuccess?.();
-      onCloseDialog(false);
+      // Better Auth will handle the cancellation and redirect to the return URL
+      toast.success("Redirecting to cancellation page...");
     } catch (error) {
       console.error("Error canceling subscription", error);
       toast.error(error instanceof Error ? error.message : genericError);

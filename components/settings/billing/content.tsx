@@ -4,6 +4,7 @@ import { ArrowUpRight, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { BillingEmailForm } from "@/components/settings/billing/email-form";
+import { PaymentSuccessDialog } from "@/components/settings/billing/success-dialog";
 import { InvoiceTable } from "@/components/settings/billing/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,10 +22,15 @@ import { customerPortalUrlResponseSchema } from "@/lib/schemas/settings";
 
 interface BillingContentProps {
   billingInfo: BillingInfo;
+  success?: boolean;
 }
 
-export function BillingContent({ billingInfo }: BillingContentProps) {
+export function BillingContent({
+  billingInfo,
+  success = false,
+}: BillingContentProps) {
   const [isLoadingPortal, setIsLoadingPortal] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(success);
   const planName =
     billingInfo.subscription.plan.name === "payg"
       ? "Pay as You Go"
@@ -160,6 +166,14 @@ export function BillingContent({ billingInfo }: BillingContentProps) {
         </div>
         <InvoiceTable invoices={billingInfo.invoices} />
       </div>
+
+      {/* Success Dialog */}
+      {success && (
+        <PaymentSuccessDialog
+          open={successOpen}
+          onOpenChange={(open) => setSuccessOpen(open)}
+        />
+      )}
     </div>
   );
 }

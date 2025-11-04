@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { usePlans } from "@/hooks/use-plans";
+import { useUser } from "@/hooks/use-user";
 import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
 
@@ -34,6 +35,7 @@ export function RestorePlanDialog({
 }: RestorePlanDialogProps) {
   const [loading, setLoading] = useState(false);
   const { refetch } = usePlans();
+  const { teamDetails } = useUser();
 
   const handleRestore = async () => {
     if (loading || !subscriptionId) return;
@@ -41,8 +43,12 @@ export function RestorePlanDialog({
     try {
       setLoading(true);
 
+      // Get the active team ID for referenceId
+      const teamId = teamDetails.find((team) => team.isActive)?.id;
+
       const { data, error } = await authClient.subscription.restore({
         subscriptionId,
+        referenceId: teamId?.toString(),
       });
 
       if (error || !data) {

@@ -128,6 +128,7 @@ export const planInfoSchema = object({
 export const plansDataSchema = object({
   currentPlan: string(),
   currentSubscriptionId: string().nullable(),
+  cancelAtPeriodEnd: boolean(),
   plans: array(planInfoSchema),
 });
 

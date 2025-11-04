@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { CancelPlanDialog } from "@/components/settings/usage/cancel-plan-dialog";
 import { PlanCard } from "@/components/settings/usage/plan-card";
+import { RestorePlanDialog } from "@/components/settings/usage/restore-plan-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,11 +30,18 @@ export function PlansDialog({ children }: PlansDialogProps) {
   const [open, setOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<PlanInfo | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [upgradingPlan, setUpgradingPlan] = useState<string | null>(null);
 
   // Get plans and subscription ID from context
-  const { plans, currentPlan, currentSubscriptionId, loading, refetch } =
-    usePlans();
+  const {
+    plans,
+    currentPlan,
+    currentSubscriptionId,
+    cancelAtPeriodEnd,
+    loading,
+    refetch,
+  } = usePlans();
   const { teamDetails } = useUser();
 
   const handleSelectPlan = async (plan: PlanInfo) => {
@@ -52,6 +60,13 @@ export function PlansDialog({ children }: PlansDialogProps) {
     }
 
     if (isCurrentPlan && isPayg) {
+      return;
+    }
+
+    // If restoring current plan (canceled but still active), show restore dialog
+    if (isCurrentPlan && !isPayg && cancelAtPeriodEnd) {
+      setSelectedPlan(plan);
+      setRestoreDialogOpen(true);
       return;
     }
 
@@ -119,8 +134,8 @@ export function PlansDialog({ children }: PlansDialogProps) {
     }
   };
 
-  const handleCancelSuccess = () => {
-    setCancelDialogOpen(false);
+  const handleRestoreSuccess = () => {
+    setRestoreDialogOpen(false);
     setSelectedPlan(null);
     setOpen(false);
   };
@@ -158,6 +173,7 @@ export function PlansDialog({ children }: PlansDialogProps) {
                   key={plan.type}
                   plan={plan}
                   currentPlan={currentPlan}
+                  cancelAtPeriodEnd={cancelAtPeriodEnd}
                   onSelectPlan={handleSelectPlan}
                 />
               ))}
@@ -189,7 +205,20 @@ export function PlansDialog({ children }: PlansDialogProps) {
             setSelectedPlan(null);
           }
         }}
-        onSuccess={handleCancelSuccess}
+      />
+
+      {/* Restore Dialog */}
+      <RestorePlanDialog
+        open={restoreDialogOpen}
+        planName={selectedPlan?.name ?? ""}
+        subscriptionId={currentSubscriptionId}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRestoreDialogOpen(false);
+            setSelectedPlan(null);
+          }
+        }}
+        onSuccess={handleRestoreSuccess}
       />
     </Dialog>
   );

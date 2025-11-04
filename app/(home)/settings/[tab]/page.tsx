@@ -14,12 +14,15 @@ import { settingsPageTabsSchema } from "@/lib/schemas/settings";
 
 interface SettingsTabPageProps {
   params: Promise<{ tab: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function SettingsTabPage({
   params,
+  searchParams,
 }: SettingsTabPageProps) {
   const { tab } = await params;
+  const searchParamsObj = await searchParams;
 
   // Validate tab using Zod
   const validation = settingsPageTabsSchema.safeParse(tab);
@@ -52,7 +55,7 @@ export default async function SettingsTabPage({
       TabContent = <UsageTab />;
       break;
     case "billing":
-      TabContent = <BillingTab />;
+      TabContent = <BillingTab searchParams={searchParamsObj} />;
       break;
     case "team":
     case "emails":

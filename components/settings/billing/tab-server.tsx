@@ -7,7 +7,11 @@ import {
   billingInfoResponseSchema,
 } from "@/lib/schemas/settings";
 
-export async function BillingTab() {
+interface BillingTabProps {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export async function BillingTab({ searchParams }: BillingTabProps) {
   const cookieStore = await cookies();
 
   // Fetch billing info
@@ -21,5 +25,10 @@ export async function BillingTab() {
     },
   );
 
-  return <BillingContent billingInfo={billingInfoResponse.data} />;
+  // Extract success parameter
+  const success = searchParams.success === "true";
+
+  return (
+    <BillingContent billingInfo={billingInfoResponse.data} success={success} />
+  );
 }

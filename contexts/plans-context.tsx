@@ -12,6 +12,7 @@ interface PlansContextType {
   plans: PlanInfo[];
   currentPlan: string;
   currentSubscriptionId: string | null;
+  cancelAtPeriodEnd: boolean;
   loading: boolean;
   error: string | null;
   fetchPlans: () => Promise<void>;
@@ -32,6 +33,7 @@ export function PlansProvider({ children }: PlansProviderProps) {
   const [currentSubscriptionId, setCurrentSubscriptionId] = useState<
     string | null
   >(null);
+  const [cancelAtPeriodEnd, setCancelAtPeriodEnd] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
@@ -57,6 +59,7 @@ export function PlansProvider({ children }: PlansProviderProps) {
       setPlans(response.data.plans);
       setCurrentPlan(response.data.currentPlan);
       setCurrentSubscriptionId(response.data.currentSubscriptionId ?? null);
+      setCancelAtPeriodEnd(response.data.cancelAtPeriodEnd ?? false);
       setHasFetched(true);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : genericError;
@@ -85,6 +88,7 @@ export function PlansProvider({ children }: PlansProviderProps) {
       setPlans(response.data.plans);
       setCurrentPlan(response.data.currentPlan);
       setCurrentSubscriptionId(response.data.currentSubscriptionId ?? null);
+      setCancelAtPeriodEnd(response.data.cancelAtPeriodEnd ?? false);
       setHasFetched(true);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : genericError;
@@ -107,6 +111,7 @@ export function PlansProvider({ children }: PlansProviderProps) {
         plans,
         currentPlan,
         currentSubscriptionId,
+        cancelAtPeriodEnd,
         loading,
         error,
         fetchPlans,

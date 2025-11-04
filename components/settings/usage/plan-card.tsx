@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 interface PlanCardProps {
   plan: PlanInfo;
   currentPlan: string;
+  cancelAtPeriodEnd: boolean;
   onSelectPlan: (plan: PlanInfo) => void;
 }
 
@@ -22,7 +23,12 @@ const PLAN_ORDER: Record<string, number> = {
   enterprise: 3,
 };
 
-export function PlanCard({ plan, currentPlan, onSelectPlan }: PlanCardProps) {
+export function PlanCard({
+  plan,
+  currentPlan,
+  cancelAtPeriodEnd,
+  onSelectPlan,
+}: PlanCardProps) {
   const isCurrentPlan = currentPlan === plan.type;
   const isEnterprise = plan.type === "enterprise";
   const isPayg = plan.type === "payg";
@@ -46,6 +52,10 @@ export function PlanCard({ plan, currentPlan, onSelectPlan }: PlanCardProps) {
     buttonText = "Selected";
     buttonVariant = "outline";
     buttonDisabled = true;
+  } else if (isCurrentPlan && cancelAtPeriodEnd) {
+    // Show Restore button if subscription is canceled but still active
+    buttonText = "Restore";
+    buttonVariant = "default";
   } else if (isCurrentPlan) {
     buttonText = "Cancel";
     buttonVariant = "destructive";
