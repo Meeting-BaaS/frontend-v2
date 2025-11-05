@@ -33,11 +33,8 @@ export function InvoicePaymentDialog({
         <DialogHeader>
           <DialogTitle>Payment Gateway Opened</DialogTitle>
           <DialogDescription className="space-y-2">
-            <p>
-              A payment gateway has been opened in a new tab. Complete the
-              payment there, then refresh this page to see your updated token
-              balance.
-            </p>
+            A payment gateway has been opened in a new tab. Complete the payment
+            there, then refresh this page to see your updated token balance.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-col sm:flex-row gap-2">
