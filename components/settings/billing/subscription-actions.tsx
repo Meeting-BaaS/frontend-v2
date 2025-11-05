@@ -2,9 +2,9 @@
 
 import { CircleArrowUp, MoreHorizontal, RotateCcw, Trash } from "lucide-react";
 import { useRef, useState } from "react";
-import { CancelPlanDialog } from "@/components/settings/usage/cancel-plan-dialog";
-import { PlansDialog } from "@/components/settings/usage/plans-dialog";
-import { RestorePlanDialog } from "@/components/settings/usage/restore-plan-dialog";
+import { CancelPlanDialog } from "@/components/settings/usage/plans/cancel-plan-dialog";
+import { PlansDialog } from "@/components/settings/usage/plans/plans-dialog";
+import { RestorePlanDialog } from "@/components/settings/usage/plans/restore-plan-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

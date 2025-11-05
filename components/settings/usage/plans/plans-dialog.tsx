@@ -3,9 +3,9 @@
 import { ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { CancelPlanDialog } from "@/components/settings/usage/cancel-plan-dialog";
-import { PlanCard } from "@/components/settings/usage/plan-card";
-import { RestorePlanDialog } from "@/components/settings/usage/restore-plan-dialog";
+import { CancelPlanDialog } from "@/components/settings/usage/plans/cancel-plan-dialog";
+import { PlanCard } from "@/components/settings/usage/plans/plan-card";
+import { RestorePlanDialog } from "@/components/settings/usage/plans/restore-plan-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

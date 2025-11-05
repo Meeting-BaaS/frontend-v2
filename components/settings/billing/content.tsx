@@ -129,8 +129,8 @@ export function BillingContent({
             Payment & Billing
           </h3>
           <p className="text-sm text-muted-foreground max-w-md">
-            To update your payment method, billing address, and Tax ID, use the
-            Stripe Customer Portal.
+            To update your default payment method, billing address, and Tax ID,
+            use the Stripe Customer Portal.
           </p>
           <div className="mt-2">
             <Button

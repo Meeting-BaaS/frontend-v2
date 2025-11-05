@@ -1,8 +1,10 @@
 import {
   array,
   boolean,
+  discriminatedUnion,
   email,
   iso,
+  literal,
   number,
   object,
   type output,
@@ -34,9 +36,11 @@ export const usageStatsSchema = object({
     dataRetentionDays: number(),
     byokTranscriptionEnabled: boolean(),
     autoPurchaseEnabled: boolean(),
-    tokenThreshold: number().nullable(),
-    autoPurchaseTokenPackId: string().nullable(),
+    autoPurchaseTokenThreshold: number().nullable(),
     autoPurchasePriceId: string().nullable(),
+    reminderEnabled: boolean(),
+    reminderThreshold: number().nullable(),
+    reminderEmail: string().nullable(),
     stripeCustomerId: string(),
   }),
   usage: object({
@@ -176,3 +180,53 @@ export type ListInvoicesRequestQueryParams = output<
   typeof listInvoicesRequestQuerySchema
 >;
 export type InvoicesListResponse = output<typeof invoicesListResponseSchema>;
+
+// Token packs schemas
+export const tokenPackSchema = object({
+  id: string(),
+  name: string(),
+  tokens: number().int().positive(),
+  originalPrice: number().int().positive(), // in cents (before discount)
+  priceId: string(),
+  discountPercentage: number().int().min(0).max(100), // discount percentage (0-100)
+});
+
+export const tokenPacksResponseSchema = object({
+  success: boolean(),
+  data: array(tokenPackSchema),
+});
+
+// Token settings schemas - using discriminated unions
+export const updateAutoRefillSettingsSchema = discriminatedUnion("enabled", [
+  object({
+    enabled: literal(false),
+  }),
+  object({
+    enabled: literal(true),
+    threshold: number().int().positive().min(1, "Threshold must be at least 1"),
+    priceId: string().min(
+      1,
+      "Token pack price ID is required when enabling auto-refill",
+    ),
+  }),
+]);
+
+export const updateReminderSettingsSchema = discriminatedUnion("enabled", [
+  object({
+    enabled: literal(false),
+  }),
+  object({
+    enabled: literal(true),
+    threshold: number().int().positive().min(1, "Threshold must be at least 1"),
+    email: email("Invalid email address"),
+  }),
+]);
+
+export type TokenPack = output<typeof tokenPackSchema>;
+export type TokenPacksResponse = output<typeof tokenPacksResponseSchema>;
+export type UpdateAutoRefillSettings = output<
+  typeof updateAutoRefillSettingsSchema
+>;
+export type UpdateReminderSettings = output<
+  typeof updateReminderSettingsSchema
+>;

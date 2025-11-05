@@ -1,8 +1,10 @@
 "use client";
 
 import { Info } from "lucide-react";
-import { PlansDialog } from "@/components/settings/usage/plans-dialog";
-import { TokenUsageRatesSheet } from "@/components/settings/usage/token-usage-rates-sheet";
+import { PlansDialog } from "@/components/settings/usage/plans/plans-dialog";
+import { TokenPacksDialog } from "@/components/settings/usage/tokens/token-packs-dialog";
+import { TokenSettingsDialog } from "@/components/settings/usage/tokens/token-settings-dialog";
+import { TokenUsageRatesSheet } from "@/components/settings/usage/tokens/token-usage-rates-sheet";
 import { Button } from "@/components/ui/button";
 import {
   ButtonGroup,
@@ -127,20 +129,25 @@ export function UsageContent({ usageStats }: UsageContentProps) {
         <div className="flex flex-col gap-1">
           <h3 className="text-lg md:text-xl font-semibold">Tokens</h3>
           <p className="text-sm text-muted-foreground max-w-md">
-            Turn on auto-refill to make sure you never run out of tokens.{" "}
-            <TokenUsageRatesSheet />
+            Turn on auto-refill in token settings to make sure you never run out
+            of tokens. <TokenUsageRatesSheet />
           </p>
           <div className="mt-2">
             <ButtonGroup>
-              <Button variant="secondary" size="sm">
-                {usageStats.plan.autoPurchaseEnabled
-                  ? "Manage auto-refill"
-                  : "Enable auto-refill"}
-              </Button>
+              <TokenSettingsDialog usageStats={usageStats}>
+                <Button variant="secondary" size="sm">
+                  {usageStats.plan.reminderEnabled ||
+                  usageStats.plan.autoPurchaseEnabled
+                    ? "Manage token settings"
+                    : "Set up token settings"}
+                </Button>
+              </TokenSettingsDialog>
               <ButtonGroupSeparator />
-              <Button variant="secondary" size="sm">
-                Buy tokens
-              </Button>
+              <TokenPacksDialog>
+                <Button variant="secondary" size="sm">
+                  Buy tokens
+                </Button>
+              </TokenPacksDialog>
             </ButtonGroup>
           </div>
         </div>
