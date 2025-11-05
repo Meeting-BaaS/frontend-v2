@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { BillingTab } from "@/components/settings/billing/tab-server";
-import { IntegrationsTab } from "@/components/settings/integrations.tsx/tab-server";
+import { IntegrationsTab } from "@/components/settings/integrations/tab-server";
 import { UsageTab } from "@/components/settings/usage/tab-server";
 import { Spinner } from "@/components/ui/spinner";
 import { axiosGetInstance } from "@/lib/api-client";

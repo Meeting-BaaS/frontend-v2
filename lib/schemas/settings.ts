@@ -6,6 +6,7 @@ import {
   number,
   object,
   type output,
+  preprocess,
   string,
   enum as zodEnum,
 } from "zod";
@@ -90,7 +91,6 @@ export const invoiceSchema = object({
 export const billingInfoSchema = object({
   billingEmail: string().nullable(),
   subscription: subscriptionSchema,
-  invoices: array(invoiceSchema),
 });
 
 export const billingInfoResponseSchema = object({
@@ -137,6 +137,25 @@ export const plansResponseSchema = object({
   data: plansDataSchema,
 });
 
+// Invoices list schemas
+export const listInvoicesRequestQuerySchema = object({
+  limit: preprocess((value) => {
+    if (value == null) return value;
+    if (typeof value === "string") {
+      return Number.parseInt(value, 10);
+    }
+    return value;
+  }, number().int().positive().max(100).default(10).nullable()),
+  starting_after: string().optional(),
+  ending_before: string().optional(),
+});
+
+export const invoicesListResponseSchema = object({
+  success: boolean(),
+  data: array(invoiceSchema),
+  hasMore: boolean(),
+});
+
 export type PlanType = output<typeof planTypeSchema>;
 export type SettingsPageTabs = output<typeof settingsPageTabsSchema>;
 export type SettingsPageQuery = output<typeof settingsPageQuerySchema>;
@@ -153,3 +172,7 @@ export type CustomerPortalUrlResponse = output<
 export type PlanInfo = output<typeof planInfoSchema>;
 export type PlansData = output<typeof plansDataSchema>;
 export type PlansResponse = output<typeof plansResponseSchema>;
+export type ListInvoicesRequestQueryParams = output<
+  typeof listInvoicesRequestQuerySchema
+>;
+export type InvoicesListResponse = output<typeof invoicesListResponseSchema>;

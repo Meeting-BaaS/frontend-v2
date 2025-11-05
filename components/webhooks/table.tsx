@@ -54,5 +54,5 @@ export function WebhooksTable({
     );
   }
 
-  return <DataTable table={table} />;
+  return <DataTable table={table} tableContainerClassName="mt-6" />;
 }

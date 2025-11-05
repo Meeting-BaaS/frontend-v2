@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { BillingEmailForm } from "@/components/settings/billing/email-form";
 import { SubscriptionActions } from "@/components/settings/billing/subscription-actions";
 import { PaymentSuccessDialog } from "@/components/settings/billing/success-dialog";
-import { InvoiceTable } from "@/components/settings/billing/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -153,17 +152,6 @@ export function BillingContent({
             </Button>
           </div>
         </div>
-      </div>
-
-      {/* Invoices Section */}
-      <div className="flex flex-col pb-8 gap-6">
-        <div className="flex flex-col gap-1">
-          <h3 className="text-lg md:text-xl font-semibold">Invoices</h3>
-          <p className="text-sm text-muted-foreground max-w-md">
-            View and download your past invoices.
-          </p>
-        </div>
-        <InvoiceTable invoices={billingInfo.invoices} />
       </div>
 
       {/* Success Dialog */}

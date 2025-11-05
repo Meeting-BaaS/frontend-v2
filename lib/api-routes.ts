@@ -47,4 +47,5 @@ export const GET_USAGE_STATS = `${SETTINGS_BASE_PATH}/usage/stats`;
 export const GET_BILLING_INFO = `${SETTINGS_BASE_PATH}/billing/info`;
 export const UPDATE_BILLING_EMAIL = `${SETTINGS_BASE_PATH}/billing/update-email`;
 export const GET_CUSTOMER_PORTAL_URL = `${SETTINGS_BASE_PATH}/billing/customer-portal`;
+export const LIST_INVOICES = `${SETTINGS_BASE_PATH}/billing/invoices`;
 export const GET_PLANS = `${SETTINGS_BASE_PATH}/plans`;

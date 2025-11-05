@@ -41,6 +41,7 @@ interface DataTableProps<TData> {
   nextIteratorLink?: string | null;
   rowCellClassName?: string;
   tableContainerClassName?: string;
+  scrollOnPageChange?: boolean;
 }
 
 export function DataTable<TData>({
@@ -54,6 +55,7 @@ export function DataTable<TData>({
   nextIteratorLink,
   rowCellClassName,
   tableContainerClassName,
+  scrollOnPageChange = true,
 }: DataTableProps<TData>) {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -190,7 +192,9 @@ export function DataTable<TData>({
               disabled={!prevIteratorLink}
             >
               {prevIteratorLink ? (
-                <Link href={prevIteratorLink}>Previous</Link>
+                <Link href={prevIteratorLink} scroll={scrollOnPageChange}>
+                  Previous
+                </Link>
               ) : (
                 "Previous"
               )}
@@ -203,7 +207,9 @@ export function DataTable<TData>({
               disabled={!nextIteratorLink}
             >
               {nextIteratorLink ? (
-                <Link href={nextIteratorLink}>Next</Link>
+                <Link href={nextIteratorLink} scroll={scrollOnPageChange}>
+                  Next
+                </Link>
               ) : (
                 "Next"
               )}

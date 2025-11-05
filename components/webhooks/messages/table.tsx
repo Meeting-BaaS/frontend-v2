@@ -73,6 +73,7 @@ export function MessagesTable({
       rowCellClassName="py-1"
       prevIteratorLink={prevIteratorLink}
       nextIteratorLink={nextIteratorLink}
+      tableContainerClassName="mt-6"
     />
   );
 }
