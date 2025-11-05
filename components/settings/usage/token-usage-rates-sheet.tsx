@@ -101,6 +101,11 @@ export function TokenUsageRatesSheet() {
               </div>
             );
           })}
+          <div className="text-muted-foreground text-xs">
+            Note: Raw recording tokens would be charged even when a bot has not
+            been accepted in a meeting based on the duration the bot was waiting
+            to be accepted.
+          </div>
         </div>
       </SheetContent>
     </Sheet>

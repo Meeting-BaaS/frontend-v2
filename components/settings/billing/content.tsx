@@ -60,7 +60,7 @@ export function BillingContent({
   };
 
   return (
-    <div className="flex flex-col gap-8 mt-10">
+    <div className="flex flex-col gap-8">
       {/* Active Subscription Section */}
       <div className="flex flex-col border-b pb-8 gap-6">
         <div className="flex flex-col gap-1">
