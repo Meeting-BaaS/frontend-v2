@@ -230,3 +230,20 @@ export type UpdateAutoRefillSettings = output<
 export type UpdateReminderSettings = output<
   typeof updateReminderSettingsSchema
 >;
+
+// Token purchase schemas
+export const purchaseTokenPackSchema = object({
+  priceId: string().min(1, "Price ID is required"),
+});
+
+export const purchaseTokenPackResponseSchema = object({
+  success: literal(true),
+  data: object({
+    hostedInvoiceUrl: string(),
+  }),
+});
+
+export type PurchaseTokenPack = output<typeof purchaseTokenPackSchema>;
+export type PurchaseTokenPackResponse = output<
+  typeof purchaseTokenPackResponseSchema
+>;

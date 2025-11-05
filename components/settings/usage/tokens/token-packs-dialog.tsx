@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { InvoicePaymentDialog } from "@/components/settings/usage/tokens/invoice-payment-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,8 +29,15 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
 import { usePlans } from "@/hooks/use-plans";
+import { axiosPostInstance } from "@/lib/api-client";
+import { PURCHASE_TOKEN_PACK } from "@/lib/api-routes";
 import { formatCurrency } from "@/lib/currency-helpers";
 import { genericError } from "@/lib/errors";
+import {
+  type PurchaseTokenPack,
+  type PurchaseTokenPackResponse,
+  purchaseTokenPackResponseSchema,
+} from "@/lib/schemas/settings";
 
 const formSchema = z.object({
   packId: z.string().min(1, "You must select a token pack to continue."),
@@ -42,6 +50,8 @@ interface TokenPacksDialogProps {
 export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
   const [open, setOpen] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
+  const [invoiceUrl, setInvoiceUrl] = useState<string>("");
   const { tokenPacks, tokenPacksLoading } = usePlans();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -95,11 +105,28 @@ export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
 
     try {
       setIsPurchasing(true);
-      // TODO: Implement actual purchase flow with Stripe checkout
-      // For now, just show a message
-      toast.info("Token purchase flow coming soon!");
-      setOpen(false);
-      form.reset();
+
+      const purchaseData: PurchaseTokenPack = {
+        priceId: selectedPack.priceId,
+      };
+
+      const response = await axiosPostInstance<
+        PurchaseTokenPack,
+        PurchaseTokenPackResponse
+      >(PURCHASE_TOKEN_PACK, purchaseData, purchaseTokenPackResponseSchema);
+
+      if (response?.data.hostedInvoiceUrl) {
+        // Store invoice URL and open instruction dialog
+        setInvoiceUrl(response.data.hostedInvoiceUrl);
+        // Close the purchase dialog
+        setOpen(false);
+        // Open the invoice payment instruction dialog
+        setInvoiceDialogOpen(true);
+        // Open the hosted invoice URL in a new tab
+        window.open(response.data.hostedInvoiceUrl, "_blank");
+      } else {
+        toast.error("Failed to get invoice URL");
+      }
     } catch (error) {
       console.error("Error purchasing token pack", error);
       toast.error(error instanceof Error ? error.message : genericError);
@@ -150,8 +177,8 @@ export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
                               <div className="flex items-center justify-between gap-4">
                                 <div className="flex-1">
                                   <FieldTitle>
-                                    {pack.name} ({pack.tokens.toLocaleString()}{" "}
-                                    tokens)
+                                    {pack.name} Pack (
+                                    {pack.tokens.toLocaleString()} tokens)
                                   </FieldTitle>
                                   <FieldDescription>
                                     {pack.hasDiscount ? (
@@ -246,6 +273,11 @@ export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
           </Button>
         </DialogFooter>
       </DialogContent>
+      <InvoicePaymentDialog
+        open={invoiceDialogOpen}
+        onOpenChange={setInvoiceDialogOpen}
+        invoiceUrl={invoiceUrl}
+      />
     </Dialog>
   );
 }

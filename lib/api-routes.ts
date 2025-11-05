@@ -50,5 +50,6 @@ export const GET_CUSTOMER_PORTAL_URL = `${SETTINGS_BASE_PATH}/billing/customer-p
 export const LIST_INVOICES = `${SETTINGS_BASE_PATH}/billing/invoices`;
 export const GET_PLANS = `${SETTINGS_BASE_PATH}/plans`;
 export const GET_TOKEN_PACKS = `${SETTINGS_BASE_PATH}/token-packs`;
+export const PURCHASE_TOKEN_PACK = `${SETTINGS_BASE_PATH}/token-packs/purchase`;
 export const UPDATE_AUTO_REFILL_SETTINGS = `${SETTINGS_BASE_PATH}/token-settings/auto-refill`;
 export const UPDATE_REMINDER_SETTINGS = `${SETTINGS_BASE_PATH}/token-settings/reminder`;
