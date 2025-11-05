@@ -26,10 +26,10 @@ const generateApiKeySlug = (id: number, createdAt: Date): string => {
 
 // Column width configuration
 export const columnWidths = {
-  name: "min-w-[280px] max-w-[320px] w-[32%]",
+  name: "min-w-[220px] max-w-[300px] w-[30%]",
   start: "min-w-[120px] max-w-[150px] w-[15%]",
-  permissions: "min-w-[160px] max-w-[200px] w-[20%]",
-  lastRequest: "min-w-[100px] max-w-[120px] w-[12%]",
+  permissions: "min-w-[140px] max-w-[180px] w-[18%]",
+  lastRequest: "min-w-[130px] max-w-[160px] w-[16%]",
   createdAt: "min-w-[120px] max-w-[150px] w-[15%]",
   actions: "min-w-[100px] max-w-[100px] w-[6%]",
 } as const;

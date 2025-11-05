@@ -57,7 +57,7 @@ export const apiKeyDetails = apiKey
   .extend({
     creatorName: string(),
     creatorImage: string().nullable(),
-    requestUuid: string().nullable(),
+    requestId: number().int().positive().nullable(),
   })
   .omit({
     metadata: true,

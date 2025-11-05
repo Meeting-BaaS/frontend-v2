@@ -58,18 +58,20 @@ export function ViewApiKeyDetails({ apiKeyDetails }: ApiKeyDetailsProps) {
           title="Last Used"
           valueClassName="capitalize"
           value={
-            apiKeyDetails.requestUuid ? (
+            apiKeyDetails.requestId ? (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
                       className="flex gap-3 items-center decoration-dashed underline hover:decoration-baas-primary-500 hover:decoration-solid"
-                      href={`/logs/${apiKeyDetails.requestUuid}`}
+                      href={`/logs/${apiKeyDetails.requestId?.toString()}`}
                     >
                       {lastRequest}
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent>View the last used log</TooltipContent>
+                  <TooltipContent side="left">
+                    View the last used log
+                  </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             ) : (
