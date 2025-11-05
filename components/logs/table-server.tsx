@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { LogsTable } from "@/components/logs/table";
 import { axiosGetInstance } from "@/lib/api-client";
 import { LIST_API_LOGS } from "@/lib/api-routes";
 import {
@@ -6,7 +7,6 @@ import {
   apiLogsListResponseSchema,
   type ListApiLogsRequestQueryParams,
 } from "@/lib/schemas/api-logs";
-import { LogsTable } from "./table";
 
 interface LogsTableServerProps {
   params: ListApiLogsRequestQueryParams | null;

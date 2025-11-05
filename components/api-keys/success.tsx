@@ -4,6 +4,7 @@ import { CheckCircle, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import {
   Dialog,
   DialogClose,
@@ -20,7 +21,6 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { CopyButton } from "../ui/copy-button";
 
 interface SuccessDialogProps {
   apiKey: string | null;

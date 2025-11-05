@@ -9,16 +9,16 @@ import {
   Video,
   XCircle,
 } from "lucide-react";
-import type { BotDetails } from "@/lib/schemas/bots";
+import { FileCard } from "@/components/bots/file-card";
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "../ui/empty";
-import { GradientIcon } from "../ui/gradient-icon";
-import { FileCard } from "./file-card";
+} from "@/components/ui/empty";
+import { GradientIcon } from "@/components/ui/gradient-icon";
+import type { BotDetails } from "@/lib/schemas/bots";
 
 interface ArtifactsProps {
   botDetails: BotDetails;

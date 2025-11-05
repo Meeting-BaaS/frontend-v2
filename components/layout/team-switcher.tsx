@@ -4,6 +4,7 @@ import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +21,6 @@ import {
 } from "@/components/ui/sidebar";
 import { TeamAvatar } from "@/components/ui/team-avatar";
 import type { TeamDetails } from "@/lib/schemas/teams";
-import { Badge } from "../ui/badge";
 
 interface TeamSwitcherProps {
   teamDetails: TeamDetails;

@@ -11,7 +11,7 @@ import {
   uuid,
   unknown as zodUnknown,
 } from "zod";
-import { slugSchema } from "./common";
+import { slugSchema } from "@/lib/schemas/common";
 
 const webhookIdSchema = uuid().min(1, "Endpoint ID is required");
 

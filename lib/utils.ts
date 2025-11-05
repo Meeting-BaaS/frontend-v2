@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { RecordingMode } from "@/lib/schemas/bots";
 import type { ReadableRecordingMode } from "@/types/bots.types";
-import type { RecordingMode } from "./schemas/bots";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

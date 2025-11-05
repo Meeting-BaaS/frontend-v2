@@ -1,4 +1,7 @@
-import { type MeetingPlatform, meetingPlatformSchema } from "./schemas/bots";
+import {
+  type MeetingPlatform,
+  meetingPlatformSchema,
+} from "@/lib/schemas/bots";
 
 export const PLATFORMS = meetingPlatformSchema.options.map((platform) => ({
   value: platform,

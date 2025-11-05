@@ -16,6 +16,7 @@ import {
   Send,
   XCircle,
 } from "lucide-react";
+import { botColorVariants } from "@/components/bots/columns";
 import { Badge } from "@/components/ui/badge";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -28,7 +29,6 @@ import {
 import { parseDateString } from "@/lib/date-helpers";
 import type { BotStatus, BotStatusHistoryEntry } from "@/lib/schemas/bots";
 import { cn } from "@/lib/utils";
-import { botColorVariants } from "./columns";
 
 interface StatusConfig {
   icon: React.ComponentType<{ className?: string }>;

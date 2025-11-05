@@ -7,8 +7,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientIcon } from "@/components/ui/gradient-icon";
+import { Skeleton } from "@/components/ui/skeleton";
 import { parseDateString } from "@/lib/date-helpers";
-import { Skeleton } from "../ui/skeleton";
 
 interface FileCardProps {
   icon: React.ComponentType<{ className?: string }>;

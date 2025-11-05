@@ -14,12 +14,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Field,
+  FieldContent,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
 import type { ApiKey } from "@/lib/schemas/api-keys";
-import { Field, FieldContent, FieldGroup, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
 
 interface DeleteAPIKeyDialogProps {
   open: boolean;

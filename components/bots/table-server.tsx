@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { BotsTable } from "@/components/bots/table";
 import { axiosGetInstance } from "@/lib/api-client";
 import { LIST_BOTS } from "@/lib/api-routes";
 import {
@@ -6,7 +7,6 @@ import {
   botsListResponseSchema,
   type ListBotsRequestQueryParams,
 } from "@/lib/schemas/bots";
-import { BotsTable } from "./table";
 
 interface BotsTableServerProps {
   params: ListBotsRequestQueryParams | null;

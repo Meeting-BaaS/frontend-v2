@@ -10,9 +10,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { NameValuePair } from "@/components/ui/name-value-pair";
+import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { formatRelativeDate } from "@/lib/date-helpers";
 import { type ApiKeyDetails, permissionMap } from "@/lib/schemas/api-keys";
-import { Tooltip, TooltipContent } from "../ui/tooltip";
 
 interface ApiKeyDetailsProps {
   apiKeyDetails: ApiKeyDetails;

@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/spinner";
 import { DeleteWebhookDialog } from "@/components/webhooks/delete";
 import { EditWebhookDialog } from "@/components/webhooks/edit";
 import { axiosPatchInstance, axiosPutInstance } from "@/lib/api-client";
@@ -32,7 +33,6 @@ import type {
   RotateWebhookEndpointSecretData,
   WebhookEndpointWithSecret,
 } from "@/lib/schemas/webhooks";
-import { Spinner } from "../ui/spinner";
 
 interface WebhookActionsProps {
   webhookEndpoint: WebhookEndpointWithSecret;

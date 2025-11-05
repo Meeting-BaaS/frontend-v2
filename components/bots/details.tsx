@@ -1,5 +1,8 @@
 "use client";
 
+import { Artifacts } from "@/components/bots/artifacts";
+import { JsonPreview } from "@/components/bots/json-preview";
+import { StatusHistory } from "@/components/bots/status-history";
 import { GoogleMeetLogo } from "@/components/icons/google-meet";
 import { MicrosoftTeamsLogo } from "@/components/icons/microsoft-teams";
 import { ZoomLogo } from "@/components/icons/zoom";
@@ -10,9 +13,6 @@ import { NameValuePair } from "@/components/ui/name-value-pair";
 import { formatDuration, formatRelativeDate } from "@/lib/date-helpers";
 import type { BotDetails } from "@/lib/schemas/bots";
 import { readableRecordingMode } from "@/lib/utils";
-import { Artifacts } from "./artifacts";
-import { JsonPreview } from "./json-preview";
-import { StatusHistory } from "./status-history";
 
 interface BotDetailsProps {
   botDetails: BotDetails;

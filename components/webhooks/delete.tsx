@@ -14,13 +14,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Field,
+  FieldContent,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { axiosDeleteInstance } from "@/lib/api-client";
 import { DELETE_WEBHOOK_ENDPOINT } from "@/lib/api-routes";
 import { genericError } from "@/lib/errors";
 import type { WebhookEndpointWithSecret } from "@/lib/schemas/webhooks";
-import { Field, FieldContent, FieldGroup, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
 
 interface DeleteWebhookDialogProps {
   open: boolean;

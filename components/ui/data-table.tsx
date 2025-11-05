@@ -6,6 +6,12 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -20,7 +26,6 @@ import {
   Table as UITable,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "./empty";
 
 // Extend ColumnMeta type to include className
 declare module "@tanstack/react-table" {

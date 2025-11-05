@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { NavUser } from "@/components/layout/nav-user";
 import { TeamSwitcher } from "@/components/layout/team-switcher";
 import {
   Sidebar,
@@ -26,7 +27,6 @@ import {
 } from "@/components/ui/sidebar";
 import type { User } from "@/lib/schemas/session";
 import type { TeamDetails } from "@/lib/schemas/teams";
-import { NavUser } from "./nav-user";
 
 const items = [
   {
