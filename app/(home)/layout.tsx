@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
-import { AppHeader } from "@/components/layout/app-header";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { LayoutContent } from "@/components/layout/layout-content";
 import { PlansProvider } from "@/contexts/plans-context";
 import { UserProvider } from "@/contexts/user-context";
 import { axiosGetInstance } from "@/lib/api-client";
@@ -63,21 +61,9 @@ export default async function HomeLayout({
       teamDetails={teamDetails.data}
     >
       <PlansProvider>
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "15.5rem",
-          } as React.CSSProperties
-        }
-      >
-        <AppSidebar user={session.user} teamDetails={teamDetails.data} />
-        <main className="flex flex-col w-full h-screen">
-          <AppHeader />
-          <div className="flex-1 overflow-y-auto px-4 md:px-10 lg:px-20 py-8">
-            {children}
-          </div>
-        </main>
-      </SidebarProvider>
+        <LayoutContent user={session.user} teamDetails={teamDetails.data}>
+          {children}
+        </LayoutContent>
       </PlansProvider>
     </UserProvider>
   );
