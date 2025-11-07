@@ -8,6 +8,10 @@ export const GET_SESSION = `${AUTH_BASE_PATH}/get-session`;
 // Team routes
 export const TEAMS_BASE_PATH = `${BASE_PATH}/teams`;
 export const GET_TEAM_DETAILS = `${TEAMS_BASE_PATH}/details`;
+export const LIST_TEAM_MEMBERS = `${TEAMS_BASE_PATH}/members`;
+export const UPLOAD_TEAM_LOGO = `${TEAMS_BASE_PATH}/upload-logo`;
+export const REMOVE_TEAM_LOGO = `${TEAMS_BASE_PATH}/remove-logo`;
+export const DELETE_TEAM = `${TEAMS_BASE_PATH}/delete`;
 
 // API keys routes
 export const API_KEYS_BASE_PATH = `${BASE_PATH}/api-keys`;

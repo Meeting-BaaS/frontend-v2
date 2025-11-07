@@ -25,8 +25,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import type { User } from "@/lib/schemas/session";
-import type { TeamDetails } from "@/lib/schemas/teams";
 
 const items = [
   {
@@ -66,19 +64,14 @@ const items = [
   },
 ];
 
-interface AppSidebarProps {
-  user: User;
-  teamDetails: TeamDetails;
-}
-
-export function AppSidebar({ user, teamDetails }: AppSidebarProps) {
+export function AppSidebar() {
   const pathname = usePathname();
   const { open, isMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" className="z-30">
       <SidebarHeader>
-        <TeamSwitcher teamDetails={teamDetails} />
+        <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -106,7 +99,7 @@ export function AppSidebar({ user, teamDetails }: AppSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} teamDetails={teamDetails} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

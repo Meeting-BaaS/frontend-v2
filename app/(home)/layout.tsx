@@ -61,9 +61,7 @@ export default async function HomeLayout({
       teamDetails={teamDetails.data}
     >
       <PlansProvider>
-        <LayoutContent user={session.user} teamDetails={teamDetails.data}>
-          {children}
-        </LayoutContent>
+        <LayoutContent>{children}</LayoutContent>
       </PlansProvider>
     </UserProvider>
   );

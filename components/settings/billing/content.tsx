@@ -71,7 +71,7 @@ export function BillingContent({
             Your current subscription plan and billing details.
           </p>
         </div>
-        <div className="flex flex-col items-start justify-center md:items-center md:flex-row gap-2">
+        <div className="flex flex-row justify-center items-center gap-2">
           <div className="grow">
             <Badge
               variant={
@@ -117,7 +117,7 @@ export function BillingContent({
             notifications and invoices.
           </p>
         </div>
-        <div className="flex flex-col w-1/3">
+        <div className="flex flex-col w-full">
           <BillingEmailForm defaultEmail={billingInfo.billingEmail} />
         </div>
       </div>
@@ -138,6 +138,7 @@ export function BillingContent({
               size="sm"
               onClick={handleOpenPortal}
               disabled={isLoadingPortal}
+              className="w-full sm:w-fit"
             >
               {isLoadingPortal ? (
                 <>

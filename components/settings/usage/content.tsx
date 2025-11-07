@@ -40,7 +40,11 @@ export function UsageContent({ usageStats }: UsageContentProps) {
           </p>
           <div>
             <PlansDialog>
-              <Button variant="secondary" size="sm" className="mt-2 capitalize">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="mt-2 capitalize w-full sm:w-auto"
+              >
                 {usageStats.plan.name === "payg" ? "Upgrade" : "Manage"}
               </Button>
             </PlansDialog>
@@ -133,9 +137,13 @@ export function UsageContent({ usageStats }: UsageContentProps) {
             of tokens. <TokenUsageRatesSheet />
           </p>
           <div className="mt-2">
-            <ButtonGroup>
+            <ButtonGroup className="w-full sm:w-fit">
               <TokenSettingsDialog usageStats={usageStats}>
-                <Button variant="secondary" size="sm">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="w-1/2 sm:w-auto"
+                >
                   {usageStats.plan.reminderEnabled ||
                   usageStats.plan.autoPurchaseEnabled
                     ? "Manage token settings"
@@ -144,7 +152,11 @@ export function UsageContent({ usageStats }: UsageContentProps) {
               </TokenSettingsDialog>
               <ButtonGroupSeparator />
               <TokenPacksDialog>
-                <Button variant="secondary" size="sm">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="w-1/2 sm:w-auto"
+                >
                   Buy tokens
                 </Button>
               </TokenPacksDialog>

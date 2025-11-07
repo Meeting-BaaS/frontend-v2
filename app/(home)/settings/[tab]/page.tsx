@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { BillingTab } from "@/components/settings/billing/tab-server";
 import { IntegrationsTab } from "@/components/settings/integrations/tab-server";
+import { TeamTab } from "@/components/settings/team/tab-server";
 import { UsageTab } from "@/components/settings/usage/tab-server";
 import { Spinner } from "@/components/ui/spinner";
 import { axiosGetInstance } from "@/lib/api-client";
@@ -59,10 +60,12 @@ export default async function SettingsTabPage({
       TabContent = <BillingTab searchParams={searchParamsObj} />;
       break;
     case "team":
+      TabContent = <TeamTab />;
+      break;
     case "emails":
       TabContent = (
         <div className="text-muted-foreground py-10 text-center">
-          {tab.charAt(0).toUpperCase() + tab.slice(1)} settings coming soon...
+          Email settings coming soon...
         </div>
       );
       break;

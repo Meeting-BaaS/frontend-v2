@@ -3,7 +3,6 @@
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -20,17 +19,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { TeamAvatar } from "@/components/ui/team-avatar";
-import type { TeamDetails } from "@/lib/schemas/teams";
+import { useUser } from "@/hooks/use-user";
 
-interface TeamSwitcherProps {
-  teamDetails: TeamDetails;
-}
-
-export function TeamSwitcher({ teamDetails }: TeamSwitcherProps) {
+export function TeamSwitcher() {
+  const { activeTeam, teamDetails } = useUser();
   const { isMobile, open } = useSidebar();
-  const [activeTeam, setActiveTeam] = useState(
-    teamDetails.find((team) => team.isActive),
-  );
 
   if (!activeTeam) {
     return null;
@@ -52,7 +45,7 @@ export function TeamSwitcher({ teamDetails }: TeamSwitcherProps) {
                     alt={activeTeam.name}
                     width={32}
                     height={32}
-                    className="rounded-lg"
+                    className="rounded-lg border"
                   />
                 </div>
               ) : (
@@ -84,7 +77,7 @@ export function TeamSwitcher({ teamDetails }: TeamSwitcherProps) {
             {teamDetails.map((team) => (
               <DropdownMenuItem
                 key={team.id}
-                onClick={() => setActiveTeam(team)}
+                // onClick={() => setActiveTeam(team)}
                 className="gap-2 p-1"
               >
                 {team.logo ? (

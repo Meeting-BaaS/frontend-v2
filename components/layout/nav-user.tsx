@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useMemo } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -31,16 +32,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useUser } from "@/hooks/use-user";
 import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
-import type { User } from "@/lib/schemas/session";
 import type { TeamDetails } from "@/lib/schemas/teams";
 import type { Theme } from "@/types/common.types";
-
-interface NavUserProps {
-  user: User;
-  teamDetails: TeamDetails;
-}
 
 const higherPlanMap: Record<TeamDetails[number]["plan"], string | null> = {
   payg: "pro",
@@ -49,12 +45,15 @@ const higherPlanMap: Record<TeamDetails[number]["plan"], string | null> = {
   enterprise: null,
 };
 
-export function NavUser({ user, teamDetails }: NavUserProps) {
+export function NavUser() {
   const { isMobile, open } = useSidebar();
   const pathname = usePathname();
   const { setTheme, resolvedTheme } = useTheme();
-
-  const activeTeam = teamDetails.find((team) => team.isActive);
+  const { user, activeTeam } = useUser();
+  const higherPlan = useMemo(
+    () => higherPlanMap[activeTeam?.plan ?? "payg"],
+    [activeTeam],
+  );
 
   const handleSignOut = async () => {
     const signedOut = await authClient.signOut();
@@ -127,7 +126,7 @@ export function NavUser({ user, teamDetails }: NavUserProps) {
                 <DropdownMenuItem asChild>
                   <Link href="/settings?page=upgrade">
                     <Sparkles />
-                    Upgrade to {higherPlanMap[activeTeam?.plan ?? "pro"]}
+                    Upgrade to {higherPlan}
                     <DropdownMenuShortcut>U</DropdownMenuShortcut>
                   </Link>
                 </DropdownMenuItem>

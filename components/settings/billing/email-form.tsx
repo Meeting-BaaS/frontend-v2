@@ -65,6 +65,7 @@ export function BillingEmailForm({ defaultEmail }: BillingEmailFormProps) {
             id="email"
             type="email"
             autoComplete="email"
+            className="md:!w-1/2 lg:!w-2/5"
             {...form.register("email")}
             aria-invalid={!!form.formState.errors.email}
           />
@@ -74,13 +75,18 @@ export function BillingEmailForm({ defaultEmail }: BillingEmailFormProps) {
             </FieldDescription>
           )}
         </Field>
-        <Button type="submit" size="sm" disabled={isUpdatingEmail || !isDirty}>
+        <Button
+          type="submit"
+          size="sm"
+          disabled={isUpdatingEmail || !isDirty}
+          className="w-full sm:w-fit"
+        >
           {isUpdatingEmail ? (
             <>
               <Spinner /> Updating...
             </>
           ) : (
-            "Update Email"
+            "Update email"
           )}
         </Button>
       </form>
