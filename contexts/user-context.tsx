@@ -10,7 +10,7 @@ interface UserContextType {
   teamDetails: TeamDetails;
   updateTeam: (teamId: number, updates: Partial<TeamDetails[number]>) => void;
   updateUser: (updates: Partial<User>) => void;
-  activeTeam: TeamDetails[number] | null;
+  activeTeam: TeamDetails[number];
 }
 
 export const UserContext = createContext<UserContextType | undefined>(
@@ -53,6 +53,10 @@ export function UserProvider({
     [teamDetails],
   );
 
+  if (!activeTeam) {
+    throw new Error("No active team found");
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -61,7 +65,7 @@ export function UserProvider({
         teamDetails,
         updateTeam,
         updateUser,
-        activeTeam: activeTeam ?? null,
+        activeTeam,
       }}
     >
       {children}

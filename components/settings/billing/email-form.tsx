@@ -9,9 +9,10 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { useUser } from "@/hooks/use-user";
 import { axiosPatchInstance } from "@/lib/api-client";
 import { UPDATE_BILLING_EMAIL } from "@/lib/api-routes";
-import { genericError } from "@/lib/errors";
+import { genericError, permissionDeniedError } from "@/lib/errors";
 import {
   type UpdateBillingEmail,
   updateBillingEmailSchema,
@@ -23,6 +24,7 @@ interface BillingEmailFormProps {
 
 export function BillingEmailForm({ defaultEmail }: BillingEmailFormProps) {
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
+  const { activeTeam } = useUser();
 
   const form = useForm<UpdateBillingEmail>({
     resolver: zodResolver(updateBillingEmailSchema),
@@ -34,6 +36,13 @@ export function BillingEmailForm({ defaultEmail }: BillingEmailFormProps) {
   const isDirty = form.formState.isDirty;
 
   const onSubmit = async (data: UpdateBillingEmail) => {
+    const isMember = activeTeam.role === "member";
+
+    if (isMember) {
+      toast.error(permissionDeniedError);
+      return;
+    }
+
     if (isUpdatingEmail) return;
     try {
       setIsUpdatingEmail(true);

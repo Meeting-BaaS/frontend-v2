@@ -29,10 +29,11 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
 import { usePlans } from "@/hooks/use-plans";
+import { useUser } from "@/hooks/use-user";
 import { axiosPostInstance } from "@/lib/api-client";
 import { PURCHASE_TOKEN_PACK } from "@/lib/api-routes";
 import { formatCurrency } from "@/lib/currency-helpers";
-import { genericError } from "@/lib/errors";
+import { genericError, permissionDeniedError } from "@/lib/errors";
 import {
   type PurchaseTokenPack,
   type PurchaseTokenPackResponse,
@@ -53,6 +54,7 @@ export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
   const [invoiceUrl, setInvoiceUrl] = useState<string>("");
   const { tokenPacks, tokenPacksLoading } = usePlans();
+  const { activeTeam } = useUser();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -95,6 +97,13 @@ export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
   );
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    const isMember = activeTeam.role === "member";
+
+    if (isMember) {
+      toast.error(permissionDeniedError);
+      return;
+    }
+
     if (isPurchasing) return;
 
     const selectedPack = tokenPacks.find((pack) => pack.id === data.packId);

@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { env } from "@/env";
 import { spotlightVariant } from "@/lib/animations/background";
 
 interface ErrorProps {
@@ -20,9 +21,6 @@ export default function SharedErrorBoundary({ error }: ErrorProps) {
   useEffect(() => {
     console.error("Something went wrong", error);
   }, [error]);
-
-  const supportEmail =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@meetingbaas.com";
 
   return (
     <div className="relative flex max-h-screen max-w-screen grow flex-col items-center justify-center">
@@ -45,7 +43,9 @@ export default function SharedErrorBoundary({ error }: ErrorProps) {
           </p>
           If the error persists, please contact us on{" "}
           <Button variant="link" asChild className="h-auto p-0 text-lg">
-            <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
+            <a href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>
+              {env.NEXT_PUBLIC_SUPPORT_EMAIL}
+            </a>
           </Button>
         </div>
       </div>

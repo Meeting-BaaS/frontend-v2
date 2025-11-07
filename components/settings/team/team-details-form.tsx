@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useUser } from "@/hooks/use-user";
 import { authClient } from "@/lib/auth-client";
-import { genericError } from "@/lib/errors";
+import { genericError, permissionDeniedError } from "@/lib/errors";
 import type { UpdateTeamName } from "@/lib/schemas/teams";
 import { updateTeamNameSchema } from "@/lib/schemas/teams";
 
@@ -21,7 +21,7 @@ interface TeamDetailsFormProps {
 }
 
 export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
-  const { updateTeam } = useUser();
+  const { updateTeam, activeTeam } = useUser();
   const [isUpdatingName, setIsUpdatingName] = useState(false);
 
   const form = useForm<UpdateTeamName>({
@@ -34,6 +34,13 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
   const isDirty = form.formState.isDirty;
 
   const onSubmit = async (data: UpdateTeamName) => {
+    const isMember = activeTeam.role === "member";
+
+    if (isMember) {
+      toast.error(permissionDeniedError);
+      return;
+    }
+
     if (isUpdatingName) return;
     try {
       setIsUpdatingName(true);

@@ -124,7 +124,6 @@ export const planInfoSchema = object({
   rateLimitPerSecond: number().nullable(),
   calendarIntegrationsLimit: number().nullable(),
   dataRetentionDays: number(),
-  teamsEnabled: boolean(),
   byokTranscriptionEnabled: boolean(),
   tokenPackDiscount: number(),
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { columns } from "@/components/settings/team/columns";
+import { columns } from "@/components/settings/team/members/columns";
 import { DataTable } from "@/components/ui/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import type { TeamMember } from "@/lib/schemas/teams";

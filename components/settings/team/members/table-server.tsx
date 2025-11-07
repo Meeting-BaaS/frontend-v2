@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { MembersTable } from "@/components/settings/team/members-table";
+import { MembersTable } from "@/components/settings/team/members/members-table";
 import { axiosGetInstance } from "@/lib/api-client";
 import { LIST_TEAM_MEMBERS } from "@/lib/api-routes";
 import {

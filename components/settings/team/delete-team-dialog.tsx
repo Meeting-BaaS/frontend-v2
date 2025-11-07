@@ -17,9 +17,10 @@ import {
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { useUser } from "@/hooks/use-user";
 import { axiosDeleteInstance } from "@/lib/api-client";
 import { DELETE_TEAM } from "@/lib/api-routes";
-import { genericError } from "@/lib/errors";
+import { genericError, permissionDeniedError } from "@/lib/errors";
 
 interface DeleteTeamDialogProps {
   teamName: string;
@@ -27,6 +28,7 @@ interface DeleteTeamDialogProps {
 
 export function DeleteTeamDialog({ teamName }: DeleteTeamDialogProps) {
   const router = useRouter();
+  const { activeTeam } = useUser();
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -52,8 +54,21 @@ export function DeleteTeamDialog({ teamName }: DeleteTeamDialogProps) {
     }
   };
 
+  const handleOpenChange = (updatedOpen: boolean) => {
+    if (updatedOpen) {
+      if (isDeleting) {
+        return;
+      }
+      if (activeTeam.role === "member") {
+        toast.error(permissionDeniedError);
+        return;
+      }
+    }
+    setOpen(updatedOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="destructive" size="sm" className="w-full sm:w-fit">
           Delete team

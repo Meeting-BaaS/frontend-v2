@@ -19,7 +19,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { usePlans } from "@/hooks/use-plans";
 import { useUser } from "@/hooks/use-user";
 import { authClient } from "@/lib/auth-client";
-import { genericError } from "@/lib/errors";
+import { genericError, permissionDeniedError } from "@/lib/errors";
 import type { PlanInfo } from "@/lib/schemas/settings";
 
 interface PlansDialogProps {
@@ -42,12 +42,18 @@ export function PlansDialog({ children }: PlansDialogProps) {
     loading,
     refetch,
   } = usePlans();
-  const { teamDetails } = useUser();
+  const { activeTeam } = useUser();
 
   const handleSelectPlan = async (plan: PlanInfo) => {
     const isCurrentPlan = currentPlan === plan.type;
     const isPayg = plan.type === "payg";
     const isEnterprise = plan.type === "enterprise";
+    const isMember = activeTeam.role === "member";
+
+    if (isMember) {
+      toast.error(permissionDeniedError);
+      return;
+    }
 
     // Skip if Enterprise (handled by mailto link)
     if (isEnterprise) {
@@ -82,7 +88,7 @@ export function PlansDialog({ children }: PlansDialogProps) {
       setUpgradingPlan(plan.type);
 
       // Get the active team ID
-      const teamId = teamDetails.find((team) => team.isActive)?.id;
+      const teamId = activeTeam.id;
 
       // Build the upgrade params
       const upgradeParams: {
@@ -97,7 +103,7 @@ export function PlansDialog({ children }: PlansDialogProps) {
         successUrl: `${window.location.origin}/settings/billing?success=true`,
         cancelUrl: `${window.location.origin}/settings/usage`,
         returnUrl: `${window.location.origin}/settings/billing`,
-        referenceId: teamId?.toString() ?? "",
+        referenceId: teamId.toString(),
       };
 
       // Always provide subscriptionId if user has an active subscription

@@ -9,11 +9,12 @@ import { PaymentSuccessDialog } from "@/components/settings/billing/success-dial
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { useUser } from "@/hooks/use-user";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_CUSTOMER_PORTAL_URL } from "@/lib/api-routes";
 import { formatCurrency } from "@/lib/currency-helpers";
 import { formatISODateString } from "@/lib/date-helpers";
-import { genericError } from "@/lib/errors";
+import { genericError, permissionDeniedError } from "@/lib/errors";
 import type {
   BillingInfo,
   CustomerPortalUrlResponse,
@@ -30,6 +31,7 @@ export function BillingContent({
   success = false,
 }: BillingContentProps) {
   const [isLoadingPortal, setIsLoadingPortal] = useState(false);
+  const { activeTeam } = useUser();
   const [successOpen, setSuccessOpen] = useState(success);
   const planName =
     billingInfo.subscription.plan.name === "payg"
@@ -37,6 +39,13 @@ export function BillingContent({
       : billingInfo.subscription.plan.name;
 
   const handleOpenPortal = async () => {
+    const isMember = activeTeam.role === "member";
+
+    if (isMember) {
+      toast.error(permissionDeniedError);
+      return;
+    }
+
     if (isLoadingPortal) return;
     try {
       setIsLoadingPortal(true);

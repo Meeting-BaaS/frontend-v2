@@ -6,11 +6,14 @@ import {
   number,
   object,
   type output,
+  preprocess,
   string,
   enum as zodEnum,
   instanceof as zodInstanceOf,
 } from "zod";
 import { planTypeSchema } from "@/lib/schemas/settings";
+
+export const roleEnum = zodEnum(["owner", "admin", "member"]);
 
 export const teamDetails = array(
   object({
@@ -21,6 +24,7 @@ export const teamDetails = array(
     plan: planTypeSchema,
     isActive: boolean(),
     rateLimit: number(),
+    role: roleEnum,
   }),
 );
 
@@ -33,7 +37,61 @@ export type TeamDetails = output<typeof teamDetails>;
 
 export type TeamDetailsResponse = output<typeof teamDetailsResponseSchema>;
 
-export const roleEnum = zodEnum(["owner", "admin", "member"]);
+export const invitationStatusEnum = zodEnum([
+  "pending",
+  "accepted",
+  "rejected",
+  "canceled",
+]);
+
+/**
+ * Schema for inviting a team member
+ */
+export const inviteMemberFormSchema = object({
+  email: email("Please enter a valid email address"),
+  role: zodEnum(["admin", "member"], {
+    message: "Role must be either admin or member",
+  }),
+});
+
+export type InviteMemberFormData = output<typeof inviteMemberFormSchema>;
+
+/**
+ * Schema for validating invitation ID from search params
+ */
+export const acceptInviteSearchParamsSchema = object({
+  id: preprocess((value) => {
+    if (typeof value === "string") {
+      return Number.parseInt(value, 10);
+    }
+    return value;
+  }, number().int().positive()),
+});
+
+export type AcceptInviteSearchParams = output<
+  typeof acceptInviteSearchParamsSchema
+>;
+
+/**
+ * Invitation response schema from Better Auth
+ */
+export const invitationResponseSchema = object({
+  success: boolean(),
+  data: object({
+    id: string(),
+    organizationId: string(),
+    email: email(),
+    role: roleEnum,
+    status: invitationStatusEnum,
+    inviterId: string(),
+    expiresAt: iso.datetime(),
+    organizationName: string(),
+    organizationSlug: string(),
+    inviterEmail: email(),
+  }),
+});
+
+export type InvitationResponse = output<typeof invitationResponseSchema>;
 
 /**
  * Schema for updating team name
@@ -51,12 +109,14 @@ export type UpdateTeamName = output<typeof updateTeamNameSchema>;
  * Team member schema
  */
 export const teamMemberSchema = object({
-  id: number().int().positive(),
   email: email(),
   role: roleEnum,
-  createdAt: iso.datetime(),
+  createdAt: iso.datetime().nullable(),
+  invitationStatus: invitationStatusEnum.nullable(),
+  expiresAt: iso.datetime().nullable(),
 });
 
+export type Role = output<typeof roleEnum>;
 export type TeamMember = output<typeof teamMemberSchema>;
 
 /**
@@ -92,7 +152,9 @@ export const MAX_LOGO_FILE_SIZE = 2 * 1024 * 1024; // 2MB
  * Schema for validating team logo file uploads (standalone validation)
  * Validates mimetype and file size
  */
-export const teamLogoFileSchema = zodInstanceOf(File)
+export const teamLogoFileSchema = zodInstanceOf(File, {
+  error: "File is required",
+})
   .refine(
     (file) =>
       ALLOWED_LOGO_MIME_TYPES.includes(

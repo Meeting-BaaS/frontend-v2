@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { DeleteTeamDialog } from "@/components/settings/team/delete-team-dialog";
-import { MembersTableServer } from "@/components/settings/team/table-server";
+import { InviteMemberDialog } from "@/components/settings/team/invite-member-dialog";
+import { MembersTableServer } from "@/components/settings/team/members/table-server";
 import { TeamDetailsForm } from "@/components/settings/team/team-details-form";
 import { TeamLogoForm } from "@/components/settings/team/team-logo-form";
 import { Spinner } from "@/components/ui/spinner";
@@ -19,22 +20,21 @@ export function TeamContent({ team }: TeamContentProps) {
           <h3 className="text-lg md:text-xl font-semibold">Overview</h3>
         </div>
         <div className="flex flex-col gap-6 md:items-start">
-          <TeamLogoForm
-            teamId={team.id}
-            initialLogoUrl={team.logo}
-            teamName={team.name}
-          />
+          <TeamLogoForm teamId={team.id} initialLogoUrl={team.logo} />
           <TeamDetailsForm teamId={team.id} initialName={team.name} />
         </div>
       </div>
 
       {/* Members Section */}
       <div className="flex flex-col border-b pb-8 gap-6">
-        <div className="flex flex-col gap-1">
-          <h3 className="text-lg md:text-xl font-semibold">Team Members</h3>
-          <p className="text-sm text-muted-foreground max-w-md">
-            View and manage team members.
-          </p>
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-lg md:text-xl font-semibold">Members</h3>
+            <p className="text-sm text-muted-foreground max-w-md">
+              View and manage team members.
+            </p>
+          </div>
+          <InviteMemberDialog />
         </div>
         <Suspense
           fallback={

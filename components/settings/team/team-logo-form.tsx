@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2, Upload } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { TeamAvatar } from "@/components/ui/team-avatar";
 import { useUser } from "@/hooks/use-user";
 import { axiosDeleteInstance, axiosPostInstance } from "@/lib/api-client";
 import { REMOVE_TEAM_LOGO, UPLOAD_TEAM_LOGO } from "@/lib/api-routes";
-import { genericError } from "@/lib/errors";
+import { genericError, permissionDeniedError } from "@/lib/errors";
 import type {
   TeamLogoFormData,
   TeamLogoUploadResponse,
@@ -37,6 +37,7 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [isRemovingLogo, setIsRemovingLogo] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(initialLogoUrl);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<TeamLogoFormData>({
     resolver: zodResolver(teamLogoFormSchema),
@@ -46,6 +47,13 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
   });
 
   const onSubmit = async (data: TeamLogoFormData) => {
+    const isMember = activeTeam.role === "member";
+
+    if (isMember) {
+      toast.error(permissionDeniedError);
+      return;
+    }
+
     if (!data.file || isUploadingLogo) return;
 
     try {
@@ -80,6 +88,13 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
   };
 
   const handleRemoveLogo = async () => {
+    const isMember = activeTeam.role === "member";
+
+    if (isMember) {
+      toast.error(permissionDeniedError);
+      return;
+    }
+
     if (isRemovingLogo || !logoPreview) return;
 
     try {
@@ -140,6 +155,7 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
                   <FormControl>
                     <Input
                       {...field}
+                      ref={fileInputRef}
                       type="file"
                       accept={ALLOWED_LOGO_MIME_TYPES.join(",")}
                       multiple={false}
@@ -153,7 +169,6 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
                       disabled={isUploadingLogo}
                       aria-invalid={fieldState.invalid}
                       className="hidden"
-                      id="logo-upload"
                     />
                   </FormControl>
                   {fieldState.error && (
@@ -170,7 +185,7 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  document.getElementById("logo-upload")?.click();
+                  fileInputRef.current?.click();
                 }}
                 disabled={isUploadingLogo}
               >

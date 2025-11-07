@@ -28,7 +28,6 @@ export const apiKey = object({
   name: string(),
   start: string(),
   prefix: string(),
-  userId: string(),
   enabled: boolean(),
   requestCount: number(),
   lastRequest: iso.datetime().nullable(),
