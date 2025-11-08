@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -46,10 +47,16 @@ const formSchema = z.object({
 
 interface TokenPacksDialogProps {
   children: React.ReactNode;
+  initialOpen?: boolean;
 }
 
-export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
-  const [open, setOpen] = useState(false);
+export function TokenPacksDialog({
+  children,
+  initialOpen = false,
+}: TokenPacksDialogProps) {
+  const [open, setOpen] = useState(initialOpen);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
   const [invoiceUrl, setInvoiceUrl] = useState<string>("");
@@ -65,9 +72,19 @@ export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
-    if (!newOpen) {
+
+    // Update search params when dialog opens/closes
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    if (newOpen) {
+      newSearchParams.set("token_packs", "true");
+    } else {
+      newSearchParams.delete("token_packs");
       form.reset();
     }
+    const newUrl = newSearchParams.toString()
+      ? `${pathname}?${newSearchParams.toString()}`
+      : pathname;
+    window.history.pushState(null, "", newUrl);
   };
 
   // Memoize token packs with calculated prices
@@ -126,7 +143,7 @@ export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
         // Store invoice URL and open instruction dialog
         setInvoiceUrl(response.data.hostedInvoiceUrl);
         // Close the purchase dialog
-        setOpen(false);
+        handleOpenChange(false);
         // Open the invoice payment instruction dialog
         setInvoiceDialogOpen(true);
         // Open the hosted invoice URL in a new tab
@@ -258,8 +275,7 @@ export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
             type="button"
             variant="outline"
             onClick={() => {
-              setOpen(false);
-              form.reset();
+              handleOpenChange(false);
             }}
           >
             Cancel

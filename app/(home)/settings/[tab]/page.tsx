@@ -54,7 +54,7 @@ export default async function SettingsTabPage({
 
   switch (tab) {
     case "usage":
-      TabContent = <UsageTab />;
+      TabContent = <UsageTab searchParams={searchParamsObj} />;
       break;
     case "billing":
       TabContent = <BillingTab searchParams={searchParamsObj} />;

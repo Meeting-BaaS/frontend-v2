@@ -90,10 +90,6 @@ export function CancelPlanDialog({
                 current billing period. You'll still have access to all features
                 until then.
               </p>
-              <p className="text-sm text-destructive mt-2">
-                <span className="font-bold">Note:</span> This action will cancel
-                your subscription at the end of the billing period.
-              </p>
             </div>
 
             <Field>

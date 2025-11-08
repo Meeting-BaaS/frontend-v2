@@ -7,7 +7,11 @@ import {
   usageStatsResponseSchema,
 } from "@/lib/schemas/settings";
 
-export async function UsageTab() {
+interface UsageTabProps {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export async function UsageTab({ searchParams }: UsageTabProps) {
   const cookieStore = await cookies();
 
   // Fetch usage stats
@@ -21,5 +25,10 @@ export async function UsageTab() {
     },
   );
 
-  return <UsageContent usageStats={usageStatsResponse.data} />;
+  return (
+    <UsageContent
+      usageStats={usageStatsResponse.data}
+      searchParams={searchParams}
+    />
+  );
 }

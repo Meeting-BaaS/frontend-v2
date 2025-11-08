@@ -140,6 +140,22 @@ export const plansResponseSchema = object({
   data: plansDataSchema,
 });
 
+// Usage page search params schemas
+export const usagePageSearchParamsSchema = object({
+  api_plans: preprocess((value) => {
+    if (typeof value === "string") {
+      return value === "true";
+    }
+    return value;
+  }, boolean().optional()),
+  token_packs: preprocess((value) => {
+    if (typeof value === "string") {
+      return value === "true";
+    }
+    return value;
+  }, boolean().optional()),
+});
+
 // Invoices list schemas
 export const listInvoicesRequestQuerySchema = object({
   limit: preprocess((value) => {
@@ -179,6 +195,7 @@ export type ListInvoicesRequestQueryParams = output<
   typeof listInvoicesRequestQuerySchema
 >;
 export type InvoicesListResponse = output<typeof invoicesListResponseSchema>;
+export type UsagePageSearchParams = output<typeof usagePageSearchParamsSchema>;
 
 // Token packs schemas
 export const tokenPackSchema = object({

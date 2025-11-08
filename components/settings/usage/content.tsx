@@ -5,6 +5,7 @@ import { PlansDialog } from "@/components/settings/usage/plans/plans-dialog";
 import { TokenPacksDialog } from "@/components/settings/usage/tokens/token-packs-dialog";
 import { TokenSettingsDialog } from "@/components/settings/usage/tokens/token-settings-dialog";
 import { TokenUsageRatesSheet } from "@/components/settings/usage/tokens/token-usage-rates-sheet";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   ButtonGroup,
@@ -18,16 +19,31 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatISODateString } from "@/lib/date-helpers";
-import type { UsageStats } from "@/lib/schemas/settings";
+import {
+  type UsageStats,
+  usagePageSearchParamsSchema,
+} from "@/lib/schemas/settings";
 
 interface UsageContentProps {
   usageStats: UsageStats;
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export function UsageContent({ usageStats }: UsageContentProps) {
+export function UsageContent({ usageStats, searchParams }: UsageContentProps) {
   const planName =
     usageStats.plan.name === "payg" ? "Pay as You Go" : usageStats.plan.name;
   // const isEnterprise = usageStats.plan.type === "Enterprise";
+  const availableTokens = usageStats.tokens.available.toFixed(2);
+
+  // Validate search params with Zod schema
+  const { data: validatedSearchParams } = usagePageSearchParamsSchema.safeParse(
+    searchParams ?? {},
+  );
+
+  // Extract dialog open states from validated search params
+  // Default to false if validation fails or params are undefined
+  const apiPlansOpen = validatedSearchParams?.api_plans ?? false;
+  const tokenPacksOpen = validatedSearchParams?.token_packs ?? false;
 
   return (
     <div className="flex flex-col gap-8 mt-10">
@@ -39,7 +55,7 @@ export function UsageContent({ usageStats }: UsageContentProps) {
             Choose a plan that fits your needs.
           </p>
           <div>
-            <PlansDialog>
+            <PlansDialog initialOpen={apiPlansOpen}>
               <Button
                 variant="secondary"
                 size="sm"
@@ -151,7 +167,7 @@ export function UsageContent({ usageStats }: UsageContentProps) {
                 </Button>
               </TokenSettingsDialog>
               <ButtonGroupSeparator />
-              <TokenPacksDialog>
+              <TokenPacksDialog initialOpen={tokenPacksOpen}>
                 <Button
                   variant="secondary"
                   size="sm"
@@ -213,12 +229,18 @@ export function UsageContent({ usageStats }: UsageContentProps) {
           </div>
           <div>
             <div className="flex items-center gap-2 grow">
-              <span className="text-sm">Available Tokens</span>
+              <span className="text-sm flex items-center gap-2">
+                Available Tokens{" "}
+                {Number(availableTokens) < 5 ? (
+                  <Badge variant="destructive">Dangerously low</Badge>
+                ) : Number(availableTokens) <
+                  (usageStats.plan.reminderThreshold || 8) ? (
+                  <Badge variant="warning">Low</Badge>
+                ) : null}
+              </span>
             </div>
             <div>
-              <span className="text-sm">
-                {usageStats.tokens.available.toFixed(2)}
-              </span>
+              <span className="text-sm">{availableTokens}</span>
             </div>
           </div>
         </div>

@@ -124,9 +124,12 @@ export function NavUser() {
               </DropdownMenuItem>
               {activeTeam?.plan !== "enterprise" && (
                 <DropdownMenuItem asChild>
-                  <Link href="/settings?page=upgrade">
+                  <Link href="/settings/usage?api_plans=true">
                     <Sparkles />
-                    Upgrade to {higherPlan}
+                    <div>
+                      Upgrade to{" "}
+                      <span className="capitalize">{higherPlan}</span>
+                    </div>
                     <DropdownMenuShortcut>U</DropdownMenuShortcut>
                   </Link>
                 </DropdownMenuItem>

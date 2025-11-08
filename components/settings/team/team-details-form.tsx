@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -9,6 +10,12 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useUser } from "@/hooks/use-user";
 import { authClient } from "@/lib/auth-client";
 import { genericError, permissionDeniedError } from "@/lib/errors";
@@ -96,14 +103,29 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
               )}
             </Field>
             <Field>
-              <FieldLabel htmlFor="region">Region</FieldLabel>
+              <FieldLabel htmlFor="region" className="flex items-center gap-2">
+                Region{" "}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      Data is stored in the region specified. Default region is
+                      'eu-west-3' (Paris, France). Additional regions are coming
+                      soon.
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </FieldLabel>
               <Input
                 id="region"
                 type="text"
                 autoComplete="off"
                 readOnly
                 disabled
-                placeholder="Region selection for US and Asia coming soon..."
+                className="w-full md:!w-1/2 lg:!w-2/5"
+                value={activeTeam.region || "eu-west-3"}
               />
             </Field>
           </div>

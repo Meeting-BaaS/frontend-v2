@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CancelPlanDialog } from "@/components/settings/usage/plans/cancel-plan-dialog";
@@ -24,10 +25,32 @@ import type { PlanInfo } from "@/lib/schemas/settings";
 
 interface PlansDialogProps {
   children: React.ReactNode;
+  initialOpen?: boolean;
 }
 
-export function PlansDialog({ children }: PlansDialogProps) {
-  const [open, setOpen] = useState(false);
+export function PlansDialog({
+  children,
+  initialOpen = false,
+}: PlansDialogProps) {
+  const [open, setOpen] = useState(initialOpen);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+
+    // Update search params when dialog opens/closes
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    if (newOpen) {
+      newSearchParams.set("api_plans", "true");
+    } else {
+      newSearchParams.delete("api_plans");
+    }
+    const newUrl = newSearchParams.toString()
+      ? `${pathname}?${newSearchParams.toString()}`
+      : pathname;
+    window.history.pushState(null, "", newUrl);
+  };
   const [selectedPlan, setSelectedPlan] = useState<PlanInfo | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
@@ -129,7 +152,7 @@ export function PlansDialog({ children }: PlansDialogProps) {
         // The redirect happens automatically by better-auth
       } else {
         toast.success("Upgrade successful!");
-        setOpen(false);
+        handleOpenChange(false);
       }
     } catch (error) {
       console.error("Error upgrading plan", error);
@@ -142,11 +165,11 @@ export function PlansDialog({ children }: PlansDialogProps) {
   const handleRestoreSuccess = () => {
     setRestoreDialogOpen(false);
     setSelectedPlan(null);
-    setOpen(false);
+    handleOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="h-[80svh] max-w-6xl sm:max-w-7xl">
         <DialogHeader>
