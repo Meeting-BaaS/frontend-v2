@@ -14,7 +14,7 @@ import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
 import { createDefaultTeamResponseSchema } from "@/lib/schemas/teams";
 
-export function CreateTeamContent() {
+export function CreateDefaultTeamContent() {
   const router = useRouter();
   const [creatingTeam, setCreatingTeam] = useState(false);
   const [signingOut, setSigningOut] = useState(false);

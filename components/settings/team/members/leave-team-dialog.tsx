@@ -39,7 +39,7 @@ export function LeaveTeamDialog({ open, onOpenChange }: LeaveTeamDialogProps) {
     });
 
     // Set next team as active or redirect to create-team
-    await setNextActiveTeamOrRedirect();
+    await setNextActiveTeamOrRedirect("/bots");
 
     setConfirmText("");
     onOpenChange(false);

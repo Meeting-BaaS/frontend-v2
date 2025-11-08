@@ -4,6 +4,7 @@ export const BASE_PATH = "/internal";
 // Auth routes
 export const AUTH_BASE_PATH = `${BASE_PATH}/auth`;
 export const GET_SESSION = `${AUTH_BASE_PATH}/get-session`;
+export const LIST_ACTIVE_SUBSCRIPTIONS = `${AUTH_BASE_PATH}/subscription/list`;
 
 // Team routes
 export const TEAMS_BASE_PATH = `${BASE_PATH}/teams`;
@@ -14,6 +15,7 @@ export const REMOVE_TEAM_LOGO = `${TEAMS_BASE_PATH}/remove-logo`;
 export const DELETE_TEAM = `${TEAMS_BASE_PATH}/delete`;
 export const GET_INVITATION = `${TEAMS_BASE_PATH}/invitation`;
 export const CREATE_DEFAULT_TEAM = `${TEAMS_BASE_PATH}/create-default`;
+export const CREATE_NEW_TEAM = `${TEAMS_BASE_PATH}/create-new`;
 
 // API keys routes
 export const API_KEYS_BASE_PATH = `${BASE_PATH}/api-keys`;

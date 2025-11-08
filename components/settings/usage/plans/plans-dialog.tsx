@@ -21,6 +21,7 @@ import { usePlans } from "@/hooks/use-plans";
 import { useUser } from "@/hooks/use-user";
 import { authClient } from "@/lib/auth-client";
 import { genericError, permissionDeniedError } from "@/lib/errors";
+import { PRICING_URL } from "@/lib/external-urls";
 import type { PlanInfo } from "@/lib/schemas/settings";
 
 interface PlansDialogProps {
@@ -178,7 +179,7 @@ export function PlansDialog({
             Select a plan that fits your needs.{" "}
             <Button variant="link" size="sm" className="p-0 h-auto" asChild>
               <a
-                href="https://meetingbaas.com/pricing"
+                href={PRICING_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 has-[>svg]:!px-0"

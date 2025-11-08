@@ -6,11 +6,11 @@ import {
   number,
   object,
   type output,
-  preprocess,
   string,
   enum as zodEnum,
   instanceof as zodInstanceOf,
 } from "zod";
+import { integerPreprocess } from "@/lib/schemas/common";
 import { planTypeSchema } from "@/lib/schemas/settings";
 
 // Roles that can be input by the user
@@ -72,12 +72,7 @@ export type InviteMemberFormData = output<typeof inviteMemberFormSchema>;
  * Schema for validating invitation ID from search params
  */
 export const acceptInviteSearchParamsSchema = object({
-  id: preprocess((value) => {
-    if (typeof value === "string") {
-      return Number.parseInt(value, 10);
-    }
-    return value;
-  }, number().int().positive()),
+  id: integerPreprocess(number().int().positive()),
 });
 
 export type AcceptInviteSearchParams = output<
@@ -160,6 +155,20 @@ export const createDefaultTeamResponseSchema = object({
 export type CreateDefaultTeamResponse = output<
   typeof createDefaultTeamResponseSchema
 >;
+
+/**
+ * Create new team response schema
+ */
+export const createNewTeamResponseSchema = object({
+  success: boolean(),
+  data: object({
+    teamId: number(),
+    teamSlug: string(),
+    checkoutUrl: string().optional(),
+  }),
+});
+
+export type CreateNewTeamResponse = output<typeof createNewTeamResponseSchema>;
 
 /**
  * Allowed MIME types for team logos

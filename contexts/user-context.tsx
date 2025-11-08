@@ -27,7 +27,9 @@ interface UserContextType {
   updateUser: (updates: Partial<User>) => void;
   activeTeam: ActiveTeam;
   setActiveTeam: (team: TeamDetails[number]) => Promise<void>;
-  setNextActiveTeamOrRedirect: () => Promise<void>;
+  setNextActiveTeamOrRedirect: (
+    redirectToAfterSetActive?: string,
+  ) => Promise<void>;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(
@@ -107,6 +109,13 @@ export function UserProvider({
           throw new Error(setActiveError.message || genericError);
         }
 
+        // Refresh the session cache with the new organization information
+        await authClient.getSession({
+          query: {
+            disableCookieCache: true,
+          },
+        });
+
         // Invalidate React Query cache and force refetch
         // First invalidate to mark as stale, then explicitly refetch to ensure it happens
         queryClient.invalidateQueries({
@@ -126,24 +135,31 @@ export function UserProvider({
   /**
    * Set the next available team as active, or redirect to create-team if none available
    */
-  const setNextActiveTeamOrRedirect = useCallback(async () => {
-    const currentActiveTeam = teamDetails.find((team) => team.isActive);
-    const nextTeam = teamDetails.find(
-      (team) => team.id !== currentActiveTeam?.id,
-    );
+  const setNextActiveTeamOrRedirect = useCallback(
+    async (redirectToAfterSetActive?: string) => {
+      const currentActiveTeam = teamDetails.find((team) => team.isActive);
+      const nextTeam = teamDetails.find(
+        (team) => team.id !== currentActiveTeam?.id,
+      );
 
-    if (!nextTeam) {
-      router.push("/create-team");
-      return;
-    }
+      if (!nextTeam) {
+        router.push("/create-default-team");
+        return;
+      }
 
-    try {
-      await setActiveTeam(nextTeam);
-    } catch {
-      // If setting active team fails, redirect to create-team
-      router.push("/create-team");
-    }
-  }, [teamDetails, setActiveTeam, router]);
+      try {
+        await setActiveTeam(nextTeam);
+        // Optional redirect to a specific page after setting the active team
+        if (redirectToAfterSetActive) {
+          router.push(redirectToAfterSetActive);
+        }
+      } catch {
+        // If setting active team fails, redirect to create-team
+        router.push("/create-default-team");
+      }
+    },
+    [teamDetails, setActiveTeam, router],
+  );
 
   // Update context state when React Query data changes (e.g., from window focus refetch)
   useEffect(() => {

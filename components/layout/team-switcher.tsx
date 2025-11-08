@@ -107,17 +107,22 @@ export function TeamSwitcher() {
                 {team.isActive && <Check className="ml-auto size-4" />}
               </DropdownMenuItem>
             ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-1" asChild>
-              <Link href="/settings?page=teams&create=true">
-                <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                  <Plus className="size-4" />
-                </div>
-                <div className="text-muted-foreground font-medium">
-                  Add team
-                </div>
-              </Link>
-            </DropdownMenuItem>
+            {/* Only show add team button if there are less than 10 teams. Backend only allows up to 10 teams per user. */}
+            {teamDetails.length < 10 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2 p-1" asChild>
+                  <Link href="/create-new-team">
+                    <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
+                      <Plus className="size-4" />
+                    </div>
+                    <div className="text-muted-foreground font-medium">
+                      Add team
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

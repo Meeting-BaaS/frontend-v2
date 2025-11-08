@@ -45,7 +45,7 @@ export function DeleteTeamDialog({ teamName }: DeleteTeamDialogProps) {
       toast.success("Team deleted successfully");
 
       // Set next team as active or redirect to create-team
-      await setNextActiveTeamOrRedirect();
+      await setNextActiveTeamOrRedirect("/bots");
     } catch (error) {
       console.error("Error deleting team", error);
       toast.error(error instanceof Error ? error.message : genericError);

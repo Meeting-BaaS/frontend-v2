@@ -12,6 +12,7 @@ import {
   string,
   enum as zodEnum,
 } from "zod";
+import { integerPreprocess } from "@/lib/schemas/common";
 
 export const planTypeSchema = zodEnum(["payg", "pro", "scale", "enterprise"]);
 export const settingsPageTabsSchema = zodEnum([
@@ -158,13 +159,9 @@ export const usagePageSearchParamsSchema = object({
 
 // Invoices list schemas
 export const listInvoicesRequestQuerySchema = object({
-  limit: preprocess((value) => {
-    if (value == null) return value;
-    if (typeof value === "string") {
-      return Number.parseInt(value, 10);
-    }
-    return value;
-  }, number().int().positive().max(100).default(10).nullable()),
+  limit: integerPreprocess(
+    number().int().positive().max(100).default(10).nullable(),
+  ),
   starting_after: string().optional(),
   ending_before: string().optional(),
 });
@@ -262,4 +259,32 @@ export const purchaseTokenPackResponseSchema = object({
 export type PurchaseTokenPack = output<typeof purchaseTokenPackSchema>;
 export type PurchaseTokenPackResponse = output<
   typeof purchaseTokenPackResponseSchema
+>;
+
+// Active subscriptions list schema (from Better Auth)
+export const activeSubscriptionSchema = object({
+  id: string().optional(),
+  status: zodEnum([
+    "active",
+    "trialing",
+    "past_due",
+    "incomplete",
+    "incomplete_expired",
+    "paused",
+    "canceled",
+    "unpaid",
+  ]),
+  stripeSubscriptionId: string().optional(),
+  cancelAtPeriodEnd: boolean().optional(),
+  periodEnd: iso.datetime().optional(),
+  periodStart: iso.datetime().optional(),
+});
+
+export const listActiveSubscriptionsResponseSchema = array(
+  activeSubscriptionSchema,
+);
+
+export type ActiveSubscription = output<typeof activeSubscriptionSchema>;
+export type ListActiveSubscriptionsResponse = output<
+  typeof listActiveSubscriptionsResponseSchema
 >;

@@ -11,6 +11,7 @@ import {
   unknown as zodUnknown,
 } from "zod";
 import { isDateBefore } from "@/lib/date-helpers";
+import { integerPreprocess } from "@/lib/schemas/common";
 
 export const apiLogMethodSchema = zodEnum([
   "GET",
@@ -21,21 +22,14 @@ export const apiLogMethodSchema = zodEnum([
 ]);
 
 // HTTP status schema for validation
-export const httpStatusSchema = preprocess((value) => {
-  if (typeof value === "string") {
-    return Number.parseInt(value, 10);
-  }
-  return value;
-}, number().int().min(100).max(599));
+export const httpStatusSchema = integerPreprocess(
+  number().int().min(100).max(599),
+);
 
 export const ListApiLogsRequestQuerySchema = object({
-  limit: preprocess((value) => {
-    if (value == null) return 50;
-    if (typeof value === "string") {
-      return Number.parseInt(value, 10);
-    }
-    return value;
-  }, number().int().positive().max(250).default(50).nullable()),
+  limit: integerPreprocess(
+    number().int().positive().max(250).default(50).nullable(),
+  ),
   createdBefore: iso.datetime().nullable().default(null),
   createdAfter: iso.datetime().nullable().default(null),
   cursor: preprocess(

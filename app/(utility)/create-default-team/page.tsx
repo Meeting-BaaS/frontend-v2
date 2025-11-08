@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { CreateTeamContent } from "@/components/utility/create-team-content";
+import { CreateDefaultTeamContent } from "@/components/utility/create-default-team-content";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_SESSION, GET_TEAM_DETAILS } from "@/lib/api-routes";
 import {
@@ -12,7 +12,7 @@ import {
   teamDetailsResponseSchema,
 } from "@/lib/schemas/teams";
 
-export default async function CreateTeamPage() {
+export default async function CreateDefaultTeamPage() {
   // Session check - users must be signed in
   const cookieStore = await cookies();
   const session = await axiosGetInstance<SessionResponse>(
@@ -43,5 +43,5 @@ export default async function CreateTeamPage() {
     return redirect("/bots");
   }
 
-  return <CreateTeamContent />;
+  return <CreateDefaultTeamContent />;
 }
