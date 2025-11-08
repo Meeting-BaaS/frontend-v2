@@ -13,7 +13,17 @@ import {
 } from "zod";
 import { planTypeSchema } from "@/lib/schemas/settings";
 
-export const roleEnum = zodEnum(["owner", "admin", "member"]);
+// Roles that can be input by the user
+export const inputRoles = ["admin", "member"] as const;
+// All roles including owner - Owner is created by the system and cannot be provided by the user
+export const allRoles = ["owner", ...inputRoles] as const;
+// Role enum for the database
+export const inputRolesEnum = zodEnum(inputRoles);
+export const roleEnum = zodEnum(allRoles);
+
+// Type exports
+export type InputRole = output<typeof inputRolesEnum>;
+export type Role = output<typeof roleEnum>;
 
 export const teamDetails = array(
   object({
@@ -25,6 +35,8 @@ export const teamDetails = array(
     isActive: boolean(),
     rateLimit: number(),
     role: roleEnum,
+    joinedAt: iso.datetime(),
+    slug: string(),
   }),
 );
 
@@ -49,7 +61,7 @@ export const invitationStatusEnum = zodEnum([
  */
 export const inviteMemberFormSchema = object({
   email: email("Please enter a valid email address"),
-  role: zodEnum(["admin", "member"], {
+  role: zodEnum(inputRoles, {
     message: "Role must be either admin or member",
   }),
 });
@@ -109,6 +121,8 @@ export type UpdateTeamName = output<typeof updateTeamNameSchema>;
  * Team member schema
  */
 export const teamMemberSchema = object({
+  id: number().nullable(),
+  invitationId: number().nullable(),
   email: email(),
   role: roleEnum,
   createdAt: iso.datetime().nullable(),
@@ -116,7 +130,6 @@ export const teamMemberSchema = object({
   expiresAt: iso.datetime().nullable(),
 });
 
-export type Role = output<typeof roleEnum>;
 export type TeamMember = output<typeof teamMemberSchema>;
 
 /**
@@ -131,6 +144,21 @@ export const teamMembersListResponseSchema = object({
 
 export type TeamMembersListResponse = output<
   typeof teamMembersListResponseSchema
+>;
+
+/**
+ * Create default team response schema
+ */
+export const createDefaultTeamResponseSchema = object({
+  success: boolean(),
+  data: object({
+    teamId: number(),
+    teamSlug: string(),
+  }),
+});
+
+export type CreateDefaultTeamResponse = output<
+  typeof createDefaultTeamResponseSchema
 >;
 
 /**

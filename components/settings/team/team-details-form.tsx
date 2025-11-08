@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -31,12 +31,19 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
     },
   });
 
-  const isDirty = form.formState.isDirty;
+  const {
+    formState: { isDirty },
+    reset,
+  } = form;
+
+  useEffect(() => {
+    reset({
+      name: initialName,
+    });
+  }, [initialName, reset]);
 
   const onSubmit = async (data: UpdateTeamName) => {
-    const isMember = activeTeam.role === "member";
-
-    if (isMember) {
+    if (activeTeam.isMember) {
       toast.error(permissionDeniedError);
       return;
     }
@@ -55,7 +62,7 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
       // Update context
       updateTeam(teamId, { name: data.name });
 
-      form.reset({
+      reset({
         name: data.name,
       });
 
@@ -72,22 +79,34 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
     <div className="w-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Field>
-            <FieldLabel htmlFor="name">Team Name</FieldLabel>
-            <Input
-              id="name"
-              type="text"
-              autoComplete="off"
-              {...form.register("name")}
-              aria-invalid={!!form.formState.errors.name}
-              className="md:!w-1/2 lg:!w-2/5"
-            />
-            {form.formState.errors.name && (
-              <FieldDescription className="text-destructive">
-                {form.formState.errors.name.message}
-              </FieldDescription>
-            )}
-          </Field>
+          <div className="flex items-center flex-col sm:flex-row gap-2 w-full">
+            <Field>
+              <FieldLabel htmlFor="name">Team Name</FieldLabel>
+              <Input
+                id="name"
+                type="text"
+                autoComplete="off"
+                {...form.register("name")}
+                aria-invalid={!!form.formState.errors.name}
+              />
+              {form.formState.errors.name && (
+                <FieldDescription className="text-destructive">
+                  {form.formState.errors.name.message}
+                </FieldDescription>
+              )}
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="region">Region</FieldLabel>
+              <Input
+                id="region"
+                type="text"
+                autoComplete="off"
+                readOnly
+                disabled
+                placeholder="Region selection for US and Asia coming soon..."
+              />
+            </Field>
+          </div>
           <Button
             type="submit"
             size="sm"
@@ -99,7 +118,7 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
                 <Spinner /> Updating...
               </>
             ) : (
-              "Update name"
+              "Update"
             )}
           </Button>
         </form>

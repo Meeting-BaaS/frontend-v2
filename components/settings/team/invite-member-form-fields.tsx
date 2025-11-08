@@ -25,13 +25,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { InviteMemberFormData } from "@/lib/schemas/teams";
+import { inputRoles } from "@/lib/schemas/teams";
 
 interface InviteMemberFormFieldsProps {
   loading: boolean;
+  emailReadonly?: boolean;
 }
 
 export function InviteMemberFormFields({
   loading,
+  emailReadonly = false,
 }: InviteMemberFormFieldsProps) {
   const form = useFormContext<InviteMemberFormData>();
 
@@ -49,11 +52,16 @@ export function InviteMemberFormFields({
                   {...field}
                   id={field.name}
                   type="email"
-                  autoComplete="email"
+                  autoComplete={emailReadonly ? "off" : "email"}
                   aria-invalid={fieldState.invalid}
-                  placeholder="colleague@example.com"
-                  aria-label="Team member email address"
-                  disabled={loading}
+                  placeholder={
+                    emailReadonly ? undefined : "colleague@example.com"
+                  }
+                  aria-label={
+                    emailReadonly ? undefined : "Team member email address"
+                  }
+                  readOnly={emailReadonly}
+                  disabled={loading || emailReadonly}
                 />
               </FormControl>
               <FieldError
@@ -101,12 +109,19 @@ export function InviteMemberFormFields({
                   onValueChange={field.onChange}
                   disabled={loading}
                 >
-                  <SelectTrigger className="w-full" id={field.name}>
+                  <SelectTrigger className="w-full capitalize" id={field.name}>
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="member">Member</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    {inputRoles.map((role) => (
+                      <SelectItem
+                        key={role}
+                        value={role}
+                        className="capitalize"
+                      >
+                        {role}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormControl>

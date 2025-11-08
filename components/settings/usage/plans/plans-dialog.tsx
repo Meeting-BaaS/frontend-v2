@@ -48,9 +48,8 @@ export function PlansDialog({ children }: PlansDialogProps) {
     const isCurrentPlan = currentPlan === plan.type;
     const isPayg = plan.type === "payg";
     const isEnterprise = plan.type === "enterprise";
-    const isMember = activeTeam.role === "member";
 
-    if (isMember) {
+    if (activeTeam.isMember) {
       toast.error(permissionDeniedError);
       return;
     }

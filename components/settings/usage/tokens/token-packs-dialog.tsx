@@ -97,9 +97,7 @@ export function TokenPacksDialog({ children }: TokenPacksDialogProps) {
   );
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const isMember = activeTeam.role === "member";
-
-    if (isMember) {
+    if (activeTeam.isMember) {
       toast.error(permissionDeniedError);
       return;
     }

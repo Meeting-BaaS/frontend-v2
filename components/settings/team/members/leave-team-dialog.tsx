@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
@@ -13,132 +12,119 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { useLeaveTeam } from "@/hooks/use-member-mutations";
 import { useUser } from "@/hooks/use-user";
-import { axiosDeleteInstance } from "@/lib/api-client";
-import { DELETE_TEAM } from "@/lib/api-routes";
-import { genericError, permissionDeniedError } from "@/lib/errors";
 
-interface DeleteTeamDialogProps {
-  teamName: string;
+interface LeaveTeamDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function DeleteTeamDialog({ teamName }: DeleteTeamDialogProps) {
+export function LeaveTeamDialog({ open, onOpenChange }: LeaveTeamDialogProps) {
+  const leaveTeam = useLeaveTeam();
   const { activeTeam, setNextActiveTeamOrRedirect } = useUser();
-  const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const isConfirmValid = confirmText === teamName;
+  const isConfirmValid = confirmText === "leave";
 
-  const handleDelete = async () => {
-    if (!isConfirmValid || isDeleting) return;
+  const handleLeave = async () => {
+    if (!isConfirmValid || leaveTeam.isPending) return;
 
-    try {
-      setIsDeleting(true);
-      await axiosDeleteInstance(DELETE_TEAM);
+    await leaveTeam.mutate({
+      organizationId: activeTeam.id.toString(),
+    });
 
-      toast.success("Team deleted successfully");
+    // Set next team as active or redirect to create-team
+    await setNextActiveTeamOrRedirect();
 
-      // Set next team as active or redirect to create-team
-      await setNextActiveTeamOrRedirect();
-    } catch (error) {
-      console.error("Error deleting team", error);
-      toast.error(error instanceof Error ? error.message : genericError);
-    } finally {
-      setIsDeleting(false);
-      setOpen(false);
-      setConfirmText("");
-    }
+    setConfirmText("");
+    onOpenChange(false);
   };
 
   const handleOpenChange = (updatedOpen: boolean) => {
-    if (updatedOpen) {
-      if (isDeleting) {
-        return;
-      }
-      if (activeTeam.isMember) {
-        toast.error(permissionDeniedError);
-        return;
-      }
+    if (updatedOpen && leaveTeam.isPending) {
+      return;
     }
-    setOpen(updatedOpen);
+    setConfirmText("");
+    onOpenChange(updatedOpen);
   };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant="destructive" size="sm" className="w-full sm:w-fit">
-          Delete team
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md" showCloseButton={!isDeleting}>
+      <DialogContent
+        className="sm:max-w-md"
+        showCloseButton={!leaveTeam.isPending}
+      >
         <DialogHeader>
-          <DialogTitle>Delete Team</DialogTitle>
+          <DialogTitle>Leave Team</DialogTitle>
           <DialogDescription>
-            This will permanently delete the team &quot;{teamName}&quot; and all
-            its associated data. All team members will lose access to this team.
+            Are you sure you want to leave this team? You will lose access to
+            all team data and resources.
           </DialogDescription>
         </DialogHeader>
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            handleDelete();
+            handleLeave();
           }}
           className="space-y-6"
         >
           <Field>
-            <FieldLabel htmlFor="confirm-delete">
+            <FieldLabel htmlFor="confirm-leave">
               Type{" "}
               <Badge
                 variant="warning"
                 className="flex items-center gap-2 py-1 text-sm"
               >
-                {teamName}
+                leave
                 <Button
                   variant="ghost"
                   size="icon"
                   className="size-3 [&_svg]:size-3 [&_svg]:text-foreground"
                   asChild
                 >
-                  <CopyButton text={teamName} />
+                  <CopyButton text="leave" />
                 </Button>
               </Badge>{" "}
               to confirm:
             </FieldLabel>
             <FieldContent>
               <Input
-                id="confirm-delete"
+                id="confirm-leave"
                 type="text"
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
-                placeholder={teamName}
-                disabled={isDeleting}
+                placeholder="leave"
+                disabled={leaveTeam.isPending}
                 aria-required="true"
               />
             </FieldContent>
           </Field>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline" disabled={isDeleting}>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={leaveTeam.isPending}
+              >
                 Cancel
               </Button>
             </DialogClose>
             <Button
               type="submit"
               variant="destructive"
-              disabled={!isConfirmValid || isDeleting}
+              disabled={!isConfirmValid || leaveTeam.isPending}
             >
-              {isDeleting ? (
+              {leaveTeam.isPending ? (
                 <>
-                  <Spinner className="size-4" /> Deleting...
+                  <Spinner className="size-4" /> Leaving...
                 </>
               ) : (
-                "Delete team"
+                "Leave team"
               )}
             </Button>
           </DialogFooter>

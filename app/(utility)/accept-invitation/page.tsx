@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AcceptInviteContent } from "@/components/utility/accept-invite-content";
+import { AcceptInviteNotFound } from "@/components/utility/accept-invite-not-found";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_INVITATION, GET_SESSION } from "@/lib/api-routes";
 import {
@@ -53,18 +54,29 @@ export default async function AcceptInvitePage({
     return redirect(`/sign-in?${redirectSearchParams.toString()}`);
   }
 
-  const invitation = await axiosGetInstance<InvitationResponse>(
-    GET_INVITATION,
-    invitationResponseSchema,
-    {
-      headers: {
-        Cookie: cookieStore.toString(),
+  let invitation: InvitationResponse | null = null;
+
+  try {
+    invitation = await axiosGetInstance<InvitationResponse>(
+      GET_INVITATION,
+      invitationResponseSchema,
+      {
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+        params: {
+          id: validatedParams.id,
+        },
       },
-      params: {
-        id: validatedParams.id,
-      },
-    },
-  );
+    );
+  } catch (error) {
+    console.error("Error accepting invitation", error);
+    return <AcceptInviteNotFound />;
+  }
+
+  if (!invitation) {
+    return <AcceptInviteNotFound />;
+  }
 
   return <AcceptInviteContent invitation={invitation} />;
 }

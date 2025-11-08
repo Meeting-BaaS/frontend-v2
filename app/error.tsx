@@ -1,9 +1,10 @@
 "use client";
 
 import SharedErrorBoundary from "@/components/error";
+import type { APIError } from "@/lib/api-client";
 
 interface ErrorProps {
-  error: Error & { digest?: string };
+  error: APIError & { digest?: string };
   reset: () => void;
 }
 

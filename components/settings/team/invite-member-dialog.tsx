@@ -2,8 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, SendHorizontal } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { InviteMemberFormFields } from "@/components/settings/team/invite-member-form-fields";
@@ -20,17 +19,22 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { Spinner } from "@/components/ui/spinner";
+import { useInviteMember } from "@/hooks/use-member-mutations";
 import { useUser } from "@/hooks/use-user";
-import { authClient } from "@/lib/auth-client";
-import { genericError, permissionDeniedError } from "@/lib/errors";
+import { permissionDeniedError } from "@/lib/errors";
 import {
   type InviteMemberFormData,
   inviteMemberFormSchema,
+  type TeamDetails,
 } from "@/lib/schemas/teams";
 
-export function InviteMemberDialog() {
-  const { activeTeam } = useUser();
-  const router = useRouter();
+interface InviteMemberDialogProps {
+  allTeams: TeamDetails;
+}
+
+export function InviteMemberDialog({ allTeams }: InviteMemberDialogProps) {
+  const { activeTeam, setTeamDetails } = useUser();
+  const inviteMember = useInviteMember();
   const [open, setOpen] = useState(false);
   const form = useForm<InviteMemberFormData>({
     resolver: zodResolver(inviteMemberFormSchema),
@@ -39,43 +43,30 @@ export function InviteMemberDialog() {
       role: "member",
     },
   });
-  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setTeamDetails(allTeams);
+  }, [allTeams, setTeamDetails]);
 
   const onSubmit = async (data: InviteMemberFormData) => {
-    if (loading) return;
+    if (inviteMember.isPending) return;
 
-    try {
-      setLoading(true);
-      const { error } = await authClient.organization.inviteMember({
-        email: data.email,
-        role: data.role,
-      });
+    await inviteMember.mutate({
+      email: data.email,
+      role: data.role,
+      organizationId: activeTeam.id.toString(),
+    });
 
-      if (error) {
-        console.error("Error inviting member", error);
-        toast.error(error.message || genericError);
-        return;
-      }
-
-      toast.success("Invitation sent successfully");
-      form.reset();
-      setOpen(false);
-      // Refresh the page to show the new invitation in the list
-      router.refresh();
-    } catch (error) {
-      console.error("Error inviting member", error);
-      toast.error(error instanceof Error ? error.message : genericError);
-    } finally {
-      setLoading(false);
-    }
+    form.reset();
+    setOpen(false);
   };
 
   const onCancel = (updatedOpen: boolean) => {
     if (updatedOpen) {
-      if (loading) {
+      if (inviteMember.isPending) {
         return;
       }
-      if (activeTeam.role === "member") {
+      if (activeTeam.isMember) {
         toast.error(permissionDeniedError);
         return;
       }
@@ -92,7 +83,10 @@ export function InviteMemberDialog() {
           <Plus /> Invite Member
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md" showCloseButton={!loading}>
+      <DialogContent
+        className="sm:max-w-md"
+        showCloseButton={!inviteMember.isPending}
+      >
         <DialogHeader>
           <DialogTitle>Invite Team Member</DialogTitle>
           <DialogDescription>
@@ -103,7 +97,7 @@ export function InviteMemberDialog() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <InviteMemberFormFields loading={loading} />
+            <InviteMemberFormFields loading={inviteMember.isPending} />
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="button" variant="outline">
@@ -112,12 +106,14 @@ export function InviteMemberDialog() {
               </DialogClose>
               <Button
                 type="submit"
-                disabled={loading}
-                aria-busy={loading}
-                aria-disabled={loading}
-                aria-label={loading ? "Sending" : "Send Invitation"}
+                disabled={inviteMember.isPending}
+                aria-busy={inviteMember.isPending}
+                aria-disabled={inviteMember.isPending}
+                aria-label={
+                  inviteMember.isPending ? "Sending" : "Send Invitation"
+                }
               >
-                {loading ? (
+                {inviteMember.isPending ? (
                   <>
                     <Spinner /> Sending
                   </>

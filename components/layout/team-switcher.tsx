@@ -20,14 +20,18 @@ import {
 } from "@/components/ui/sidebar";
 import { TeamAvatar } from "@/components/ui/team-avatar";
 import { useUser } from "@/hooks/use-user";
+import type { TeamDetails } from "@/lib/schemas/teams";
 
 export function TeamSwitcher() {
-  const { activeTeam, teamDetails } = useUser();
+  const { activeTeam, teamDetails, setActiveTeam } = useUser();
   const { isMobile, open } = useSidebar();
 
-  if (!activeTeam) {
-    return null;
-  }
+  const onTeamClick = async (team: TeamDetails[number]) => {
+    if (team.id === activeTeam.id) return;
+
+    await setActiveTeam(team);
+    // Error is already handled in setActiveTeam
+  };
 
   return (
     <SidebarMenu>
@@ -39,13 +43,14 @@ export function TeamSwitcher() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               {activeTeam.logo ? (
-                <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <div className="relative flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg border">
                   <Image
                     src={activeTeam.logo}
                     alt={activeTeam.name}
-                    width={32}
-                    height={32}
-                    className="rounded-lg border"
+                    fill
+                    sizes="32px"
+                    priority
+                    className="object-cover"
                   />
                 </div>
               ) : (
@@ -77,17 +82,17 @@ export function TeamSwitcher() {
             {teamDetails.map((team) => (
               <DropdownMenuItem
                 key={team.id}
-                // onClick={() => setActiveTeam(team)}
+                onClick={() => onTeamClick(team)}
                 className="gap-2 p-1"
               >
                 {team.logo ? (
-                  <div className="flex size-6 items-center justify-center rounded-md border">
+                  <div className="relative flex size-6 items-center justify-center overflow-hidden rounded-md border">
                     <Image
                       src={team.logo}
                       alt={team.name}
-                      width={24}
-                      height={24}
-                      className="rounded-md"
+                      fill
+                      sizes="24px"
+                      className="object-cover rounded-md"
                     />
                   </div>
                 ) : (

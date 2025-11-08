@@ -13,6 +13,7 @@ export const UPLOAD_TEAM_LOGO = `${TEAMS_BASE_PATH}/upload-logo`;
 export const REMOVE_TEAM_LOGO = `${TEAMS_BASE_PATH}/remove-logo`;
 export const DELETE_TEAM = `${TEAMS_BASE_PATH}/delete`;
 export const GET_INVITATION = `${TEAMS_BASE_PATH}/invitation`;
+export const CREATE_DEFAULT_TEAM = `${TEAMS_BASE_PATH}/create-default`;
 
 // API keys routes
 export const API_KEYS_BASE_PATH = `${BASE_PATH}/api-keys`;

@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2, Upload } from "lucide-react";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -36,8 +36,15 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
   const { updateTeam, activeTeam } = useUser();
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [isRemovingLogo, setIsRemovingLogo] = useState(false);
-  const [logoPreview, setLogoPreview] = useState<string | null>(initialLogoUrl);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+    initialLogoUrl,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update the avatar preview when the initial logo url changes
+  useEffect(() => {
+    setAvatarPreview(initialLogoUrl);
+  }, [initialLogoUrl]);
 
   const form = useForm<TeamLogoFormData>({
     resolver: zodResolver(teamLogoFormSchema),
@@ -47,9 +54,7 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
   });
 
   const onSubmit = async (data: TeamLogoFormData) => {
-    const isMember = activeTeam.role === "member";
-
-    if (isMember) {
+    if (activeTeam.isMember) {
       toast.error(permissionDeniedError);
       return;
     }
@@ -73,14 +78,18 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
 
       if (response?.data?.logoUrl) {
         const newLogoUrl = response.data.logoUrl;
-        setLogoPreview(newLogoUrl);
+        setAvatarPreview(newLogoUrl);
         // Update context
         updateTeam(teamId, { logo: newLogoUrl });
         form.reset({ file: undefined });
-        toast.success("Logo uploaded successfully");
+        // Clear the file input's internal state (file inputs can't be cleared via form.reset)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        toast.success("Avatar uploaded successfully");
       }
     } catch (error) {
-      console.error("Error uploading logo", error);
+      console.error("Error uploading avatar", error);
       toast.error(error instanceof Error ? error.message : genericError);
     } finally {
       setIsUploadingLogo(false);
@@ -88,27 +97,29 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
   };
 
   const handleRemoveLogo = async () => {
-    const isMember = activeTeam.role === "member";
-
-    if (isMember) {
+    if (activeTeam.isMember) {
       toast.error(permissionDeniedError);
       return;
     }
 
-    if (isRemovingLogo || !logoPreview) return;
+    if (isRemovingLogo || !avatarPreview) return;
 
     try {
       setIsRemovingLogo(true);
 
       await axiosDeleteInstance(REMOVE_TEAM_LOGO);
 
-      setLogoPreview(null);
+      setAvatarPreview(null);
       // Update context
       updateTeam(teamId, { logo: null });
       form.reset({ file: undefined });
-      toast.success("Logo removed successfully");
+      // Clear the file input's internal state (file inputs can't be cleared via form.reset)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      toast.success("Avatar removed successfully");
     } catch (error) {
-      console.error("Error removing logo", error);
+      console.error("Error removing avatar", error);
       toast.error(error instanceof Error ? error.message : genericError);
     } finally {
       setIsRemovingLogo(false);
@@ -117,16 +128,16 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <FieldLabel htmlFor="logo-upload">Avatar</FieldLabel>
+      <FieldLabel htmlFor="avatar-upload">Avatar</FieldLabel>
       <div className="flex items-center gap-4">
-        {logoPreview ? (
-          <div className="flex size-20 items-center justify-center rounded-lg border overflow-hidden">
+        {avatarPreview ? (
+          <div className="relative flex size-20 items-center justify-center rounded-lg border overflow-hidden">
             <Image
-              src={logoPreview}
+              src={avatarPreview}
               alt={activeTeam?.name ?? ""}
-              width={80}
-              height={80}
-              className="rounded-md object-cover"
+              fill
+              sizes="80px"
+              className="object-cover"
             />
           </div>
         ) : (
@@ -182,6 +193,7 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
             <div className="flex items-center gap-2">
               <Button
                 type="button"
+                id="avatar-upload"
                 variant="outline"
                 size="sm"
                 onClick={() => {
@@ -196,18 +208,18 @@ export function TeamLogoForm({ teamId, initialLogoUrl }: TeamLogoFormProps) {
                 ) : (
                   <>
                     <Upload className="size-4" />{" "}
-                    {logoPreview ? "Change avatar" : "Upload avatar"}
+                    {avatarPreview ? "Change avatar" : "Upload avatar"}
                   </>
                 )}
               </Button>
-              {logoPreview && (
+              {avatarPreview && (
                 <Button
                   type="button"
                   variant="destructive"
                   size="icon"
                   onClick={handleRemoveLogo}
                   disabled={isRemovingLogo}
-                  aria-label="Remove logo"
+                  aria-label="Remove avatar"
                 >
                   {isRemovingLogo ? (
                     <Spinner className="size-4" />

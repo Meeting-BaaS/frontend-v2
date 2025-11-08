@@ -1,8 +1,9 @@
 // /lib/apiClient.ts
 
-import axios, { type AxiosRequestConfig } from "axios";
+import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import type { ZodType } from "zod";
 import { env } from "@/env";
+import { type ErrorResponse, errorResponseSchema } from "@/lib/schemas/common";
 
 export const api = axios.create({
   baseURL: env.NEXT_PUBLIC_API_SERVER_BASEURL,
@@ -10,6 +11,32 @@ export const api = axios.create({
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
+
+/**
+ * Extended Error type for API errors with code and original error
+ */
+export interface APIError extends Error {
+  errorResponse: ErrorResponse;
+}
+
+// Response interceptor to extract error messages from API responses
+api.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    // Validate and extract error message from API response
+    if (error.response?.data) {
+      const parsed = errorResponseSchema.safeParse(error.response.data);
+      if (parsed.success) {
+        const apiError = new Error(parsed.data.error) as APIError;
+        // Attach error response and preserve original error for debugging
+        apiError.errorResponse = parsed.data;
+        return Promise.reject(apiError);
+      }
+    }
+    // Otherwise, return the original error
+    return Promise.reject(error);
+  },
+);
 
 export async function axiosGetInstance<T>(
   url: string,

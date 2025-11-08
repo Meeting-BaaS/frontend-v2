@@ -36,9 +36,7 @@ export function BillingEmailForm({ defaultEmail }: BillingEmailFormProps) {
   const isDirty = form.formState.isDirty;
 
   const onSubmit = async (data: UpdateBillingEmail) => {
-    const isMember = activeTeam.role === "member";
-
-    if (isMember) {
+    if (activeTeam.isMember) {
       toast.error(permissionDeniedError);
       return;
     }

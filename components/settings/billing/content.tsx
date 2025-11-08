@@ -39,9 +39,7 @@ export function BillingContent({
       : billingInfo.subscription.plan.name;
 
   const handleOpenPortal = async () => {
-    const isMember = activeTeam.role === "member";
-
-    if (isMember) {
+    if (activeTeam.isMember) {
       toast.error(permissionDeniedError);
       return;
     }

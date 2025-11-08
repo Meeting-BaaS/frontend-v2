@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import type { ReactNode } from "react";
-import { LayoutContent } from "@/components/layout/layout-content";
+import { redirect } from "next/navigation";
+import { CreateTeamContent } from "@/components/utility/create-team-content";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_SESSION, GET_TEAM_DETAILS } from "@/lib/api-routes";
 import {
@@ -13,17 +12,8 @@ import {
   teamDetailsResponseSchema,
 } from "@/lib/schemas/teams";
 
-export const metadata: Metadata = {
-  title: "Dashboard | Meeting BaaS",
-  description: "Meeting BaaS Dashboard",
-};
-
-export default async function HomeLayout({
-  children,
-}: Readonly<{
-  children: ReactNode;
-}>) {
-  // Redirect if user is not logged in
+export default async function CreateTeamPage() {
+  // Session check - users must be signed in
   const cookieStore = await cookies();
   const session = await axiosGetInstance<SessionResponse>(
     GET_SESSION,
@@ -34,12 +24,9 @@ export default async function HomeLayout({
       },
     },
   );
+
   if (!session) {
-    // Important: This is allowed to pass through
-    // Because the expectation is that each individual page will handle the redirection
-    // And will have a session check on the page itself
-    // As per Next.js, that is the correct approach
-    return children;
+    return redirect("/sign-in");
   }
 
   const teamDetails = await axiosGetInstance<TeamDetailsResponse>(
@@ -52,9 +39,9 @@ export default async function HomeLayout({
     },
   );
 
-  return (
-    <LayoutContent sessionResponse={session} teamDetails={teamDetails.data}>
-      {children}
-    </LayoutContent>
-  );
+  if (teamDetails.data.length > 0) {
+    return redirect("/bots");
+  }
+
+  return <CreateTeamContent />;
 }

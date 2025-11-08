@@ -24,6 +24,7 @@ export async function TeamTab() {
   // Find active team
   const activeTeam = teamDetails.data.find((team) => team.isActive);
 
+  // Just a safety check to prevent undefined errors. This should never happen.
   if (!activeTeam) {
     return (
       <div className="text-muted-foreground py-10 text-center">
@@ -32,5 +33,5 @@ export async function TeamTab() {
     );
   }
 
-  return <TeamContent team={activeTeam} />;
+  return <TeamContent allTeams={teamDetails.data} activeTeam={activeTeam} />;
 }

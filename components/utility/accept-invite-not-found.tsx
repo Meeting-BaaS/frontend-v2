@@ -1,12 +1,28 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { GradientIcon } from "@/components/ui/gradient-icon";
 import { env } from "@/env";
 
 export function AcceptInviteNotFound() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-4 text-center">
+      <div className="w-full max-w-md space-y-6 text-center">
+        <div className="flex justify-center">
+          <GradientIcon color="var(--color-background)" size="xl">
+            <div className="relative flex size-10 items-center justify-center overflow-hidden rounded-lg">
+              <Image
+                src="/logo-2.svg"
+                alt="Meeting BaaS logo"
+                fill
+                sizes="40px"
+                className="object-contain"
+              />
+            </div>
+          </GradientIcon>
+        </div>
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">
             We couldn't find your invite
@@ -26,6 +42,9 @@ export function AcceptInviteNotFound() {
           </Button>
           .
         </p>
+        <Button variant="outline" asChild className="w-full">
+          <Link href="/bots">Back to Home</Link>
+        </Button>
       </div>
     </div>
   );

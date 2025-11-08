@@ -4,7 +4,9 @@ import { SendHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import {
   Dialog,
   DialogClose,
@@ -95,7 +97,24 @@ export function DeleteWebhookDialog({
             </div>
             <FieldGroup>
               <Field>
-                <FieldLabel>Type "delete" to confirm</FieldLabel>
+                <FieldLabel>
+                  Type{" "}
+                  <Badge
+                    variant="warning"
+                    className="flex items-center gap-2 py-1 text-sm"
+                  >
+                    delete
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-3 [&_svg]:size-3 [&_svg]:text-foreground"
+                      asChild
+                    >
+                      <CopyButton text="delete" />
+                    </Button>
+                  </Badge>
+                  to confirm
+                </FieldLabel>
                 <FieldContent>
                   <Input
                     value={typedText}

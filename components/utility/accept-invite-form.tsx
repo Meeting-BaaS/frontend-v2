@@ -10,9 +10,15 @@ import { genericError } from "@/lib/errors";
 
 interface AcceptInviteFormProps {
   invitationId: string;
+  organizationId: string;
+  organizationSlug: string;
 }
 
-export function AcceptInviteForm({ invitationId }: AcceptInviteFormProps) {
+export function AcceptInviteForm({
+  invitationId,
+  organizationId,
+  organizationSlug,
+}: AcceptInviteFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState<"accept" | "reject" | null>(null);
@@ -31,6 +37,20 @@ export function AcceptInviteForm({ invitationId }: AcceptInviteFormProps) {
         console.error("Error accepting invitation", error);
         toast.error(error.message || genericError);
         return;
+      }
+
+      // Set the newly joined team as active
+      const { error: setActiveError } = await authClient.organization.setActive(
+        {
+          organizationId,
+          organizationSlug,
+        },
+      );
+
+      if (setActiveError) {
+        console.error("Error setting active team", setActiveError);
+        toast.error(setActiveError.message || genericError);
+        // Still redirect even if setActive fails - the user can switch teams manually
       }
 
       toast.success("Invitation accepted successfully");

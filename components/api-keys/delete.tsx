@@ -4,6 +4,7 @@ import { SendHorizontal } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +26,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
 import type { ApiKey } from "@/lib/schemas/api-keys";
+import { CopyButton } from "../ui/copy-button";
 
 interface DeleteAPIKeyDialogProps {
   open: boolean;
@@ -106,7 +108,22 @@ export function DeleteAPIKeyDialog({
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="delete-confirmation">
-                  Type "delete" to confirm
+                  Type{" "}
+                  <Badge
+                    variant="warning"
+                    className="flex items-center gap-2 py-1 text-sm"
+                  >
+                    delete
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-3 [&_svg]:size-3 [&_svg]:text-foreground"
+                      asChild
+                    >
+                      <CopyButton text="delete" />
+                    </Button>
+                  </Badge>{" "}
+                  to confirm
                 </FieldLabel>
                 <FieldContent>
                   <Input
