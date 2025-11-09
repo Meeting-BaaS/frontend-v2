@@ -26,7 +26,10 @@ interface UserContextType {
   updateActiveTeam: (updates: Partial<ActiveTeam>) => void;
   updateUser: (updates: Partial<User>) => void;
   activeTeam: ActiveTeam;
-  setActiveTeam: (team: TeamDetails[number]) => Promise<void>;
+  setActiveTeam: (
+    team: TeamDetails[number],
+    redirectToAfterSetActive?: string,
+  ) => Promise<void>;
   setNextActiveTeamOrRedirect: (
     redirectToAfterSetActive?: string,
   ) => Promise<void>;
@@ -87,7 +90,7 @@ export function UserProvider({
    * Set a team as active and invalidate React Query cache
    */
   const setActiveTeam = useCallback(
-    async (team: TeamDetails[number]) => {
+    async (team: TeamDetails[number], redirectToAfterSetActive = "/bots") => {
       try {
         const { error: setActiveError } =
           await authClient.organization.setActive({
@@ -115,7 +118,7 @@ export function UserProvider({
         });
         // Explicitly refetch to ensure it happens even if already fetching
         await refetchTeamDetails();
-        router.refresh();
+        router.push(redirectToAfterSetActive);
       } catch (error) {
         console.error("Error setting active team", error);
         throw error;
@@ -140,11 +143,7 @@ export function UserProvider({
       }
 
       try {
-        await setActiveTeam(nextTeam);
-        // Optional redirect to a specific page after setting the active team
-        if (redirectToAfterSetActive) {
-          router.push(redirectToAfterSetActive);
-        }
+        await setActiveTeam(nextTeam, redirectToAfterSetActive);
       } catch {
         // If setting active team fails, redirect to create-team
         router.push("/create-default-team");

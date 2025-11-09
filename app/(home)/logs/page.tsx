@@ -65,7 +65,7 @@ export default async function LogsPage({ searchParams }: LogsPageProps) {
 
   return (
     <section>
-      <LogsView params={validatedParams ?? null} apiKeys={apiKeys ?? []} />
+      <LogsView params={validatedParams ?? null} apiKeys={apiKeys.data ?? []} />
     </section>
   );
 }

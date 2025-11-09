@@ -51,7 +51,7 @@ export default async function ApiKeysPage({
 
   return (
     <section>
-      <ApiKeysView apiKeys={apiKeys} newKey={isNew} />
+      <ApiKeysView apiKeys={apiKeys.data ?? []} newKey={isNew} />
     </section>
   );
 }

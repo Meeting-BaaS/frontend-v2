@@ -8,10 +8,10 @@ import { ApiKeysTable } from "@/components/api-keys/table";
 import { DocsButton } from "@/components/layout/docs-button";
 import { PageHeading } from "@/components/layout/page-heading";
 import { Button } from "@/components/ui/button";
-import type { ApiKeyListResponse } from "@/lib/schemas/api-keys";
+import type { ApiKey } from "@/lib/schemas/api-keys";
 
 interface ApiKeysViewProps {
-  apiKeys: ApiKeyListResponse;
+  apiKeys: ApiKey[];
   newKey?: boolean;
 }
 

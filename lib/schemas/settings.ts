@@ -19,7 +19,6 @@ export const settingsPageTabsSchema = zodEnum([
   "usage",
   "billing",
   "team",
-  "emails",
   "integrations",
 ]);
 

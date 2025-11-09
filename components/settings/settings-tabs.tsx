@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Bell, CreditCard, Plug, Users } from "lucide-react";
+import { BarChart3, CreditCard, Plug, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,12 +28,6 @@ export function SettingsTabs() {
           <Link href="/settings/team">
             <Users className="size-4" />
             Team
-          </Link>
-        </TabsTrigger>
-        <TabsTrigger value="emails" className="gap-2" asChild>
-          <Link href="/settings/emails">
-            <Bell className="size-4" />
-            Emails
           </Link>
         </TabsTrigger>
         <TabsTrigger value="integrations" className="gap-2" asChild>

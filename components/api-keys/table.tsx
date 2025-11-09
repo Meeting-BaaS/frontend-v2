@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/empty";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { useDataTable } from "@/hooks/use-data-table";
-import type { ApiKeyListResponse } from "@/lib/schemas/api-keys";
+import type { ApiKey } from "@/lib/schemas/api-keys";
 
 interface ApiKeysTableProps {
-  apiKeys: ApiKeyListResponse;
+  apiKeys: ApiKey[];
   onAddButtonClick: () => void;
 }
 
@@ -57,6 +57,7 @@ export function ApiKeysTable({ apiKeys, onAddButtonClick }: ApiKeysTableProps) {
       table={table}
       clientSideSearch
       searchColumn="name"
+      searchPlaceholder="Search by name..."
       clientSideFilters={<PermissionFilter table={table} />}
     />
   );

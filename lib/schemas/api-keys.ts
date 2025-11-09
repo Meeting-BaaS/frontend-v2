@@ -50,7 +50,10 @@ export const createApiKeyResponseSchema = object({
   }),
 });
 
-export const apiKeyListResponseSchema = array(apiKey).nullable();
+export const apiKeyListResponseSchema = object({
+  success: boolean(),
+  data: array(apiKey).nullable(),
+});
 
 export const apiKeyDetails = apiKey
   .extend({

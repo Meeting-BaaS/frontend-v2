@@ -2,13 +2,13 @@
 
 import { format } from "date-fns";
 import { Download, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientIcon } from "@/components/ui/gradient-icon";
-import { Skeleton } from "@/components/ui/skeleton";
 import { parseDateString } from "@/lib/date-helpers";
+import { cn } from "@/lib/utils";
 
 interface FileCardProps {
   icon: React.ComponentType<{ className?: string }>;
@@ -17,6 +17,7 @@ interface FileCardProps {
   date: string | null;
   url: string;
   fileName: string;
+  fileTitleClassName?: string;
 }
 
 export function FileCard({
@@ -26,19 +27,9 @@ export function FileCard({
   date,
   url,
   fileName,
+  fileTitleClassName,
 }: FileCardProps) {
   const [isDownloading, setIsDownloading] = useState(false);
-  const [size, setSize] = useState(0);
-
-  useEffect(() => {
-    if (!url) return;
-    fetch(url, { method: "HEAD" })
-      .then((response) => response.headers.get("Content-Length"))
-      .then((size) => setSize(Number(size)))
-      .catch((error) => {
-        console.error("Failed to get file size", error);
-      });
-  }, [url]);
 
   const handleDownload = () => {
     if (isDownloading) return;
@@ -73,17 +64,11 @@ export function FileCard({
         <Icon className="size-5" />
       </GradientIcon>
       <div className="flex-1 min-w-0">
-        <div className="font-medium truncate">{title}</div>
+        <div className={cn("font-medium truncate", fileTitleClassName)}>
+          {title}
+        </div>
         {date && (
-          <div className="text-xs text-muted-foreground flex items-center gap-2">
-            <span>
-              {size ? (
-                `${(size / 1024 / 1024).toFixed(2)} MB`
-              ) : (
-                <Skeleton className="w-10 h-2" />
-              )}
-            </span>
-            <span>•</span>
+          <div className="text-xs text-muted-foreground">
             {format(parseDateString(date), "MMM d, yyyy h:mm a")}
           </div>
         )}

@@ -19,7 +19,7 @@ export const CREATE_NEW_TEAM = `${TEAMS_BASE_PATH}/create-new`;
 
 // API keys routes
 export const API_KEYS_BASE_PATH = `${BASE_PATH}/api-keys`;
-export const LIST_API_KEYS = `${AUTH_BASE_PATH}/api-key/list`;
+export const LIST_API_KEYS = `${API_KEYS_BASE_PATH}/list`;
 export const CREATE_API_KEY = `${API_KEYS_BASE_PATH}/create`;
 export const UPDATE_API_KEY = `${API_KEYS_BASE_PATH}/update`;
 export const GET_API_KEY_DETAILS = `${API_KEYS_BASE_PATH}/details`;
@@ -70,3 +70,12 @@ export const CHECK_CREDENTIAL_ACCOUNT = `${ACCOUNT_BASE_PATH}/check-credential-a
 export const LIST_USER_INVITATIONS = `${ACCOUNT_BASE_PATH}/list-invitations`;
 export const GET_EMAIL_PREFERENCES = `${ACCOUNT_BASE_PATH}/email-preferences`;
 export const UPDATE_EMAIL_PREFERENCES = `${ACCOUNT_BASE_PATH}/email-preferences`;
+
+// Support Center
+export const SUPPORT_BASE_PATH = `${BASE_PATH}/support`;
+export const LIST_SUPPORT_TICKETS = `${SUPPORT_BASE_PATH}/list`;
+export const CREATE_SUPPORT_TICKET = `${SUPPORT_BASE_PATH}/create`;
+export const GET_TICKET_DETAILS = `${SUPPORT_BASE_PATH}/get-details`;
+export const UPDATE_TICKET = `${SUPPORT_BASE_PATH}/update`;
+export const UPDATE_TICKET_STATUS = `${SUPPORT_BASE_PATH}/update-status`;
+export const UPLOAD_ATTACHMENTS = `${SUPPORT_BASE_PATH}/upload-attachments`;

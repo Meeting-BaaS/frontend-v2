@@ -1,12 +1,16 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { PageHeading } from "@/components/layout/page-heading";
+import { SupportTicketsView } from "@/components/support/view";
 import { axiosGetInstance } from "@/lib/api-client";
-import { GET_SESSION } from "@/lib/api-routes";
+import { GET_SESSION, LIST_SUPPORT_TICKETS } from "@/lib/api-routes";
 import {
   type SessionResponse,
   sessionResponseSchema,
 } from "@/lib/schemas/session";
+import {
+  type ListSupportTicketsResponse,
+  listSupportTicketsResponseSchema,
+} from "@/lib/schemas/support";
 
 export default async function SupportCenterPage() {
   // Redirect if user is not logged in
@@ -27,9 +31,19 @@ export default async function SupportCenterPage() {
     return redirect(`/sign-in?${redirectSearchParams.toString()}`);
   }
 
+  const tickets = await axiosGetInstance<ListSupportTicketsResponse>(
+    LIST_SUPPORT_TICKETS,
+    listSupportTicketsResponseSchema,
+    {
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+    },
+  );
+
   return (
     <section>
-      <PageHeading title="Support Center" />
+      <SupportTicketsView tickets={tickets.data || []} />
     </section>
   );
 }

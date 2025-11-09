@@ -7,6 +7,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { PlansProvider } from "@/contexts/plans-context";
+import { SupportDialogProvider } from "@/contexts/support-dialog-context";
 import { UserProvider } from "@/contexts/user-context";
 import { TEAM_DETAILS_QUERY_KEY } from "@/hooks/use-team-details";
 import type { SessionResponse } from "@/lib/schemas/session";
@@ -46,21 +47,23 @@ export function LayoutContent({
         teamDetails={teamDetails}
       >
         <PlansProvider>
-          <SidebarProvider
-            style={
-              {
-                "--sidebar-width": "15.5rem",
-              } as React.CSSProperties
-            }
-          >
-            <AppSidebar />
-            <main className="flex flex-col w-full h-screen">
-              <AppHeader />
-              <div className="flex-1 overflow-y-auto px-4 md:px-10 lg:px-20 py-8">
-                {children}
-              </div>
-            </main>
-          </SidebarProvider>
+          <SupportDialogProvider>
+            <SidebarProvider
+              style={
+                {
+                  "--sidebar-width": "15.5rem",
+                } as React.CSSProperties
+              }
+            >
+              <AppSidebar />
+              <main className="flex flex-col w-full h-screen">
+                <AppHeader />
+                <div className="flex-1 overflow-y-auto px-4 md:px-10 lg:px-20 py-8">
+                  {children}
+                </div>
+              </main>
+            </SidebarProvider>
+          </SupportDialogProvider>
         </PlansProvider>
       </UserProvider>
     </QueryClientProvider>

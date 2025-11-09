@@ -77,19 +77,6 @@ export function DataTable<TData>({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  if (table.getRowModel().rows?.length === 0) {
-    return (
-      <Empty className="border rounded-lg">
-        <EmptyHeader>
-          <EmptyTitle>No results found</EmptyTitle>
-          <EmptyDescription>
-            Try adjusting your filters, date range or search query
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    );
-  }
-
   return (
     <div>
       {serverSidePagination && (
@@ -133,58 +120,69 @@ export function DataTable<TData>({
         </div>
       )}
       <div className={cn("overflow-hidden", tableContainerClassName)}>
-        <UITable className="m-0 border-separate border-spacing-0 border-none p-0 text-left">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className={cn(
-                        "h-8 px-3 !bg-secondary dark:!bg-input/30 border-b border-t border-input first:rounded-l-md first:border-l last:rounded-r-md last:border-r last:text-right text-muted-foreground",
-                        header.column.columnDef.meta?.className,
-                      )}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length > 0 &&
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-transparent"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        "py-3 h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-3 text-sm last:text-right",
-                        cell.column.columnDef.meta?.className,
-                        rowCellClassName,
-                      )}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+        {table.getRowModel().rows?.length === 0 ? (
+          <Empty className="border rounded-lg">
+            <EmptyHeader>
+              <EmptyTitle>No results found</EmptyTitle>
+              <EmptyDescription>
+                Try adjusting your filters, date range or search query
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <UITable className="m-0 border-separate border-spacing-0 border-none p-0 text-left">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className={cn(
+                          "h-8 px-3 !bg-secondary dark:!bg-input/30 border-b border-t border-input first:rounded-l-md first:border-l last:rounded-r-md last:border-r last:text-right text-muted-foreground",
+                          header.column.columnDef.meta?.className,
+                        )}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
               ))}
-          </TableBody>
-        </UITable>
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length > 0 &&
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="hover:bg-transparent"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className={cn(
+                          "py-3 h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-3 text-sm last:text-right",
+                          cell.column.columnDef.meta?.className,
+                          rowCellClassName,
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </UITable>
+        )}
       </div>
       <div className="flex items-center md:justify-end space-x-2 py-4">
         {serverSidePagination ? (

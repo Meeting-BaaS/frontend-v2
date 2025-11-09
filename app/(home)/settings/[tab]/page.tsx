@@ -62,13 +62,6 @@ export default async function SettingsTabPage({
     case "team":
       TabContent = <TeamTab />;
       break;
-    case "emails":
-      TabContent = (
-        <div className="text-muted-foreground py-10 text-center">
-          Email settings coming soon...
-        </div>
-      );
-      break;
     case "integrations":
       TabContent = <IntegrationsTab />;
       break;
