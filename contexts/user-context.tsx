@@ -23,7 +23,7 @@ interface UserContextType {
   session: Session;
   teamDetails: TeamDetails;
   setTeamDetails: (teamDetails: TeamDetails) => void;
-  updateTeam: (teamId: number, updates: Partial<TeamDetails[number]>) => void;
+  updateActiveTeam: (updates: Partial<ActiveTeam>) => void;
   updateUser: (updates: Partial<User>) => void;
   activeTeam: ActiveTeam;
   setActiveTeam: (team: TeamDetails[number]) => Promise<void>;
@@ -75,17 +75,9 @@ export function UserProvider({
   const { data: queryTeamDetails, refetch: refetchTeamDetails } =
     useTeamDetails();
 
-  const updateTeam = useCallback(
-    (teamId: number, updates: Partial<TeamDetails[number]>) => {
-      console.log("Updating team", teamId, updates);
-      setTeamDetails((prev) =>
-        prev.map((team) =>
-          team.id === teamId ? { ...team, ...updates } : team,
-        ),
-      );
-    },
-    [],
-  );
+  const updateActiveTeam = useCallback((updates: Partial<ActiveTeam>) => {
+    setActiveTeamState((prev) => (prev ? { ...prev, ...updates } : null));
+  }, []);
 
   const updateUser = useCallback((updates: Partial<User>) => {
     setUser((prev) => ({ ...prev, ...updates }));
@@ -199,7 +191,7 @@ export function UserProvider({
         user,
         session,
         teamDetails,
-        updateTeam,
+        updateActiveTeam,
         setTeamDetails,
         updateUser,
         activeTeam,

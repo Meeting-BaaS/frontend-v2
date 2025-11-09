@@ -116,7 +116,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/settings?page=account">
+                <Link href="/account">
                   <CircleUserRound />
                   My Account
                   <DropdownMenuShortcut>M</DropdownMenuShortcut>

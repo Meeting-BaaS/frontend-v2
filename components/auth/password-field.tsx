@@ -4,9 +4,13 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import type { FormType } from "@/components/auth/form-fields";
 import { Button } from "@/components/ui/button";
-import { Field, FieldContent, FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { FormControl, FormField } from "@/components/ui/form";
 import {
   InputGroup,
@@ -17,36 +21,43 @@ import {
 
 interface PasswordFieldProps {
   loading: boolean;
-  formType: FormType;
-  name: "password" | "confirmPassword";
+  name: string;
+  placeholder?: string;
+  label?: string;
+  autoComplete: string;
+  showForgotPasswordLink?: boolean;
 }
 
 export const PasswordField = ({
   loading,
-  formType,
   name,
+  label,
+  placeholder,
+  autoComplete,
+  showForgotPasswordLink = false,
 }: PasswordFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const form = useFormContext();
-  const label = name === "password" ? "Password" : "Confirm password";
+
   return (
     <FormField
       control={form.control}
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
+          {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
           <FieldContent>
             <FormControl>
               <InputGroup>
                 <InputGroupInput
+                  id={name}
                   type={showPassword ? "text" : "password"}
                   {...field}
                   disabled={loading}
-                  placeholder={label}
-                  autoComplete={
-                    formType === "sign-up" ? "new-password" : "current-password"
-                  }
-                  aria-label={label}
+                  placeholder={placeholder}
+                  autoComplete={autoComplete}
+                  aria-label={label ?? placeholder ?? "Password"}
+                  aria-invalid={fieldState.invalid}
                 />
                 <InputGroupAddon align="inline-end">
                   <InputGroupButton
@@ -67,7 +78,7 @@ export const PasswordField = ({
             <FieldError
               errors={fieldState.error ? [fieldState.error] : undefined}
             />
-            {formType === "sign-in" && name === "password" && (
+            {showForgotPasswordLink && (
               <div className="flex justify-end mt-3">
                 <Button
                   variant="link"

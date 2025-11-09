@@ -28,7 +28,7 @@ interface TeamDetailsFormProps {
 }
 
 export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
-  const { updateTeam, activeTeam } = useUser();
+  const { updateActiveTeam, activeTeam } = useUser();
   const [isUpdatingName, setIsUpdatingName] = useState(false);
 
   const form = useForm<UpdateTeamName>({
@@ -67,7 +67,7 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
       });
 
       // Update context
-      updateTeam(teamId, { name: data.name });
+      updateActiveTeam({ name: data.name });
 
       reset({
         name: data.name,

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { Spinner } from "@/components/ui/spinner";
+import { env } from "@/env";
 import { axiosPostInstance } from "@/lib/api-client";
 import { CREATE_DEFAULT_TEAM } from "@/lib/api-routes";
 import { authClient } from "@/lib/auth-client";
@@ -18,6 +19,7 @@ export function CreateDefaultTeamContent() {
   const router = useRouter();
   const [creatingTeam, setCreatingTeam] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const handleCreateTeam = async () => {
     if (creatingTeam) return;
@@ -75,6 +77,31 @@ export function CreateDefaultTeamContent() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (deletingAccount) return;
+
+    try {
+      setDeletingAccount(true);
+      const { error } = await authClient.deleteUser({
+        callbackURL: `${env.NEXT_PUBLIC_FRONTEND_BASEURL}/sign-in`,
+      });
+
+      if (error) {
+        toast.error(error.message || genericError);
+        return;
+      }
+
+      toast.success(
+        "Account deletion verification email sent. Please check your email to confirm.",
+      );
+    } catch (error) {
+      console.error("Error deleting account", error);
+      toast.error(error instanceof Error ? error.message : genericError);
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6 text-center">
@@ -117,14 +144,20 @@ export function CreateDefaultTeamContent() {
           </Button>
           <Button
             variant="destructive"
-            onClick={() => {
-              // TODO: Implement delete account
-              toast.info("Delete account feature coming soon");
-            }}
-            disabled={creatingTeam || signingOut}
+            onClick={handleDeleteAccount}
+            disabled={creatingTeam || signingOut || deletingAccount}
             className="w-full"
+            aria-busy={deletingAccount}
           >
-            <Trash2 className="size-4" /> Delete Account
+            {deletingAccount ? (
+              <>
+                <Spinner className="size-4" /> Processing...
+              </>
+            ) : (
+              <>
+                <Trash2 className="size-4" /> Delete Account
+              </>
+            )}
           </Button>
           <Button
             variant="outline"

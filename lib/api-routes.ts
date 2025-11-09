@@ -61,3 +61,12 @@ export const GET_TOKEN_PACKS = `${SETTINGS_BASE_PATH}/token-packs`;
 export const PURCHASE_TOKEN_PACK = `${SETTINGS_BASE_PATH}/token-packs/purchase`;
 export const UPDATE_AUTO_REFILL_SETTINGS = `${SETTINGS_BASE_PATH}/token-settings/auto-refill`;
 export const UPDATE_REMINDER_SETTINGS = `${SETTINGS_BASE_PATH}/token-settings/reminder`;
+
+// Account routes
+export const ACCOUNT_BASE_PATH = `${BASE_PATH}/account`;
+export const UPLOAD_USER_IMAGE = `${ACCOUNT_BASE_PATH}/upload-image`;
+export const REMOVE_USER_IMAGE = `${ACCOUNT_BASE_PATH}/remove-image`;
+export const CHECK_CREDENTIAL_ACCOUNT = `${ACCOUNT_BASE_PATH}/check-credential-account`;
+export const LIST_USER_INVITATIONS = `${ACCOUNT_BASE_PATH}/list-invitations`;
+export const GET_EMAIL_PREFERENCES = `${ACCOUNT_BASE_PATH}/email-preferences`;
+export const UPDATE_EMAIL_PREFERENCES = `${ACCOUNT_BASE_PATH}/email-preferences`;

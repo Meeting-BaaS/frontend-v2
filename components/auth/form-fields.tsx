@@ -99,15 +99,22 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
           {["sign-in", "sign-up", "reset-password"].includes(formType) && (
             <PasswordField
               loading={loading}
-              formType={formType}
               name="password"
+              placeholder="Password"
+              autoComplete={
+                formType === "sign-up" || formType === "reset-password"
+                  ? "new-password"
+                  : "current-password"
+              }
+              showForgotPasswordLink={formType === "sign-in"}
             />
           )}
           {formType === "reset-password" && (
             <PasswordField
               loading={loading}
-              formType={formType}
               name="confirmPassword"
+              placeholder="Confirm password"
+              autoComplete="new-password"
             />
           )}
         </FieldGroup>

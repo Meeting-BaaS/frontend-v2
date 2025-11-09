@@ -96,3 +96,24 @@ export const formatDuration = (seconds: number) => {
   }
   return `${secs}s`;
 };
+
+/**
+ * Formats a future date to show relative time (e.g., "in 2 days", "in 3 hours")
+ * @param isoString - ISO timestamp string (e.g., "2025-10-23T13:05:45.961Z")
+ * @returns Formatted relative date string (e.g., "in 2 days")
+ */
+export function formatFutureRelativeDate(isoString: string): string {
+  const date = parseISO(isoString);
+  const now = new Date();
+
+  // If the date is in the past, return "expired"
+  if (isBefore(date, now)) {
+    return "expired";
+  }
+
+  // Use formatDistanceToNow with addSuffix for future dates
+  // This will return "in X days", "in X hours", etc.
+  const distance = formatDistanceToNow(date, { addSuffix: true });
+
+  return distance;
+}

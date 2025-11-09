@@ -2,117 +2,100 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2, Upload } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Form, FormControl, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { TeamAvatar } from "@/components/ui/team-avatar";
 import { useUser } from "@/hooks/use-user";
 import { axiosDeleteInstance, axiosPostInstance } from "@/lib/api-client";
-import { REMOVE_TEAM_LOGO, UPLOAD_TEAM_LOGO } from "@/lib/api-routes";
-import { genericError, permissionDeniedError } from "@/lib/errors";
+import { REMOVE_USER_IMAGE, UPLOAD_USER_IMAGE } from "@/lib/api-routes";
+import { genericError } from "@/lib/errors";
 import type {
-  TeamLogoFormData,
-  TeamLogoUploadResponse,
-} from "@/lib/schemas/teams";
+  UserImageFormData,
+  UserImageUploadResponse,
+} from "@/lib/schemas/account";
 import {
-  ALLOWED_LOGO_MIME_TYPES,
-  MAX_LOGO_FILE_SIZE,
-  teamLogoFormSchema,
-  teamLogoUploadResponseSchema,
-} from "@/lib/schemas/teams";
+  ALLOWED_USER_IMAGE_MIME_TYPES,
+  MAX_USER_IMAGE_FILE_SIZE,
+  userImageFormSchema,
+  userImageUploadResponseSchema,
+} from "@/lib/schemas/account";
 
-interface TeamLogoFormProps {
-  initialLogoUrl: string | null;
-}
-
-export function TeamLogoForm({ initialLogoUrl }: TeamLogoFormProps) {
-  const { updateActiveTeam, activeTeam } = useUser();
-  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const [isRemovingLogo, setIsRemovingLogo] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    initialLogoUrl,
-  );
+export function UserProfileForm() {
+  const { user, updateUser } = useUser();
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isRemovingImage, setIsRemovingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(user.image);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Update the avatar preview when the initial logo url changes
+  // Update the image preview when the user image changes
   useEffect(() => {
-    setAvatarPreview(initialLogoUrl);
-  }, [initialLogoUrl]);
+    setImagePreview(user.image);
+  }, [user.image]);
 
-  const form = useForm<TeamLogoFormData>({
-    resolver: zodResolver(teamLogoFormSchema),
+  const form = useForm<UserImageFormData>({
+    resolver: zodResolver(userImageFormSchema),
     defaultValues: {
       file: undefined,
     },
   });
 
-  const onSubmit = async (data: TeamLogoFormData) => {
-    if (activeTeam.isMember) {
-      toast.error(permissionDeniedError);
-      return;
-    }
-
-    if (!data.file || isUploadingLogo) return;
+  const onSubmit = async (data: UserImageFormData) => {
+    if (!data.file || isUploadingImage) return;
 
     try {
-      setIsUploadingLogo(true);
+      setIsUploadingImage(true);
 
       const formData = new FormData();
       formData.append("file", data.file);
 
       const response = await axiosPostInstance<
         FormData,
-        TeamLogoUploadResponse
-      >(UPLOAD_TEAM_LOGO, formData, teamLogoUploadResponseSchema, {
+        UserImageUploadResponse
+      >(UPLOAD_USER_IMAGE, formData, userImageUploadResponseSchema, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      if (response?.data?.logoUrl) {
-        const newLogoUrl = response.data.logoUrl;
-        setAvatarPreview(newLogoUrl);
+      if (response?.data?.imageUrl) {
+        const newImageUrl = response.data.imageUrl;
+        setImagePreview(newImageUrl);
         // Update context
-        updateActiveTeam({ logo: newLogoUrl });
+        updateUser({ image: newImageUrl });
         form.reset({ file: undefined });
-        // Clear the file input's internal state (file inputs can't be cleared via form.reset)
+        // Clear the file input's internal state
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
-        toast.success("Avatar uploaded successfully");
+        toast.success("Profile image uploaded successfully");
       }
     } catch (error) {
-      console.error("Error uploading avatar", error);
+      console.error("Error uploading profile image", error);
       toast.error(error instanceof Error ? error.message : genericError);
     } finally {
-      setIsUploadingLogo(false);
+      setIsUploadingImage(false);
     }
   };
 
-  const handleRemoveLogo = async () => {
-    if (activeTeam.isMember) {
-      toast.error(permissionDeniedError);
-      return;
-    }
-
-    if (isRemovingLogo || !avatarPreview) return;
+  const handleRemoveImage = async () => {
+    if (isRemovingImage || !imagePreview) return;
 
     try {
-      setIsRemovingLogo(true);
+      setIsRemovingImage(true);
 
-      await axiosDeleteInstance(REMOVE_TEAM_LOGO);
+      await axiosDeleteInstance(REMOVE_USER_IMAGE);
 
-      setAvatarPreview(null);
+      setImagePreview(null);
       // Update context
-      updateActiveTeam({ logo: null });
+      updateUser({ image: null });
       form.reset({ file: undefined });
-      // Clear the file input's internal state (file inputs can't be cleared via form.reset)
+      // Clear the file input's internal state
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -121,32 +104,28 @@ export function TeamLogoForm({ initialLogoUrl }: TeamLogoFormProps) {
       console.error("Error removing avatar", error);
       toast.error(error instanceof Error ? error.message : genericError);
     } finally {
-      setIsRemovingLogo(false);
+      setIsRemovingImage(false);
     }
   };
 
   return (
     <div className="flex flex-col gap-2">
-      <FieldLabel htmlFor="avatar-upload">Avatar</FieldLabel>
+      <FieldLabel htmlFor="avatar-upload">Profile image</FieldLabel>
       <div className="flex items-center gap-4">
-        {avatarPreview ? (
-          <div className="relative flex size-20 items-center justify-center rounded-lg border overflow-hidden">
-            <Image
-              src={avatarPreview}
-              alt={activeTeam?.name ?? ""}
-              fill
-              sizes="80px"
-              className="object-cover"
-            />
+        {imagePreview ? (
+          <div className="relative flex size-20 items-center justify-center rounded-full border overflow-hidden">
+            <Avatar className="size-20">
+              <AvatarImage src={imagePreview} alt={user.name} />
+            </Avatar>
           </div>
         ) : (
-          <div className="flex size-20 items-center justify-center">
-            <TeamAvatar
-              name={activeTeam?.name ?? ""}
-              size="lg"
-              className="size-20"
-              textClassName="text-2xl"
-            />
+          <div className="flex size-20 items-center justify-center rounded-full">
+            <Avatar className="size-20">
+              <AvatarImage src={user.image ?? undefined} alt={user.name} />
+              <AvatarFallback className="bg-gradient-to-br from-baas-primary-500 via-baas-primary-700 to-baas-black text-white font-bold text-2xl">
+                {user.name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
           </div>
         )}
         <Form {...form}>
@@ -167,7 +146,7 @@ export function TeamLogoForm({ initialLogoUrl }: TeamLogoFormProps) {
                       {...field}
                       ref={fileInputRef}
                       type="file"
-                      accept={ALLOWED_LOGO_MIME_TYPES.join(",")}
+                      accept={ALLOWED_USER_IMAGE_MIME_TYPES.join(",")}
                       multiple={false}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
@@ -176,7 +155,7 @@ export function TeamLogoForm({ initialLogoUrl }: TeamLogoFormProps) {
                           form.handleSubmit(onSubmit)();
                         }
                       }}
-                      disabled={isUploadingLogo}
+                      disabled={isUploadingImage}
                       aria-invalid={fieldState.invalid}
                       className="hidden"
                     />
@@ -198,29 +177,31 @@ export function TeamLogoForm({ initialLogoUrl }: TeamLogoFormProps) {
                 onClick={() => {
                   fileInputRef.current?.click();
                 }}
-                disabled={isUploadingLogo}
+                disabled={isUploadingImage}
               >
-                {isUploadingLogo ? (
+                {isUploadingImage ? (
                   <>
                     <Spinner className="size-4" /> Uploading...
                   </>
                 ) : (
                   <>
                     <Upload className="size-4" />{" "}
-                    {avatarPreview ? "Change avatar" : "Upload avatar"}
+                    {imagePreview
+                      ? "Change profile image"
+                      : "Upload profile image"}
                   </>
                 )}
               </Button>
-              {avatarPreview && (
+              {imagePreview && (
                 <Button
                   type="button"
                   variant="destructive"
                   size="icon"
-                  onClick={handleRemoveLogo}
-                  disabled={isRemovingLogo}
-                  aria-label="Remove avatar"
+                  onClick={handleRemoveImage}
+                  disabled={isRemovingImage}
+                  aria-label="Remove profile image"
                 >
-                  {isRemovingLogo ? (
+                  {isRemovingImage ? (
                     <Spinner className="size-4" />
                   ) : (
                     <Trash2 className="size-4" />
@@ -229,7 +210,8 @@ export function TeamLogoForm({ initialLogoUrl }: TeamLogoFormProps) {
               )}
             </div>
             <p className="text-xs text-muted-foreground">
-              PNG, JPEG, or WebP. Max {MAX_LOGO_FILE_SIZE / (1024 * 1024)}MB.
+              PNG, JPEG, or WebP. Max {MAX_USER_IMAGE_FILE_SIZE / (1024 * 1024)}
+              MB.
             </p>
           </form>
         </Form>

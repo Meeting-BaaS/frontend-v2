@@ -21,10 +21,7 @@ export function TeamContent({ allTeams, activeTeam }: TeamContentProps) {
           <h3 className="text-lg md:text-xl font-semibold">Overview</h3>
         </div>
         <div className="flex flex-col gap-6 md:items-start">
-          <TeamLogoForm
-            teamId={activeTeam.id}
-            initialLogoUrl={activeTeam.logo}
-          />
+          <TeamLogoForm initialLogoUrl={activeTeam.logo} />
           <TeamDetailsForm
             teamId={activeTeam.id}
             initialName={activeTeam.name}
