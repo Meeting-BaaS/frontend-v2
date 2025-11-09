@@ -1,4 +1,4 @@
-import { Lock, Plus } from "lucide-react";
+import { Plus, Webhook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import {
@@ -36,7 +36,7 @@ export function WebhooksTable({
         <EmptyHeader>
           <EmptyMedia>
             <GradientIcon color="var(--color-green-300)" size="lg">
-              <Lock />
+              <Webhook />
             </GradientIcon>
           </EmptyMedia>
           <EmptyTitle>No webhooks yet</EmptyTitle>
