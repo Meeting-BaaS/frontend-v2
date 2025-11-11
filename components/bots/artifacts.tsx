@@ -2,13 +2,13 @@
 
 import {
   FileCode,
-  FileText,
   Headphones,
   Loader,
   Users,
   Video,
   XCircle,
 } from "lucide-react";
+import type { ComponentType } from "react";
 import { FileCard } from "@/components/bots/file-card";
 import {
   Empty,
@@ -18,74 +18,65 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { GradientIcon } from "@/components/ui/gradient-icon";
-import type { BotDetails } from "@/lib/schemas/bots";
+import type { ArtifactWithSignedUrl, BotDetails } from "@/lib/schemas/bots";
 
 interface ArtifactsProps {
   botDetails: BotDetails;
   botUuid: string;
 }
 
-const artifactConfig = [
+const artifactTypeConfig: Record<
+  ArtifactWithSignedUrl["type"],
   {
-    key: "videoUrl" as const,
+    icon: ComponentType<{ className?: string }>;
+    iconColor: string;
+  }
+> = {
+  video: {
     icon: Video,
     iconColor: "var(--color-red-500)",
-    label: "Video",
-    extension: "mp4",
   },
-  {
-    key: "audioUrl" as const,
+  audio: {
     icon: Headphones,
     iconColor: "var(--color-blue-500)",
-    label: "Audio",
-    extension: "wav",
   },
-  {
-    key: "diarizationUrl" as const,
+  diarization: {
     icon: Users,
     iconColor: "var(--color-violet-500)",
-    label: "Diarization",
-    extension: "json",
   },
-  {
-    key: "transcriptUrl" as const,
-    icon: FileText,
-    iconColor: "var(--color-green-500)",
-    label: "Transcript",
-    extension: "txt",
-  },
-  {
-    key: "rawTranscriptUrl" as const,
+  raw_transcription: {
     icon: FileCode,
-    iconColor: "var(--color-amber-500)",
-    label: "Raw Transcript",
-    extension: "json",
+    iconColor: "var(--color-green-500)",
   },
-] as const;
+};
 
 export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
-  const artifacts = artifactConfig
-    .filter((config) => botDetails[config.key])
-    .map((config) => {
-      const url = botDetails[config.key];
-      if (!url) return null;
+  const artifacts =
+    botDetails.artifacts
+      ?.filter((artifact) => artifact.uploaded)
+      .map((artifact) => {
+        const config = artifactTypeConfig[artifact.type];
+        if (!config) return null;
 
-      const fileName = `${botDetails.name}-${botUuid}.${config.extension}`;
-      const title = `${botDetails.name} - ${config.label}`;
+        const title = `${botUuid} - ${artifact.type}`;
 
-      return (
-        <FileCard
-          key={config.key}
-          icon={config.icon}
-          iconColor={config.iconColor}
-          title={title}
-          date={botDetails.endedAt}
-          url={url}
-          fileName={fileName}
-        />
-      );
-    })
-    .filter(Boolean);
+        const normalizedExtension = artifact.extension
+          .replace(/^\./, "")
+          .toLowerCase();
+        const fileName = `${botUuid} - ${artifact.type}.${normalizedExtension}`;
+        return (
+          <FileCard
+            key={artifact.s3Key}
+            icon={config.icon}
+            iconColor={config.iconColor}
+            title={title}
+            date={artifact.uploadedAt}
+            url={artifact.signedUrl}
+            fileName={fileName}
+          />
+        );
+      })
+      .filter(Boolean) ?? [];
 
   if (botDetails.artifactsDeleted) {
     return (

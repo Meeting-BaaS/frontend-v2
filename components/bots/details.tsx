@@ -79,7 +79,7 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
         <NameValuePair
           title="Transcription ID"
           valueClassName="capitalize"
-          value={botDetails.transcriptionId}
+          value={botDetails.transcriptionIds?.join(", ")}
         />
         <NameValuePair title="Consumed Tokens" value={botDetails.totalTokens} />
         <NameValuePair

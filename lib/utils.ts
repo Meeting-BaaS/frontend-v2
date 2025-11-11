@@ -16,11 +16,11 @@ export function readableRecordingMode(
   recordingMode: RecordingMode,
 ): ReadableRecordingMode {
   switch (recordingMode) {
-    case "audioOnly":
+    case "audio_only":
       return "Audio Only";
-    case "speakerView":
+    case "speaker_view":
       return "Speaker View";
-    case "galleryView":
+    case "gallery_view":
       return "Gallery View";
     default:
       return "Unknown";

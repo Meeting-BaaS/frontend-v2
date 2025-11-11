@@ -90,7 +90,7 @@ export function ViewWebhookMessageDetails({
       </div>
       <div className="mt-10 flex flex-col gap-2">
         <div className="text-muted-foreground text-xs uppercase">Payload</div>
-        <pre className="text-xs border border-dashed rounded-md p-4 relative">
+        <pre className="text-xs border border-dashed rounded-md p-4 relative whitespace-pre-wrap break-words overflow-wrap-anywhere">
           <Button
             variant="ghost"
             size="icon"

@@ -65,7 +65,7 @@ export function ViewLogDetails({ logDetails }: LogDetailsProps) {
             Request Body
           </div>
           {logDetails.requestBody ? (
-            <pre className="text-xs border border-dashed rounded-md p-4 relative overflow-auto max-h-[500px]">
+            <pre className="text-xs border border-dashed rounded-md p-4 relative overflow-auto max-h-[500px] whitespace-pre-wrap break-words overflow-wrap-anywhere">
               <Button
                 variant="ghost"
                 size="icon"
@@ -91,7 +91,7 @@ export function ViewLogDetails({ logDetails }: LogDetailsProps) {
             Response Body
           </div>
           {logDetails.responseBody ? (
-            <pre className="text-xs border border-dashed rounded-md p-4 relative overflow-auto max-h-[500px]">
+            <pre className="text-xs border border-dashed rounded-md p-4 relative overflow-auto max-h-[500px] whitespace-pre-wrap break-words overflow-wrap-anywhere">
               <Button
                 variant="ghost"
                 size="icon"

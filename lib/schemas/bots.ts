@@ -16,9 +16,9 @@ import { isDateBefore } from "@/lib/date-helpers";
 
 export const meetingPlatformSchema = zodEnum(["zoom", "meet", "teams"]);
 export const recordingModeSchema = zodEnum([
-  "audioOnly",
-  "speakerView",
-  "galleryView",
+  "audio_only",
+  "speaker_view",
+  "gallery_view",
 ]);
 export const speechToTextProviderSchema = zodEnum([
   "gladia",
@@ -47,6 +47,36 @@ export const botStatusSchema = zodEnum([
   "completed",
   "failed",
 ]);
+
+const artifactTypeSchema = zodEnum([
+  "audio",
+  "video",
+  "diarization",
+  "raw_transcription",
+]);
+
+const artifactErrorCodeSchema = zodEnum([
+  "FILE_NOT_FOUND",
+  "UPLOAD_FAILED",
+  "FILE_TOO_SMALL",
+  "UNKNOWN_ERROR",
+  "NOT_SUPPORTED",
+]);
+
+const artifactSchema = object({
+  s3Key: string().nullable(),
+  filePath: string(),
+  extension: string(),
+  uploaded: boolean(),
+  uploadedAt: iso.datetime(),
+  type: artifactTypeSchema,
+  errorCode: artifactErrorCodeSchema.nullable(),
+  errorMessage: string().nullable(),
+});
+
+const artifactWithSignedUrlSchema = artifactSchema.extend({
+  signedUrl: url().nullable(),
+});
 
 export const ListBotsRequestQuerySchema = object({
   botUuid: string().nullable().default(null),
@@ -169,16 +199,11 @@ export const botDetailsSchema = object({
   videoUploadFailures: number(),
   audioUploadFailures: number(),
   logsUploadFailures: number(),
-  artifacts: record(string(), zodUnknown()).nullable(),
+  artifacts: array(artifactWithSignedUrlSchema).nullable(),
   artifactsDeleted: boolean(),
   errors: record(string(), zodUnknown()).nullable(),
   updatedAt: iso.datetime(),
-  transcriptionId: string().nullish(),
-  videoUrl: url().nullish(),
-  audioUrl: url().nullish(),
-  diarizationUrl: url().nullish(),
-  transcriptUrl: url().nullish(),
-  rawTranscriptUrl: url().nullish(),
+  transcriptionIds: array(string()).nullable(),
 });
 
 export const botDetailsResponseSchema = object({
@@ -198,3 +223,5 @@ export type BotsListResponse = output<typeof botsListResponseSchema>;
 export type BotDetails = output<typeof botDetailsSchema>;
 export type BotStatusHistoryEntry = output<typeof botStatusHistoryEntry>;
 export type BotDetailsResponse = output<typeof botDetailsResponseSchema>;
+export type Artifact = output<typeof artifactSchema>;
+export type ArtifactWithSignedUrl = output<typeof artifactWithSignedUrlSchema>;

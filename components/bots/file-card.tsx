@@ -15,7 +15,7 @@ interface FileCardProps {
   iconColor: string;
   title: string;
   date: string | null;
-  url: string;
+  url: string | null;
   fileName: string;
   fileTitleClassName?: string;
 }
@@ -33,6 +33,7 @@ export function FileCard({
 
   const handleDownload = () => {
     if (isDownloading) return;
+    if (!url) return;
 
     setIsDownloading(true);
 
@@ -77,7 +78,7 @@ export function FileCard({
         variant="outline"
         size="icon"
         onClick={handleDownload}
-        disabled={isDownloading}
+        disabled={isDownloading || !url}
         aria-label={`Download ${title}`}
       >
         {isDownloading ? (
