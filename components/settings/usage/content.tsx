@@ -213,10 +213,10 @@ export function UsageContent({ usageStats, searchParams }: UsageContentProps) {
                   </TooltipTrigger>
                   <TooltipContent className="max-w-sm">
                     <strong>Reserved tokens</strong> are tokens that are
-                    reserved by active bots. Upon creation of a bot, it reserves
+                    reserved by active bots. When a bot is created, it reserves
                     0.5 tokens which are released when it completes. Please
-                    contact support if you notice that reserved tokens are not
-                    being released.
+                    raise a support ticket if you notice that reserved tokens
+                    are not being released even after the bot has completed.
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

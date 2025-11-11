@@ -53,6 +53,7 @@ const artifactTypeSchema = zodEnum([
   "video",
   "diarization",
   "raw_transcription",
+  "transcription",
 ]);
 
 const artifactErrorCodeSchema = zodEnum([

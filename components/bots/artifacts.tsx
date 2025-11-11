@@ -2,6 +2,7 @@
 
 import {
   FileCode,
+  FileText,
   Headphones,
   Loader,
   Users,
@@ -40,13 +41,17 @@ const artifactTypeConfig: Record<
     icon: Headphones,
     iconColor: "var(--color-blue-500)",
   },
+  transcription: {
+    icon: FileText,
+    iconColor: "var(--color-green-500)",
+  },
   diarization: {
     icon: Users,
     iconColor: "var(--color-violet-500)",
   },
   raw_transcription: {
     icon: FileCode,
-    iconColor: "var(--color-green-500)",
+    iconColor: "var(--color-yellow-500)",
   },
 };
 
