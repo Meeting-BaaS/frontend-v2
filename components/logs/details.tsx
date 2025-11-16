@@ -64,7 +64,7 @@ export function ViewLogDetails({ logDetails }: LogDetailsProps) {
           <div className="text-muted-foreground text-xs uppercase">
             Request Body
           </div>
-          {logDetails.requestBody ? (
+          {logDetails.requestBody != null ? (
             <pre className="text-xs border border-dashed rounded-md p-4 relative overflow-auto max-h-[500px] whitespace-pre-wrap break-words overflow-wrap-anywhere">
               <Button
                 variant="ghost"
@@ -84,13 +84,53 @@ export function ViewLogDetails({ logDetails }: LogDetailsProps) {
             </div>
           )}
         </div>
+        {logDetails.requestParams != null && (
+          <div className="flex flex-col gap-2">
+            <div className="text-muted-foreground text-xs uppercase">
+              Request Params
+            </div>
+            <pre className="text-xs border border-dashed rounded-md p-4 relative overflow-auto max-h-[500px] whitespace-pre-wrap break-words overflow-wrap-anywhere">
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="absolute top-0 right-0 m-1 z-10 bg-background/80 backdrop-blur-sm"
+              >
+                <CopyButton
+                  text={JSON.stringify(logDetails.requestParams, null, 2)}
+                />
+              </Button>
+              {JSON.stringify(logDetails.requestParams, null, 2)}
+            </pre>
+          </div>
+        )}
+        {logDetails.requestQuery != null && (
+          <div className="flex flex-col gap-2">
+            <div className="text-muted-foreground text-xs uppercase">
+              Request Query
+            </div>
+            <pre className="text-xs border border-dashed rounded-md p-4 relative overflow-auto max-h-[500px] whitespace-pre-wrap break-words overflow-wrap-anywhere">
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="absolute top-0 right-0 m-1 z-10 bg-background/80 backdrop-blur-sm"
+              >
+                <CopyButton
+                  text={JSON.stringify(logDetails.requestQuery, null, 2)}
+                />
+              </Button>
+              {JSON.stringify(logDetails.requestQuery, null, 2)}
+            </pre>
+          </div>
+        )}
 
         {/* Response Body */}
         <div className="flex flex-col gap-2">
           <div className="text-muted-foreground text-xs uppercase">
             Response Body
           </div>
-          {logDetails.responseBody ? (
+          {logDetails.responseBody != null ? (
             <pre className="text-xs border border-dashed rounded-md p-4 relative overflow-auto max-h-[500px] whitespace-pre-wrap break-words overflow-wrap-anywhere">
               <Button
                 variant="ghost"

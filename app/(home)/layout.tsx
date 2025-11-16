@@ -52,8 +52,14 @@ export default async function HomeLayout({
     },
   );
 
+  const sidebarState = cookieStore.get("sidebar_state")?.value === "true";
+
   return (
-    <LayoutContent sessionResponse={session} teamDetails={teamDetails.data}>
+    <LayoutContent
+      sessionResponse={session}
+      teamDetails={teamDetails.data}
+      sidebarState={sidebarState}
+    >
       {children}
     </LayoutContent>
   );

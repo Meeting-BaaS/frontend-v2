@@ -17,12 +17,14 @@ interface LayoutContentProps {
   children: ReactNode;
   sessionResponse: SessionResponse;
   teamDetails: TeamDetails;
+  sidebarState: boolean;
 }
 
 export function LayoutContent({
   children,
   sessionResponse,
   teamDetails,
+  sidebarState,
 }: LayoutContentProps) {
   // Create QueryClient and set initial data for team details
   // This prevents the initial fetch when useTeamDetails hook is used
@@ -54,6 +56,7 @@ export function LayoutContent({
                   "--sidebar-width": "15.5rem",
                 } as React.CSSProperties
               }
+              defaultOpen={sidebarState}
             >
               <AppSidebar />
               <main className="flex flex-col w-full h-screen">

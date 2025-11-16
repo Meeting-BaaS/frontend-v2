@@ -122,6 +122,8 @@ export const apiLogDetailsSchema = object({
   durationMs: number().int().positive(),
   userAgent: string().nullable(),
   requestBody: zodUnknown().nullable(),
+  requestParams: zodUnknown().nullable(),
+  requestQuery: zodUnknown().nullable(),
   responseBody: zodUnknown().nullable(),
   createdAt: iso.datetime(),
 });

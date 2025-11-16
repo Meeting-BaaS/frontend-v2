@@ -100,7 +100,7 @@ export function ViewWebhookDetails({
                   {eventCount} {eventCount === 1 ? "event" : "events"}
                 </Badge>
               </HoverCardTrigger>
-              <HoverCardContent className="w-42 p-1">
+              <HoverCardContent className="w-48 p-1">
                 {webhookEndpoint.events.map((event: string) => (
                   <div
                     key={event}
