@@ -194,7 +194,6 @@ export const botDetailsSchema = object({
   exitedAt: iso.datetime().nullable(),
   latestStatus: botStatusSchema,
   statusHistory: array(botStatusHistoryEntry),
-  diarizationV2: boolean(),
   transcriptionFailures: number(),
   diarizationFailures: number(),
   videoUploadFailures: number(),
