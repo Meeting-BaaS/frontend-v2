@@ -195,7 +195,7 @@ export function StatusHistory({ statusHistory }: StatusHistoryProps) {
                     <button
                       type="button"
                       className="group flex flex-col items-center justify-center gap-2 rounded-lg outline-hidden cursor-default"
-                      aria-label={`${entry.status} - ${config.description}`}
+                      aria-label={`${entry.status} - ${config.description} ${entry.error_message ? `: ${entry.error_message}` : ""}`}
                     >
                       <div className="relative z-20 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition duration-150 ease-in-out group-focus-visible:border-slate-8">
                         <GradientIcon
@@ -220,7 +220,14 @@ export function StatusHistory({ statusHistory }: StatusHistoryProps) {
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
                     {config.description}{" "}
-                    {entry.message ? `: ${entry.message}` : ""}
+                    {entry.error_message ? (
+                      <div>
+                        <span className="font-bold">Error:</span>{" "}
+                        {entry.error_message}
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </TooltipContent>
                 </Tooltip>
                 <span className="text-xs text-muted-foreground font-normal text-center whitespace-nowrap">

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CircleX,
   FileCode,
   FileText,
   Headphones,
@@ -96,6 +97,35 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
           <EmptyDescription>
             The artifacts for this bot have been deleted as per our data
             retention policy or upon request.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+
+  if (botDetails.latestStatus === "failed") {
+    return (
+      <Empty className="border rounded-lg">
+        <EmptyHeader>
+          <EmptyMedia>
+            <GradientIcon color="var(--color-red-500)" size="lg">
+              <CircleX />
+            </GradientIcon>
+          </EmptyMedia>
+          <EmptyTitle>No artifacts generated</EmptyTitle>
+          <EmptyDescription>
+            The bot has did not generate any artifacts.{" "}
+            {botDetails.statusHistory && botDetails.statusHistory.length > 0 ? (
+              <div>
+                <span className="font-bold">Error:</span>{" "}
+                {
+                  botDetails.statusHistory[botDetails.statusHistory.length - 1]
+                    .error_message
+                }
+              </div>
+            ) : (
+              ""
+            )}
           </EmptyDescription>
         </EmptyHeader>
       </Empty>

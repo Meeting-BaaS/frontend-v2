@@ -78,9 +78,14 @@ export function UserProvider({
   const { data: queryTeamDetails, refetch: refetchTeamDetails } =
     useTeamDetails();
 
-  const updateActiveTeam = useCallback((updates: Partial<ActiveTeam>) => {
-    setActiveTeamState((prev) => (prev ? { ...prev, ...updates } : null));
-  }, []);
+  const updateActiveTeam = useCallback(
+    (updates: Partial<ActiveTeam>) => {
+      setActiveTeamState((prev) => (prev ? { ...prev, ...updates } : null));
+      // Refetch team details to ensure that the team updates reflect in the team details array too
+      refetchTeamDetails();
+    },
+    [refetchTeamDetails],
+  );
 
   const updateUser = useCallback((updates: Partial<User>) => {
     setUser((prev) => ({ ...prev, ...updates }));

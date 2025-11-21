@@ -177,6 +177,7 @@ export const botStatusHistoryEntry = object({
   status: botStatusSchema,
   updatedAt: iso.datetime(),
   message: string().nullish(),
+  error_message: string().nullish(),
 });
 
 export const botDetailsSchema = object({
@@ -201,7 +202,7 @@ export const botDetailsSchema = object({
   logsUploadFailures: number(),
   artifacts: array(artifactWithSignedUrlSchema).nullable(),
   artifactsDeleted: boolean(),
-  errors: record(string(), zodUnknown()).nullable(),
+  errors: array(record(string(), zodUnknown())).nullable(),
   updatedAt: iso.datetime(),
   transcriptionIds: array(string()).nullable(),
 });
