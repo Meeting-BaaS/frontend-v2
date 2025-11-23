@@ -103,7 +103,7 @@ const statusConfigMap: Record<BotStatus, StatusConfig> = {
   // Processing state - Violet
   transcribing: {
     icon: FileText,
-    description: "Transcribing the recorded audio",
+    description: "Transcription has been requested from transcription provider",
     color: "var(--color-violet-500)",
     badgeVariant: "outline",
   },

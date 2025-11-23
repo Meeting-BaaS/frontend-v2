@@ -267,7 +267,22 @@ export function UsageContent({ usageStats, searchParams }: UsageContentProps) {
                 strokeWidth={4}
                 showLabel={false}
               />
-              <span className="text-sm">Rate Limit</span>
+              <span className="text-sm flex items-center gap-2">
+                Rate Limit{" "}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-sm">
+                      The rate limit is the maximum number of requests that can
+                      be made per second. This applies to all POST, PATCH and
+                      DELETE requests. This is a soft limit and you can request
+                      for a higher limit by raising a support ticket.
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </span>
             </div>
             <div>
               {usageStats.plan.rateLimitPerSecond ? (
