@@ -1,6 +1,7 @@
 "use client";
 
 import { Artifacts } from "@/components/bots/artifacts";
+import { BotActions } from "@/components/bots/bot-actions";
 import { JsonPreview } from "@/components/bots/json-preview";
 import { StatusHistory } from "@/components/bots/status-history";
 import { GoogleMeetLogo } from "@/components/icons/google-meet";
@@ -27,15 +28,15 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
     <section>
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
         <ItemHeading
-          title={botDetails.name}
+          title={botDetails.bot_name}
           name={botUuid}
           nameClassName="text-xl"
           containerClassName="md:flex-1"
           gradientIcon={
             <GradientIcon color="var(--color-background)" size="xl">
-              {botDetails.meetingPlatform === "zoom" ? (
+              {botDetails.meeting_platform === "zoom" ? (
                 <ZoomLogo className="size-8" />
-              ) : botDetails.meetingPlatform === "meet" ? (
+              ) : botDetails.meeting_platform === "meet" ? (
                 <GoogleMeetLogo className="size-8" />
               ) : (
                 <MicrosoftTeamsLogo className="size-8" />
@@ -45,20 +46,24 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
         />
         <div className="flex w-full sm:w-auto gap-2 flex-row sm:items-center">
           <DocsButton />
-          {/* <TableActions apiKey={apiKeyDetails} buttonVariant="outline" /> */}
+          <BotActions
+            botDetails={botDetails}
+            botUuid={botUuid}
+            buttonVariant="outline"
+          />
         </div>
       </div>
 
       <div className="grid mt-10 md:mt-12 md:space-y-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <NameValuePair title="Meeting URL" value={botDetails.meetingUrl} />
+        <NameValuePair title="Meeting URL" value={botDetails.meeting_url} />
         <NameValuePair
           title="Recording Mode"
-          value={readableRecordingMode(botDetails.recordingMode)}
+          value={readableRecordingMode(botDetails.recording_mode)}
         />
         <NameValuePair
           title="Created At"
           valueClassName="capitalize"
-          value={formatRelativeDate(botDetails.createdAt)}
+          value={formatRelativeDate(botDetails.created_at)}
         />
         <NameValuePair
           title="Duration"
@@ -74,14 +79,17 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
         <NameValuePair
           title="Transcription Provider"
           valueClassName="capitalize"
-          value={botDetails.speechToTextProvider}
+          value={botDetails.speech_to_text_provider}
         />
         <NameValuePair
           title="Transcription ID"
           valueClassName="capitalize"
-          value={botDetails.transcriptionIds?.join(", ")}
+          value={botDetails.transcription_ids?.join(", ")}
         />
-        <NameValuePair title="Consumed Tokens" value={botDetails.totalTokens} />
+        <NameValuePair
+          title="Consumed Tokens"
+          value={botDetails.total_tokens}
+        />
         <NameValuePair
           title="Extra Metadata"
           value={botDetails.extra && <JsonPreview data={botDetails.extra} />}
@@ -89,7 +97,9 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
         <NameValuePair
           containerClassName="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4"
           title="Status History"
-          value={<StatusHistory statusHistory={botDetails.statusHistory} />}
+          value={
+            <StatusHistory statusHistory={botDetails.status_history ?? []} />
+          }
         />
         <NameValuePair
           containerClassName="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4"

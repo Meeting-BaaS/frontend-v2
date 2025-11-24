@@ -72,19 +72,19 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
         const fileName = `${botUuid} - ${artifact.type}.${normalizedExtension}`;
         return (
           <FileCard
-            key={artifact.s3Key}
+            key={artifact.s3_key}
             icon={config.icon}
             iconColor={config.iconColor}
             title={title}
-            date={artifact.uploadedAt}
-            url={artifact.signedUrl}
+            date={artifact.uploaded_at ?? null}
+            url={artifact.signed_url ?? null}
             fileName={fileName}
           />
         );
       })
       .filter(Boolean) ?? [];
 
-  if (botDetails.artifactsDeleted) {
+  if (botDetails.artifacts_deleted) {
     return (
       <Empty className="border rounded-lg">
         <EmptyHeader>
@@ -103,7 +103,7 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
     );
   }
 
-  if (botDetails.latestStatus === "failed") {
+  if (botDetails.status === "failed") {
     return (
       <Empty className="border rounded-lg">
         <EmptyHeader>
@@ -115,12 +115,14 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
           <EmptyTitle>No artifacts generated</EmptyTitle>
           <EmptyDescription>
             The bot has did not generate any artifacts.{" "}
-            {botDetails.statusHistory && botDetails.statusHistory.length > 0 ? (
+            {botDetails.status_history &&
+            botDetails.status_history.length > 0 ? (
               <div>
                 <span className="font-bold">Error:</span>{" "}
                 {
-                  botDetails.statusHistory[botDetails.statusHistory.length - 1]
-                    .error_message
+                  botDetails.status_history[
+                    botDetails.status_history.length - 1
+                  ].error_message
                 }
               </div>
             ) : (

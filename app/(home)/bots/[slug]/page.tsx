@@ -47,11 +47,10 @@ export default async function BotDetailsPage({ params }: BotDetailsPageProps) {
   }
 
   const botDetailsResponse = await axiosGetInstance<BotDetailsResponse>(
-    GET_BOT_DETAILS,
+    GET_BOT_DETAILS(validatedParams.slug),
     botDetailsResponseSchema,
     {
       headers: { Cookie: cookieStore.toString() },
-      params: { botUuid: validatedParams.slug },
     },
   );
 

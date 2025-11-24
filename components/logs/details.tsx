@@ -146,7 +146,9 @@ export function ViewLogDetails({ logDetails }: LogDetailsProps) {
             </pre>
           ) : (
             <div className="text-sm text-muted-foreground border border-dashed rounded-md p-4">
-              No response body
+              {logDetails.method === "GET"
+                ? "Response body is not available for GET requests"
+                : "No response body"}
             </div>
           )}
         </div>

@@ -24,10 +24,10 @@ export async function BotsTableServer({ params }: BotsTableServerProps) {
       },
       params: {
         cursor: params?.cursor ?? null,
-        botUuid: params?.botUuid ?? null,
-        createdBefore: params?.createdBefore ?? null,
-        createdAfter: params?.createdAfter ?? null,
-        meetingPlatform: params?.meetingPlatform?.join(",") ?? null,
+        bot_id: params?.botUuid ?? null,
+        created_before: params?.createdBefore ?? null,
+        created_after: params?.createdAfter ?? null,
+        meeting_platform: params?.meetingPlatform?.join(",") ?? null,
         status: params?.status?.join(",") ?? null,
       },
     },
@@ -36,7 +36,7 @@ export async function BotsTableServer({ params }: BotsTableServerProps) {
   return (
     <BotsTable
       bots={botList.data}
-      prevCursor={botList.prevCursor}
+      prevCursor={botList.prev_cursor}
       nextCursor={botList.cursor}
       params={params}
     />

@@ -1,7 +1,9 @@
 import {
   array,
   boolean,
+  discriminatedUnion,
   iso,
+  literal,
   number,
   object,
   type output,
@@ -9,6 +11,7 @@ import {
   record,
   string,
   url,
+  uuid,
   enum as zodEnum,
   unknown as zodUnknown,
 } from "zod";
@@ -65,21 +68,23 @@ const artifactErrorCodeSchema = zodEnum([
   "NOT_SUPPORTED",
 ]);
 
+// Artifact schema (snake_case to match BFF API)
 const artifactSchema = object({
-  s3Key: string().nullable(),
-  filePath: string(),
+  s3_key: string().nullable(),
+  file_path: string(),
   extension: string(),
   uploaded: boolean(),
-  uploadedAt: iso.datetime(),
+  uploaded_at: iso.datetime().nullable(),
   type: artifactTypeSchema,
-  errorCode: artifactErrorCodeSchema.nullable(),
-  errorMessage: string().nullable(),
+  error_code: artifactErrorCodeSchema.nullable(),
+  error_message: string().nullable(),
 });
 
 const artifactWithSignedUrlSchema = artifactSchema.extend({
-  signedUrl: url().nullable(),
+  signed_url: string().nullable(),
 });
 
+// Frontend query params (camelCase for URL/search params)
 export const ListBotsRequestQuerySchema = object({
   botUuid: string().nullable().default(null),
   createdBefore: iso.datetime().nullable().default(null),
@@ -121,59 +126,64 @@ export const ListBotsRequestQuerySchema = object({
   )
   .nullable();
 
+// Bot list entry (snake_case to match BFF API)
 export const botListEntry = object({
-  botUuid: string(),
-  botName: string(),
-  meetingUrl: string(),
-  meetingPlatform: meetingPlatformSchema,
+  bot_id: uuid(),
+  bot_name: string(),
+  meeting_url: url(),
+  meeting_platform: meetingPlatformSchema,
   extra: record(string(), zodUnknown()).nullable(),
   duration: number().nullable(),
-  createdAt: iso.datetime(),
-  endedAt: iso.datetime().nullable(),
-  joinedAt: iso.datetime().nullable(),
-  exitedAt: iso.datetime().nullable(),
-  latestStatus: botStatusSchema,
+  created_at: iso.datetime(),
+  ended_at: iso.datetime().nullable(),
+  joined_at: iso.datetime().nullable(),
+  exited_at: iso.datetime().nullable(),
+  status: botStatusSchema,
+  error_code: string().nullable(),
+  error_message: string().nullable(),
 });
 
 export const botsListResponseSchema = object({
   data: array(botListEntry),
   success: boolean(),
   cursor: string().nullable(),
-  prevCursor: string().nullable(),
+  prev_cursor: string().nullable(),
 });
 
+// Bot status history entry (snake_case to match BFF API)
 export const botStatusHistoryEntry = object({
   status: botStatusSchema,
-  updatedAt: iso.datetime(),
-  message: string().nullish(),
-  error_message: string().nullish(),
+  updated_at: iso.datetime(),
+  error_code: string().nullable(),
+  error_message: string().nullable(),
 });
 
+// Bot details schema (snake_case to match BFF API)
 export const botDetailsSchema = object({
-  name: string(),
-  meetingUrl: string(),
-  meetingPlatform: meetingPlatformSchema,
-  recordingMode: recordingModeSchema,
-  speechToTextProvider: speechToTextProviderSchema,
+  bot_name: string(),
+  meeting_url: string(),
+  meeting_platform: meetingPlatformSchema,
+  recording_mode: recordingModeSchema,
+  speech_to_text_provider: speechToTextProviderSchema,
   extra: record(string(), zodUnknown()).nullable(),
-  totalTokens: string().nullable(),
+  total_tokens: string().nullable(),
   duration: string().nullable(),
-  createdAt: iso.datetime(),
-  endedAt: iso.datetime().nullable(),
-  joinedAt: iso.datetime().nullable(),
-  exitedAt: iso.datetime().nullable(),
-  latestStatus: botStatusSchema,
-  statusHistory: array(botStatusHistoryEntry),
-  transcriptionFailures: number(),
-  diarizationFailures: number(),
-  videoUploadFailures: number(),
-  audioUploadFailures: number(),
-  logsUploadFailures: number(),
+  created_at: iso.datetime(),
+  ended_at: iso.datetime().nullable(),
+  joined_at: iso.datetime().nullable(),
+  exited_at: iso.datetime().nullable(),
+  status: botStatusSchema,
+  status_history: array(botStatusHistoryEntry).nullable(),
+  transcription_failures: number(),
+  diarization_failures: number(),
+  video_upload_failures: number(),
+  audio_upload_failures: number(),
+  logs_upload_failures: number(),
   artifacts: array(artifactWithSignedUrlSchema).nullable(),
-  artifactsDeleted: boolean(),
+  artifacts_deleted: boolean(),
   errors: array(record(string(), zodUnknown())).nullable(),
-  updatedAt: iso.datetime(),
-  transcriptionIds: array(string()).nullable(),
+  updated_at: iso.datetime(),
+  transcription_ids: array(string()).nullable(),
 });
 
 export const botDetailsResponseSchema = object({
@@ -195,3 +205,18 @@ export type BotStatusHistoryEntry = output<typeof botStatusHistoryEntry>;
 export type BotDetailsResponse = output<typeof botDetailsResponseSchema>;
 export type Artifact = output<typeof artifactSchema>;
 export type ArtifactWithSignedUrl = output<typeof artifactWithSignedUrlSchema>;
+
+// Retry callback form schema (for dialog) - discriminated union
+export const retryCallbackFormSchema = discriminatedUnion("useOverride", [
+  object({
+    useOverride: literal(true),
+    url: url("Callback URL must be a valid URL"),
+    method: zodEnum(["POST", "PUT"]),
+    secret: string().optional(),
+  }),
+  object({
+    useOverride: literal(false),
+  }),
+]);
+
+export type RetryCallbackFormData = output<typeof retryCallbackFormSchema>;

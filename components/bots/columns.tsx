@@ -59,40 +59,40 @@ export const botColorVariants = cva("", {
 
 // Column width configuration shared between columns and skeleton
 export const columnWidths = {
-  botUuid: "min-w-[320px] max-w-[400px] w-[40%]",
+  bot_id: "min-w-[320px] max-w-[400px] w-[40%]",
   status: "min-w-[120px] max-w-[150px] w-[15%]",
-  botName: "min-w-[160px] max-w-[180px] w-[18%]",
+  bot_name: "min-w-[160px] max-w-[180px] w-[18%]",
   duration: "min-w-[100px] max-w-[120px] w-[12%]",
-  createdAt: "min-w-[140px] max-w-[150px] w-[15%]",
+  created_at: "min-w-[140px] max-w-[150px] w-[15%]",
 } as const;
 
 export const columns: ColumnDef<BotListEntry>[] = [
   {
-    id: "botUuid",
-    accessorKey: "botUuid",
-    header: "Bot UUID",
+    id: "bot_id",
+    accessorKey: "bot_id",
+    header: "Bot ID",
     meta: {
-      className: columnWidths.botUuid,
+      className: columnWidths.bot_id,
     },
     cell: ({ row }) => {
       return (
         <div className="flex gap-1 items-center group">
           <Button variant="link" asChild className="p-0">
             <Link
-              href={`/bots/${row.original.botUuid}`}
+              href={`/bots/${row.original.bot_id}`}
               prefetch={false} // Disable prefetching for these links to save on server-side requests
               className="flex gap-3 items-center decoration-dashed underline group-hover:decoration-baas-primary-500 group-hover:decoration-solid"
             >
               <GradientIcon color="var(--color-background)">
-                {row.original.meetingPlatform === "zoom" ? (
+                {row.original.meeting_platform === "zoom" ? (
                   <ZoomLogo />
-                ) : row.original.meetingPlatform === "meet" ? (
+                ) : row.original.meeting_platform === "meet" ? (
                   <GoogleMeetLogo />
                 ) : (
                   <MicrosoftTeamsLogo />
                 )}
               </GradientIcon>
-              <span className="truncate max-w-sm">{row.original.botUuid}</span>
+              <span className="truncate max-w-sm">{row.original.bot_id}</span>
             </Link>
           </Button>
           <Button
@@ -101,15 +101,15 @@ export const columns: ColumnDef<BotListEntry>[] = [
             asChild
             className="opacity-0 -translate-x-2 delay-200 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
           >
-            <CopyButton text={row.original.botUuid} />
+            <CopyButton text={row.original.bot_id} />
           </Button>
         </div>
       );
     },
   },
   {
-    id: "latestStatus",
-    accessorKey: "latestStatus",
+    id: "status",
+    accessorKey: "status",
     header: "Status",
     meta: {
       className: columnWidths.status,
@@ -119,20 +119,20 @@ export const columns: ColumnDef<BotListEntry>[] = [
         <Badge
           className={cn(
             "capitalize",
-            botColorVariants({ status: row.original.latestStatus }),
+            botColorVariants({ status: row.original.status }),
           )}
         >
-          {row.original.latestStatus.split("_").join(" ")}
+          {row.original.status.split("_").join(" ")}
         </Badge>
       );
     },
   },
   {
-    id: "botName",
-    accessorKey: "botName",
+    id: "bot_name",
+    accessorKey: "bot_name",
     header: "Bot Name",
     meta: {
-      className: columnWidths.botName,
+      className: columnWidths.bot_name,
     },
   },
   {
@@ -153,15 +153,15 @@ export const columns: ColumnDef<BotListEntry>[] = [
     ),
   },
   {
-    id: "createdAt",
-    accessorKey: "createdAt",
+    id: "created_at",
+    accessorKey: "created_at",
     header: "Created At",
     meta: {
-      className: columnWidths.createdAt,
+      className: columnWidths.created_at,
     },
     cell: ({ row }) => (
       <div className="capitalize">
-        {formatRelativeDate(row.original.createdAt)}
+        {formatRelativeDate(row.original.created_at)}
       </div>
     ),
   },

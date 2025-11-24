@@ -40,7 +40,7 @@ export function BotsTable({
   const { table } = useDataTable({
     data: bots || [],
     columns: columns,
-    getRowId: (row) => row.botUuid,
+    getRowId: (row) => row.bot_id,
     manualPagination: true,
   });
 
