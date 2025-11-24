@@ -11,25 +11,23 @@ import {
 } from "@/components/ui/input-group";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 
-interface SearchFilterProps {
+interface ScheduledBotsSearchFilterProps {
   botUuid?: string | null;
 }
 
-export function SearchFilter({ botUuid }: SearchFilterProps) {
+export function ScheduledBotsSearchFilter({
+  botUuid,
+}: ScheduledBotsSearchFilterProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Local state for immediate UI updates (optimistic UI)
   const [localValue, setLocalValue] = useState(botUuid ?? "");
 
-  // Debounced function to update URL params
   const updateSearchParams = useRef(
     debounce((value: string) => {
       const newSearchParams = new URLSearchParams(searchParams.toString());
-
-      // Remove cursor when filtering to start from the beginning
       newSearchParams.delete("cursor");
 
       if (value.trim()) {
@@ -43,13 +41,10 @@ export function SearchFilter({ botUuid }: SearchFilterProps) {
   ).current;
 
   const handleChange = (value: string) => {
-    // Update local state immediately for responsive UI
     setLocalValue(value);
-    // Debounce the actual navigation
     updateSearchParams(value);
   };
 
-  // Keyboard shortcut for search (Cmd/Ctrl + S)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "s") {
@@ -62,11 +57,8 @@ export function SearchFilter({ botUuid }: SearchFilterProps) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Cleanup debounce on unmount
   useEffect(() => {
-    return () => {
-      updateSearchParams.cancel();
-    };
+    return () => updateSearchParams.cancel();
   }, [updateSearchParams]);
 
   return (

@@ -155,11 +155,6 @@ export function RetryCallbackDialog({
                       <FieldLabel htmlFor="use-override">
                         Override callback configuration
                       </FieldLabel>
-                      <FieldDescription>
-                        If enabled, you can provide custom callback URL, method,
-                        and secret. If disabled, the bot&apos;s original
-                        callback configuration will be used.
-                      </FieldDescription>
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
                       )}
@@ -167,8 +162,10 @@ export function RetryCallbackDialog({
                     <Switch
                       id="use-override"
                       name={field.name}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
+                      checked={field.value === true}
+                      onCheckedChange={(checked) =>
+                        field.onChange(checked === true)
+                      }
                       disabled={loading}
                       aria-invalid={fieldState.invalid}
                     />
@@ -186,9 +183,7 @@ export function RetryCallbackDialog({
                     data-invalid={fieldState.invalid}
                     className={disabledFieldClasses}
                   >
-                    <FieldLabel htmlFor="callback-url">
-                      Callback URL <span className="text-destructive">*</span>
-                    </FieldLabel>
+                    <FieldLabel htmlFor="callback-url">Callback URL</FieldLabel>
                     <FieldContent>
                       <FormControl>
                         <Input
@@ -231,6 +226,7 @@ export function RetryCallbackDialog({
                           <SelectTrigger
                             id="callback-method"
                             aria-invalid={fieldState.invalid}
+                            className="w-full"
                           >
                             <SelectValue placeholder="Select method" />
                           </SelectTrigger>

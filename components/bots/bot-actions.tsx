@@ -5,7 +5,7 @@ import {
   MoreHorizontal,
   RefreshCw,
   Send,
-  Trash2,
+  Trash,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -48,7 +48,14 @@ export function BotActions({
     botDetails.status === "completed" || botDetails.status === "failed";
 
   const handleResendWebhook = async () => {
-    if (loading || !isFinalState) return;
+    if (loading) return;
+
+    if (!isFinalState) {
+      toast.error(
+        "Please wait for the bot to complete before resending the webhook",
+      );
+      return;
+    }
 
     try {
       setLoading(true);
@@ -68,6 +75,31 @@ export function BotActions({
     }
   };
 
+  const handleRetryCallback = async () => {
+    if (loading) return;
+
+    if (!isFinalState) {
+      toast.error(
+        "Please wait for the bot to complete before retrying the callback",
+      );
+      return;
+    }
+
+    setOpenRetryDialog(true);
+  };
+
+  const handleDeleteBotData = async () => {
+    if (loading) return;
+
+    if (!botDetails.artifacts_deleted) {
+      toast.error(
+        "Please wait for the bot to complete before deleting the bot data",
+      );
+      return;
+    }
+
+    setOpenDeleteDialog(true);
+  };
   const handleReportIssue = () => {
     openSupportDialog({
       botUuid: botUuid,
@@ -85,31 +117,25 @@ export function BotActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {isFinalState && (
+          <DropdownMenuItem onClick={handleResendWebhook} disabled={loading}>
+            <Send /> Resend final webhook
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleRetryCallback} disabled={loading}>
+            <RefreshCw /> Retry callback
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {!botDetails.artifacts_deleted && (
             <>
               <DropdownMenuItem
-                onClick={handleResendWebhook}
+                onClick={handleDeleteBotData}
                 disabled={loading}
+                className="text-destructive hover:!text-destructive hover:!bg-destructive/10"
               >
-                <Send /> Resend final webhook
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setOpenRetryDialog(true)}
-                disabled={loading}
-              >
-                <RefreshCw /> Retry callback
+                <Trash className="text-destructive" /> Delete bot data
               </DropdownMenuItem>
               <DropdownMenuSeparator />
             </>
           )}
-          <DropdownMenuItem
-            onClick={() => setOpenDeleteDialog(true)}
-            disabled={loading}
-            className="text-destructive focus:text-destructive"
-          >
-            <Trash2 /> Delete bot data
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleReportIssue} disabled={loading}>
             <AlertTriangle /> Report issue
           </DropdownMenuItem>

@@ -61,7 +61,7 @@ export function DeleteBotDataDialog({
       });
 
       toast.success("Bot data deleted successfully");
-      router.push("/bots");
+      router.refresh();
       onCancel(false);
     } catch (error) {
       console.error("Error deleting bot data", error);

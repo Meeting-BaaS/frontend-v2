@@ -317,7 +317,7 @@ export function CreateSupportTicketDialog({
                     className="col-span-1 md:col-span-2"
                   >
                     <FieldLabel htmlFor={field.name}>
-                      Bot UUID (Optional)
+                      Bot ID (Optional)
                     </FieldLabel>
                     <FieldContent>
                       <FormControl>

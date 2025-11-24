@@ -3,6 +3,7 @@
 import {
   Bot,
   Calendar,
+  CalendarClock,
   ChartColumn,
   KeyRound,
   Logs,
@@ -31,6 +32,11 @@ const items = [
     title: "Bots",
     url: "/bots",
     icon: Bot,
+  },
+  {
+    title: "Scheduled Bots",
+    url: "/scheduled-bots",
+    icon: CalendarClock,
   },
   {
     title: "Calendars",

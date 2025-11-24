@@ -1,6 +1,13 @@
 "use client";
 
-import { endOfDay, format, isSameDay, startOfDay, subDays } from "date-fns";
+import {
+  addDays,
+  endOfDay,
+  format,
+  isSameDay,
+  startOfDay,
+  subDays,
+} from "date-fns";
 import { Check, ChevronDown } from "lucide-react";
 import { useMemo } from "react";
 import type { DateRange, Matcher } from "react-day-picker";
@@ -18,6 +25,7 @@ interface DateRangePickerProps {
   setDateRange: (dateRange: DateRange) => void;
   buttonClassName?: string;
   disabled?: Matcher | Matcher[];
+  futurePresets?: boolean;
 }
 
 type Preset = {
@@ -25,87 +33,163 @@ type Preset = {
   getRange: () => DateRange;
 };
 
+const PAST_PRESETS: Preset[] = [
+  {
+    label: "Today",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(today),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "Yesterday",
+    getRange: () => {
+      const yesterday = subDays(new Date(), 1);
+      return {
+        from: startOfDay(yesterday),
+        to: endOfDay(yesterday),
+      };
+    },
+  },
+  {
+    label: "Last 2 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(subDays(today, 1)),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "Last 3 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(subDays(today, 2)),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "Last 7 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(subDays(today, 6)),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "Last 15 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(subDays(today, 14)),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "Last 30 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(subDays(today, 29)),
+        to: endOfDay(today),
+      };
+    },
+  },
+];
+
+const FUTURE_PRESETS: Preset[] = [
+  {
+    label: "Today",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(today),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "Tomorrow",
+    getRange: () => {
+      const tomorrow = addDays(new Date(), 1);
+      return {
+        from: startOfDay(tomorrow),
+        to: endOfDay(tomorrow),
+      };
+    },
+  },
+  {
+    label: "In 2 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(addDays(today, 1)),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "In 3 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(addDays(today, 2)),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "In 7 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(addDays(today, 6)),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "In 15 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(addDays(today, 14)),
+        to: endOfDay(today),
+      };
+    },
+  },
+  {
+    label: "In 30 days",
+    getRange: () => {
+      const today = new Date();
+      return {
+        from: startOfDay(subDays(today, 29)),
+        to: endOfDay(today),
+      };
+    },
+  },
+];
+
 export function DateRangePicker({
   dateRange,
   setDateRange,
   buttonClassName,
   disabled,
+  futurePresets = false,
 }: DateRangePickerProps) {
   // Memoize presets to avoid unnecessary re-renders
   const presets = useMemo<Preset[]>(
-    () => [
-      {
-        label: "Today",
-        getRange: () => {
-          const today = new Date();
-          return {
-            from: startOfDay(today),
-            to: endOfDay(today),
-          };
-        },
-      },
-      {
-        label: "Yesterday",
-        getRange: () => {
-          const yesterday = subDays(new Date(), 1);
-          return {
-            from: startOfDay(yesterday),
-            to: endOfDay(yesterday),
-          };
-        },
-      },
-      {
-        label: "Last 2 days",
-        getRange: () => {
-          const today = new Date();
-          return {
-            from: startOfDay(subDays(today, 1)),
-            to: endOfDay(today),
-          };
-        },
-      },
-      {
-        label: "Last 3 days",
-        getRange: () => {
-          const today = new Date();
-          return {
-            from: startOfDay(subDays(today, 2)),
-            to: endOfDay(today),
-          };
-        },
-      },
-      {
-        label: "Last 7 days",
-        getRange: () => {
-          const today = new Date();
-          return {
-            from: startOfDay(subDays(today, 6)),
-            to: endOfDay(today),
-          };
-        },
-      },
-      {
-        label: "Last 15 days",
-        getRange: () => {
-          const today = new Date();
-          return {
-            from: startOfDay(subDays(today, 14)),
-            to: endOfDay(today),
-          };
-        },
-      },
-      {
-        label: "Last 30 days",
-        getRange: () => {
-          const today = new Date();
-          return {
-            from: startOfDay(subDays(today, 29)),
-            to: endOfDay(today),
-          };
-        },
-      },
-    ],
-    [],
+    () => (futurePresets ? FUTURE_PRESETS : PAST_PRESETS),
+    [futurePresets],
   );
 
   // Check if current dateRange matches any preset
