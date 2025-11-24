@@ -64,7 +64,6 @@ export function ViewScheduledBotDetails({
           value={
             <Badge
               className={scheduledStatusVariants({ status: botDetails.status })}
-              variant="outline"
             >
               {formatScheduledBotStatus(botDetails.status)}
             </Badge>

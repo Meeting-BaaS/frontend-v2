@@ -1,14 +1,28 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { PageHeading } from "@/components/layout/page-heading";
+import { CalendarsView } from "@/components/calendars/view";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_SESSION } from "@/lib/api-routes";
+import { ListCalendarsRequestQuerySchema } from "@/lib/schemas/calendars";
 import {
   type SessionResponse,
   sessionResponseSchema,
 } from "@/lib/schemas/session";
 
-export default async function CalendarsPage() {
+interface CalendarsPageProps {
+  searchParams: Promise<{
+    cursor?: string | string[] | undefined;
+    email?: string | string[] | undefined;
+    calendarPlatform?: string | string[] | undefined;
+    status?: string | string[] | undefined;
+  }>;
+}
+
+export default async function CalendarsPage({
+  searchParams,
+}: CalendarsPageProps) {
+  const params = await searchParams;
+
   // Redirect if user is not logged in
   // It is recommended to verify session on each page
   const cookieStore = await cookies();
@@ -27,9 +41,17 @@ export default async function CalendarsPage() {
     return redirect(`/sign-in?${redirectSearchParams.toString()}`);
   }
 
+  const { success, data: validatedParams } =
+    ListCalendarsRequestQuerySchema.safeParse(params);
+
+  if (!success) {
+    // If params aren't valid, return calendars without any filtering/pagination
+    return redirect("/calendars");
+  }
+
   return (
     <section>
-      <PageHeading title="Calendars" />
+      <CalendarsView params={validatedParams ?? null} />
     </section>
   );
 }
