@@ -158,6 +158,22 @@ export const botStatusHistoryEntry = object({
   error_message: string().nullable(),
 });
 
+export const callbackErrorSchema = object({
+  status_code: number()
+    .nullable()
+    .describe("Status code if the callback failed"),
+  error: string().describe("Error code if the callback failed"),
+  message: string().describe(
+    "Human-readable error message if the callback failed",
+  ),
+  attempted_at: iso
+    .datetime()
+    .describe("ISO 8601 timestamp when the callback was attempted"),
+  retries_attempted: number()
+    .nullable()
+    .describe("Number of retries attempted"),
+});
+
 // Bot details schema (snake_case to match BFF API)
 export const botDetailsSchema = object({
   bot_name: string(),
@@ -174,6 +190,8 @@ export const botDetailsSchema = object({
   exited_at: iso.datetime().nullable(),
   status: botStatusSchema,
   status_history: array(botStatusHistoryEntry).nullable(),
+  callback_error: callbackErrorSchema.nullable(),
+  has_screenshots: boolean(),
   transcription_failures: number(),
   diarization_failures: number(),
   video_upload_failures: number(),
@@ -205,6 +223,7 @@ export type BotStatusHistoryEntry = output<typeof botStatusHistoryEntry>;
 export type BotDetailsResponse = output<typeof botDetailsResponseSchema>;
 export type Artifact = output<typeof artifactSchema>;
 export type ArtifactWithSignedUrl = output<typeof artifactWithSignedUrlSchema>;
+export type CallbackError = output<typeof callbackErrorSchema>;
 
 // Retry callback form schema (for dialog) - discriminated union
 export const retryCallbackFormSchema = discriminatedUnion("useOverride", [
