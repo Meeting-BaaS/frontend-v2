@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, BotMessageSquare, MessageCirclePlus } from "lucide-react";
+import { BotMessageSquare, MessageCirclePlus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -54,9 +54,10 @@ export function AppHeader() {
         <SidebarTrigger />
       </div>
       <div className="flex items-center">
-        <Button variant="ghost" size="icon">
+        {/* Will be implemented in the future */}
+        {/* <Button variant="ghost" size="icon">
           <Bell />
-        </Button>
+        </Button> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="link">Help</Button>

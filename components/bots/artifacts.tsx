@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import type { ComponentType } from "react";
 import { FileCard } from "@/components/bots/file-card";
+import { Screenshots } from "@/components/bots/screenshots";
 import {
   Empty,
   EmptyDescription,
@@ -28,7 +29,7 @@ interface ArtifactsProps {
 }
 
 const artifactTypeConfig: Record<
-  ArtifactWithSignedUrl["type"],
+  Exclude<ArtifactWithSignedUrl["type"], "screenshots">,
   {
     icon: ComponentType<{ className?: string }>;
     iconColor: string;
@@ -61,6 +62,8 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
     botDetails.artifacts
       ?.filter((artifact) => artifact.uploaded)
       .map((artifact) => {
+        // Type guard: backend filters out screenshots, but TypeScript doesn't know that
+        if (artifact.type === "screenshots") return null;
         const config = artifactTypeConfig[artifact.type];
         if (!config) return null;
 
@@ -153,5 +156,12 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
     );
   }
 
-  return <div className="space-y-3">{artifacts}</div>;
+  return (
+    <div className="space-y-3">
+      {artifacts}
+      {botDetails.meeting_platform !== "zoom" && (
+        <Screenshots botUuid={botUuid} endedAt={botDetails.ended_at} />
+      )}
+    </div>
+  );
 }

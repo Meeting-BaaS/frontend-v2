@@ -4,7 +4,7 @@ import {
   Bot,
   Calendar,
   CalendarClock,
-  ChartColumn,
+  // ChartColumn,
   KeyRound,
   Logs,
   Settings,
@@ -43,11 +43,12 @@ const items = [
     url: "/calendars",
     icon: Calendar,
   },
-  {
-    title: "Analytics",
-    url: "/analytics",
-    icon: ChartColumn,
-  },
+  // Will be implemented in the future
+  // {
+  //   title: "Analytics",
+  //   url: "/analytics",
+  //   icon: ChartColumn,
+  // },
   {
     title: "Logs",
     url: "/logs",

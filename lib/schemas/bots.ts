@@ -58,6 +58,7 @@ const artifactTypeSchema = zodEnum([
   "diarization",
   "raw_transcription",
   "transcription",
+  "screenshots",
 ]);
 
 const artifactErrorCodeSchema = zodEnum([
@@ -239,3 +240,29 @@ export const retryCallbackFormSchema = discriminatedUnion("useOverride", [
 ]);
 
 export type RetryCallbackFormData = output<typeof retryCallbackFormSchema>;
+
+// Screenshot schemas
+export const botScreenshotSchema = object({
+  screenshot_id: number().int().positive(),
+  url: url(),
+});
+
+export const getBotScreenshotsRequestQuerySchema = object({
+  limit: number().int().positive().max(250).default(50).optional(),
+  cursor: string().nullable().default(null),
+});
+
+export const getBotScreenshotsResponseSchema = object({
+  success: literal(true),
+  data: array(botScreenshotSchema),
+  cursor: string().nullable(),
+  prev_cursor: string().nullable(),
+});
+
+export type BotScreenshot = output<typeof botScreenshotSchema>;
+export type GetBotScreenshotsRequestQuery = output<
+  typeof getBotScreenshotsRequestQuerySchema
+>;
+export type GetBotScreenshotsResponse = output<
+  typeof getBotScreenshotsResponseSchema
+>;
