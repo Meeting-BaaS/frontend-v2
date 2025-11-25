@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -15,14 +14,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { env } from "@/env";
-import { BRANDING_IMAGE_URL } from "@/lib/external-urls";
 import { genericError } from "@/lib/errors";
-import { cn } from "@/lib/utils";
+import { BRANDING_IMAGE_URL } from "@/lib/external-urls";
 import {
-  sendBotFormSchema,
   type SendBotFormValues,
+  sendBotFormSchema,
 } from "@/lib/schemas/onboarding";
+import { cn } from "@/lib/utils";
 
 interface SendBotStepProps {
   step: number;
@@ -51,20 +51,30 @@ export function SendBotStep({
     try {
       setLoading(true);
 
-      const response = await fetch(`${env.NEXT_PUBLIC_API_SERVER_BASEURL}/v2/bots`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-meeting-baas-api-key": apiKey,
+      // Just an onboarding bot, we don't need to create a bot config for it
+      const response = await fetch(
+        `${env.NEXT_PUBLIC_API_SERVER_BASEURL}/v2/bots`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-meeting-baas-api-key": apiKey,
+          },
+          body: JSON.stringify({
+            bot_name: "My First Bot",
+            bot_image: BRANDING_IMAGE_URL,
+            meeting_url: values.meeting_url.trim(),
+            recording_mode: "speaker_view",
+            allow_multiple_bots: true,
+            transcription_enabled: true,
+            transcription_config: {
+              provider: "gladia",
+            },
+            streaming_enabled: false,
+            callback_enabled: false,
+          }),
         },
-        body: JSON.stringify({
-          bot_name: "My First Bot",
-          bot_image: BRANDING_IMAGE_URL,
-          meeting_url: values.meeting_url.trim(),
-          recording_mode: "speaker_view",
-          allow_multiple_bots: true,
-        }),
-      });
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -89,7 +99,9 @@ export function SendBotStep({
       className={cn(
         "flex items-start gap-6 border-l-2 pb-8 pl-6 transition-colors",
         isActive ? "border-primary" : "border-border",
-        isEnabled ? "opacity-100 pointer-events-auto" : "opacity-30 pointer-events-none",
+        isEnabled
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-30 pointer-events-none",
       )}
     >
       <div className="flex-shrink-0">
@@ -115,7 +127,10 @@ export function SendBotStep({
         </div>
         {isEnabled ? (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSendBot)} className="space-y-3">
+            <form
+              onSubmit={form.handleSubmit(handleSendBot)}
+              className="space-y-3"
+            >
               <FormField
                 control={form.control}
                 name="meeting_url"
@@ -155,4 +170,3 @@ export function SendBotStep({
     </div>
   );
 }
-
