@@ -68,6 +68,11 @@ export function RetryCallbackDialog({
   useEffect(() => {
     if (!useOverride) {
       reset({
+        useOverride: false,
+      });
+    } else {
+      reset({
+        useOverride: true,
         url: "",
         method: "POST",
         secret: "",

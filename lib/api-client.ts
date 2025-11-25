@@ -31,6 +31,8 @@ api.interceptors.response.use(
         // Attach error response and preserve original error for debugging
         apiError.errorResponse = parsed.data;
         return Promise.reject(apiError);
+      } else {
+        console.error("Invalid API response:", parsed.error);
       }
     }
     // Otherwise, return the original error
