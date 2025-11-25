@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { PageHeading } from "@/components/layout/page-heading";
+import { ExploreMore } from "@/components/onboarding/explore-more";
+import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_SESSION } from "@/lib/api-routes";
 import {
@@ -29,7 +30,10 @@ export default async function OnboardingPage() {
 
   return (
     <section>
-      <PageHeading title="Onboarding" />
+      <OnboardingWizard />
+      <div className="mt-12">
+        <ExploreMore />
+      </div>
     </section>
   );
 }
