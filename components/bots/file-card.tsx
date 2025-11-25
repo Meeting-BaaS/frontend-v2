@@ -20,7 +20,7 @@ interface FileCardProps {
   fileName: string;
   isVideo?: boolean;
   hasTranscription?: boolean;
-  botUuid: string;
+  botUuid?: string;
   fileTitleClassName?: string;
 }
 
@@ -81,7 +81,7 @@ export function FileCard({
           </div>
         )}
       </div>
-      {isVideo && url && (
+      {isVideo && url && botUuid && (
         <Button
           variant="outline"
           size="icon"

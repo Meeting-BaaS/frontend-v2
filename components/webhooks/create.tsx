@@ -63,6 +63,11 @@ export function CreateWebhookDialog({
         CreateWebhookEndpointResponse
       >(CREATE_WEBHOOK_ENDPOINT, data, createWebhookEndpointResponseSchema);
 
+      if (!response || !response.success) {
+        console.error("Failed to create webhook", response);
+        throw new Error("Failed to create webhook");
+      }
+
       router.push(`/webhooks/${response.data.webhookId}`);
       toast.success("Webhook created successfully");
       onOpenChange(false);
