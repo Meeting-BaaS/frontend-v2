@@ -1,7 +1,7 @@
 // Base routes
 // All internal routes (routes built for frontend use) are prefixed with /internal
 // BFF routes (Backend for Frontend) use /bff and reuse public API handlers with snake_case
-export const BASE_PATH = "/internal";
+export const BASE_PATH = "/v2-internal";
 export const BFF_BASE_PATH = "/bff";
 
 // Auth routes
