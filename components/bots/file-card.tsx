@@ -1,7 +1,8 @@
 "use client";
 
 import { format } from "date-fns";
-import { Download, Loader2 } from "lucide-react";
+import { Download, Eye, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,9 @@ interface FileCardProps {
   date: string | null;
   url: string | null;
   fileName: string;
+  isVideo?: boolean;
+  hasTranscription?: boolean;
+  botUuid: string;
   fileTitleClassName?: string;
 }
 
@@ -27,7 +31,10 @@ export function FileCard({
   date,
   url,
   fileName,
+  isVideo = false,
   fileTitleClassName,
+  botUuid,
+  hasTranscription = false,
 }: FileCardProps) {
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -74,6 +81,21 @@ export function FileCard({
           </div>
         )}
       </div>
+      {isVideo && url && (
+        <Button
+          variant="outline"
+          size="icon"
+          asChild
+          aria-label={`View ${title}`}
+        >
+          <Link
+            href={hasTranscription ? `/viewer/${botUuid}` : url}
+            target="_blank"
+          >
+            <Eye className="size-4" />
+          </Link>
+        </Button>
+      )}
       <Button
         variant="outline"
         size="icon"
