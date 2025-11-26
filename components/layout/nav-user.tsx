@@ -12,7 +12,6 @@ import {
   Sun,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
 import { toast } from "sonner";
@@ -49,7 +48,6 @@ const higherPlanMap: Record<TeamDetails[number]["plan"], string | null> = {
 
 export function NavUser() {
   const { isMobile, open } = useSidebar();
-  const pathname = usePathname();
   const { setTheme, resolvedTheme } = useTheme();
   const { user, activeTeam } = useUser();
   const higherPlan = useMemo(
@@ -64,7 +62,7 @@ export function NavUser() {
       return;
     }
     const redirectSearchParams = new URLSearchParams();
-    redirectSearchParams.set("redirectTo", pathname);
+    redirectSearchParams.set("redirectTo", "/bots");
     window.location.href = `/sign-in?${redirectSearchParams.toString()}`;
   };
 
