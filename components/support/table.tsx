@@ -72,6 +72,7 @@ export function SupportTicketsTable({
         {tab === "open" && (
           <EmptyContent>
             <Button
+              variant="primary"
               size="sm"
               className="font-medium"
               onClick={onAddButtonClick}

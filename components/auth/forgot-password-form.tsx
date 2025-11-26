@@ -73,6 +73,7 @@ export default function ForgotPasswordForm() {
         >
           <Button
             type="submit"
+            size="sm"
             disabled={isForgotPasswordLoading}
             aria-label={
               isForgotPasswordLoading ? "Sending email..." : "Send email"

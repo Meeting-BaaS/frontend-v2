@@ -83,6 +83,7 @@ export function UserNameForm() {
             )}
           </Field>
           <Button
+            variant="primary"
             type="submit"
             size="sm"
             disabled={isUpdatingName || !isDirty}

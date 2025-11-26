@@ -78,7 +78,7 @@ export function ScheduledBotsTable({
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button size="sm" className="font-medium" asChild>
+          <Button variant="primary" size="sm" className="font-medium" asChild>
             <Link href="/bots">
               <ClipboardList /> View active bots
             </Link>

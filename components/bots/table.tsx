@@ -80,7 +80,7 @@ export function BotsTable({
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button size="sm" className="font-medium" asChild>
+          <Button variant="primary" size="sm" className="font-medium" asChild>
             <Link href="/onboarding">
               <ListCheck /> Go to onboarding
             </Link>

@@ -3,6 +3,7 @@
 import {
   CircleUserRound,
   EllipsisVertical,
+  ExternalLink,
   Fish,
   ListCheck,
   LogOut,
@@ -35,6 +36,7 @@ import {
 import { useUser } from "@/hooks/use-user";
 import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
+import { V1_BAAS_URL } from "@/lib/external-urls";
 import type { TeamDetails } from "@/lib/schemas/teams";
 import type { Theme } from "@/types/common.types";
 
@@ -160,10 +162,24 @@ export function NavUser() {
                   <DropdownMenuShortcut>S</DropdownMenuShortcut>
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={V1_BAAS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink />
+                  Access Meeting BaaS v1
+                  <DropdownMenuShortcut>V</DropdownMenuShortcut>
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
-              <LogOut />
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="text-destructive hover:!text-destructive hover:!bg-destructive/10"
+            >
+              <LogOut className="text-destructive" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

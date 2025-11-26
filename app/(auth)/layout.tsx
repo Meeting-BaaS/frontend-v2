@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { AnimationWrapper } from "@/components/auth/animation-wrapper";
-import { GitHubRepoButton } from "@/components/header/github-repo-button";
+import { GotoV1Button } from "@/components/header/goto-v1-button";
 import HeroSection from "@/components/hero";
 import { opacityVariant } from "@/lib/animations/opacity";
 import { axiosGetInstance } from "@/lib/api-client";
@@ -40,7 +40,7 @@ export default async function AuthLayout({
         <HeroSection />
       </div>
       <motion.div {...opacityVariant(1)} className="absolute top-0 left-0 m-4">
-        <GitHubRepoButton />
+        <GotoV1Button />
       </motion.div>
     </>
   );

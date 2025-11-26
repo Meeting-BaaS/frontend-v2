@@ -50,6 +50,10 @@
   --color-baas-warning-500: var(--baas-warning-500);
   --color-baas-primary-700: var(--baas-primary-700);
   --color-baas-black: var(--baas-black);
+  --color-baas-primary-accent: var(--baas-primary-accent);
+  --color-baas-primary-dark: var(--baas-primary-dark);
+  --color-baas-neutral-dark: var(--baas-neutral-dark);
+  --color-baas-neutral-medium: var(--baas-neutral-medium);
 
   /* External Brand Colors */
   --color-google-blue: var(--google-blue);
@@ -102,6 +106,10 @@
   --baas-warning-500: oklch(0.98 0.1298 108.58);
   --baas-primary-700: oklch(0.53 0.0548 187.47);
   --baas-black: oklch(0.26 0 0);
+  --baas-primary-accent: oklch(0.75 0.16 185);
+  --baas-primary-dark: oklch(0.24 0.01 185);
+  --baas-neutral-dark: oklch(0.15 0 0);
+  --baas-neutral-medium: oklch(0.5 0 0);
 
   /* Brand Logo colors */
   --google-blue: oklch(0.63 0.1803 259.76);
@@ -156,11 +164,59 @@
   }
 }
 
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 @layer utilities {
 .bg-dots {
     background-image: radial-gradient(var(--dots) 1px, transparent 1px);
     background-position: 10 10;
     background-size: 10px 10px;
+  }
+
+  .rainbow-border {
+    position: relative;
+    z-index: 0;
+    background: linear-gradient(var(--background), var(--background)) padding-box, linear-gradient(
+          var(--angle),
+          #02fcef70 0%,
+          #ffb52b70 50%,
+          #a02bfe70 100%
+        ) border-box;
+    animation: 9s rotate linear infinite;
+  }
+
+.rainbow-border::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: -1;
+    top: -10px;
+
+    /* shadow area */
+    padding: 24px; /* outward size */
+    background: linear-gradient(
+      var(--angle),
+      #02fcef40 0%,
+      #ffb52b40 50%,
+      #a02bfe40 100%
+    );
+
+    /* blur to turn it into a shadow */
+    filter: blur(12px);
+
+    animation: rotate 9s linear infinite;
+    pointer-events: none;
   }
 }
 

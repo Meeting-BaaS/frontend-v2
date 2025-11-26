@@ -46,7 +46,12 @@ export function WebhooksTable({
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button size="sm" className="font-medium" onClick={onAddButtonClick}>
+          <Button
+            variant="primary"
+            size="sm"
+            className="font-medium"
+            onClick={onAddButtonClick}
+          >
             <Plus /> Add webhook
           </Button>
         </EmptyContent>

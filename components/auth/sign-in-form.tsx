@@ -120,6 +120,7 @@ export default function SignInForm({
         >
           <Button
             type="submit"
+            size="sm"
             disabled={loading}
             aria-label={loading ? "Signing in..." : "Sign in"}
             aria-busy={isSignInLoading}

@@ -44,7 +44,12 @@ export function ApiKeysTable({ apiKeys, onAddButtonClick }: ApiKeysTableProps) {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button size="sm" className="font-medium" onClick={onAddButtonClick}>
+          <Button
+            variant="primary"
+            size="sm"
+            className="font-medium"
+            onClick={onAddButtonClick}
+          >
             <Plus /> Create API key
           </Button>
         </EmptyContent>

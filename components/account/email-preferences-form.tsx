@@ -173,6 +173,7 @@ export function EmailPreferencesForm({
           </FieldGroup>
 
           <Button
+            variant="primary"
             type="submit"
             size="sm"
             disabled={isUpdating || !isDirty}

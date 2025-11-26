@@ -38,7 +38,8 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     <FormWrapper
       key="sign-in"
       title="Welcome Back"
-      subtitle="Log in to Meeting BaaS"
+      subtitle="Log in to"
+      v2Badge
       redirectLink={
         <>
           Don&apos;t have an account yet?{" "}

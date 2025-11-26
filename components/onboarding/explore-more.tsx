@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowRight, Calendar, CalendarCheck, Webhook } from "lucide-react";
+import { ArrowRight, Calendar, CalendarClock, Webhook } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { GradientIcon } from "@/components/ui/gradient-icon";
 
 interface ExploreCard {
   title: string;
@@ -25,14 +26,14 @@ const exploreCards: ExploreCard[] = [
     title: "Schedule Bots",
     description:
       "Schedule bots to automatically join meetings at specific times in the future.",
-    icon: Calendar,
+    icon: CalendarClock,
     href: "/scheduled-bots",
   },
   {
     title: "Calendar Bots",
     description:
       "Automatically send bots to join meetings from your connected calendar. Bots will join meetings based on your calendar events.",
-    icon: CalendarCheck,
+    icon: Calendar,
     href: "/calendars",
   },
 ];
@@ -55,7 +56,9 @@ export function ExploreMore() {
           >
             <div className="mb-4 flex items-start justify-between">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                <card.icon className="h-6 w-6 text-primary" />
+                <GradientIcon color="var(--color-background)" size="lg">
+                  <card.icon className="size-6 text-primary" />
+                </GradientIcon>
               </div>
               {card.recommended && (
                 <Badge variant="secondary" className="text-xs">

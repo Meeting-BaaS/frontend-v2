@@ -147,6 +147,7 @@ export function PendingInvites({ invitations }: PendingInvitesProps) {
                 )}
               </Button>
               <Button
+                variant="primary"
                 size="sm"
                 onClick={() => handleAccept(invitation)}
                 disabled={loadingInvitationId === invitation.id}

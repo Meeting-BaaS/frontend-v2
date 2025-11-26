@@ -87,3 +87,5 @@ export const BOOK_A_CALL_URL = "https://www.meetingbaas.com/en/company/contact";
 
 export const BRANDING_IMAGE_URL =
   "https://branding-template.s3.fr-par.scw.cloud/branding_template.png";
+
+export const V1_BAAS_URL = "https://auth.meetingbaas.com";

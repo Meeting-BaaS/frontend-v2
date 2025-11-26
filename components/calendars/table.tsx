@@ -80,7 +80,7 @@ export function CalendarsTable({
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button size="sm" className="font-medium" asChild>
+          <Button variant="primary" size="sm" className="font-medium" asChild>
             {/* TODO: Add a link to the calendar docs */}
             <Link target="_blank" rel="noopener noreferrer" href={DOCS_URL}>
               Go to docs <ExternalLink />

@@ -32,6 +32,7 @@ export const SocialButton = ({
         "grow fill-foreground shadow-sm hover:fill-white",
         className,
       )}
+      size="sm"
       variant={primary ? "default" : "outline"}
       disabled={loading}
       type="submit"

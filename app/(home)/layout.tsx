@@ -52,7 +52,10 @@ export default async function HomeLayout({
     },
   );
 
-  const sidebarState = cookieStore.get("sidebar_state")?.value === "true";
+  const sidebarState =
+    cookieStore.get("sidebar_state") === undefined
+      ? true
+      : cookieStore.get("sidebar_state")?.value === "true";
 
   return (
     <LayoutContent
