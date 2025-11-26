@@ -42,7 +42,7 @@ export async function CalendarViewServer({
           start_time: startTime.toISOString(),
           end_time: endTime.toISOString(),
           status: null,
-          show_deleted: false,
+          show_cancelled: false,
           limit: 250,
         },
       },

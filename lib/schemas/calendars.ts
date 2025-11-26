@@ -92,13 +92,12 @@ export const ListCalendarEventsRequestQuerySchema = object({
     }
     return value;
   }, array(calendarEventStatusSchema).min(1).nullable().default(null)),
-  show_deleted: boolean().nullable().default(null),
+  show_cancelled: boolean().nullable().default(null),
 }).nullable();
 
 export const calendarEventListItemSchema = object({
   event_id: uuid(),
   title: string(),
-  deleted: boolean(),
   start_time: iso.datetime(),
   end_time: iso.datetime(),
   status: calendarEventStatusSchema,

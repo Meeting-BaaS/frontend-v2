@@ -10,7 +10,6 @@ import { genericError } from "@/lib/errors";
 import {
   type CreateApiKeyResponse,
   createApiKeyResponseSchema,
-  permissionsEnum,
 } from "@/lib/schemas/api-keys";
 import { cn } from "@/lib/utils";
 
@@ -78,7 +77,9 @@ export function CreateApiKeyStep({
           <div
             className={cn(
               "flex h-10 w-10 items-center justify-center rounded-full",
-              isActive ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground",
+              isActive
+                ? "bg-primary/10 text-primary"
+                : "bg-muted text-muted-foreground",
             )}
           >
             <span className="text-sm font-semibold">{step}</span>
@@ -89,8 +90,8 @@ export function CreateApiKeyStep({
         <div>
           <h3 className="text-lg font-semibold">Create an API Key</h3>
           <p className="text-sm text-muted-foreground">
-            We'll create an API key named "Onboarding" for you. This key will
-            be used to authenticate your bot requests.
+            We'll create an API key named "Onboarding" for you. This key will be
+            used to authenticate your bot requests.
           </p>
         </div>
         {!isCompleted && (
@@ -118,4 +119,3 @@ export function CreateApiKeyStep({
     </div>
   );
 }
-

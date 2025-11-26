@@ -15,7 +15,6 @@ export interface CalendarEvent {
   event_id: string;
   calendar_id: string;
   status: "confirmed" | "cancelled" | "tentative";
-  deleted: boolean;
   is_exception: boolean;
   meeting_url: string | null;
   meeting_platform: MeetingPlatform | null;

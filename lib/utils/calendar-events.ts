@@ -28,7 +28,6 @@ export function mapApiEventToCalendarEvent(
     event_id: apiEvent.event_id,
     calendar_id: apiEvent.calendar_id,
     status: apiEvent.status,
-    deleted: apiEvent.deleted,
     is_exception: apiEvent.is_exception,
     meeting_url: apiEvent.meeting_url,
     meeting_platform: apiEvent.meeting_platform,

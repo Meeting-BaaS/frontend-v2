@@ -8,6 +8,7 @@ export const HTTP_STATUSES = [
   { value: 402, label: "402 Payment Required" },
   { value: 403, label: "403 Forbidden" },
   { value: 404, label: "404 Not Found" },
+  { value: 409, label: "409 Conflict" },
   { value: 422, label: "422 Unprocessable" },
   { value: 429, label: "429 Rate Limited" },
   { value: 500, label: "500 Internal Error" },
