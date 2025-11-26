@@ -130,6 +130,7 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
             </Field>
           </div>
           <Button
+            variant="primary"
             type="submit"
             size="sm"
             disabled={isUpdatingName || !isDirty}

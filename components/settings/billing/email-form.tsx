@@ -83,6 +83,7 @@ export function BillingEmailForm({ defaultEmail }: BillingEmailFormProps) {
           )}
         </Field>
         <Button
+          variant="primary"
           type="submit"
           size="sm"
           disabled={isUpdatingEmail || !isDirty}
