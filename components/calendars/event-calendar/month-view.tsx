@@ -226,6 +226,7 @@ export function MonthView({
                                 "--event-height": `${EventHeight}px`,
                               } as React.CSSProperties
                             }
+                            onOpenAutoFocus={(e) => e.preventDefault()}
                           >
                             <div className="space-y-2">
                               <div className="text-sm font-medium">
