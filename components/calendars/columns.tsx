@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 export const calendarColumnWidths = {
   calendar_id: "min-w-[320px] max-w-[400px] w-[32%]",
-  account_email: "min-w-[260px] max-w-[320px] w-[26%]",
+  account_email: "min-w-[150px] max-w-[180px] w-[18%]",
   status: "min-w-[120px] max-w-[140px] w-[12%]",
   created_at: "min-w-[180px] max-w-[200px] w-[15%]",
   synced_at: "min-w-[180px] max-w-[200px] w-[15%]",
