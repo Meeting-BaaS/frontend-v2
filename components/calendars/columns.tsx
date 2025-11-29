@@ -15,11 +15,11 @@ import type { CalendarListEntry } from "@/lib/schemas/calendars";
 import { cn } from "@/lib/utils";
 
 export const calendarColumnWidths = {
-  calendar_id: "min-w-[320px] max-w-[400px] w-[40%]",
-  account_email: "min-w-[280px] max-w-[350px] w-[30%]",
+  calendar_id: "min-w-[320px] max-w-[400px] w-[32%]",
+  account_email: "min-w-[260px] max-w-[320px] w-[26%]",
   status: "min-w-[120px] max-w-[140px] w-[12%]",
-  created_at: "min-w-[160px] max-w-[180px] w-[18%]",
-  synced_at: "min-w-[160px] max-w-[180px] w-[18%]",
+  created_at: "min-w-[180px] max-w-[200px] w-[15%]",
+  synced_at: "min-w-[180px] max-w-[200px] w-[15%]",
 } as const;
 
 export const calendarStatusVariants = cva("capitalize", {
