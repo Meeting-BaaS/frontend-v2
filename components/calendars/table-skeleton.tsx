@@ -24,8 +24,8 @@ const tableHeaders = [
     width: calendarColumnWidths.status,
   },
   {
-    label: "Subscription",
-    width: calendarColumnWidths.subscription_status,
+    label: "Created At",
+    width: calendarColumnWidths.created_at,
   },
   {
     label: "Last Synced",

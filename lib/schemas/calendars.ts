@@ -59,7 +59,6 @@ export const calendarListEntrySchema = object({
   calendar_platform: calendarPlatformSchema,
   account_email: string(),
   status: calendarConnectionStatusSchema,
-  subscription_status: subscriptionStatusSchema.nullable(),
   synced_at: iso.datetime().nullable(),
   created_at: iso.datetime(),
 });
@@ -137,7 +136,6 @@ export const calendarDetailsSchema = object({
   account_email: string(),
   status: calendarConnectionStatusSchema,
   status_message: string().nullable(),
-  subscription_status: subscriptionStatusSchema.nullable(),
   subscription_id: string().nullable(),
   subscription_expires_at: iso.datetime().nullable(),
   synced_at: iso.datetime().nullable(),

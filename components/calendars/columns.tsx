@@ -18,7 +18,7 @@ export const calendarColumnWidths = {
   calendar_id: "min-w-[320px] max-w-[400px] w-[40%]",
   account_email: "min-w-[280px] max-w-[350px] w-[30%]",
   status: "min-w-[120px] max-w-[140px] w-[12%]",
-  subscription_status: "min-w-[140px] max-w-[160px] w-[14%]",
+  created_at: "min-w-[160px] max-w-[180px] w-[18%]",
   synced_at: "min-w-[160px] max-w-[180px] w-[18%]",
 } as const;
 
@@ -130,25 +130,14 @@ export const calendarColumns: ColumnDef<CalendarListEntry>[] = [
     },
   },
   {
-    accessorKey: "subscription_status",
-    header: "Subscription",
+    accessorKey: "created_at",
+    header: "Created At",
     cell: ({ row }) => {
-      const subscriptionStatus = row.original.subscription_status;
-      if (!subscriptionStatus) {
-        return <span className="text-muted-foreground">—</span>;
-      }
-      return (
-        <Badge
-          className={cn(
-            subscriptionStatusVariants({ status: subscriptionStatus }),
-          )}
-        >
-          {formatCalendarConnectionStatus(subscriptionStatus)}
-        </Badge>
-      );
+      const createdAt = row.original.created_at;
+      return <div className="capitalize">{formatRelativeDate(createdAt)}</div>;
     },
     meta: {
-      className: calendarColumnWidths.subscription_status,
+      className: calendarColumnWidths.created_at,
     },
   },
   {
@@ -159,11 +148,7 @@ export const calendarColumns: ColumnDef<CalendarListEntry>[] = [
       if (!syncedAt) {
         return <span className="text-muted-foreground">—</span>;
       }
-      return (
-        <span className="text-sm text-muted-foreground">
-          {formatRelativeDate(syncedAt)}
-        </span>
-      );
+      return <div className="capitalize">{formatRelativeDate(syncedAt)}</div>;
     },
     meta: {
       className: calendarColumnWidths.synced_at,
