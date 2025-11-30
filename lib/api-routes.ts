@@ -142,5 +142,7 @@ export const ADMIN_TOKEN_OPERATIONS = (teamId: number) =>
 export const ADMIN_SUPPORT_BASE_PATH = `${ADMIN_BASE_PATH}/support`;
 export const ADMIN_LIST_SUPPORT_TICKETS = `${ADMIN_SUPPORT_BASE_PATH}/list`;
 export const ADMIN_GET_TICKET_DETAILS = `${ADMIN_SUPPORT_BASE_PATH}/get-details`;
+export const ADMIN_REPLY_TICKET = (ticketId: string) =>
+  `${ADMIN_SUPPORT_BASE_PATH}/${ticketId}/reply`;
 export const ADMIN_UPDATE_TICKET_STATUS = (ticketId: string) =>
   `${ADMIN_SUPPORT_BASE_PATH}/${ticketId}/update-status`;

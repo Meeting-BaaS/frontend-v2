@@ -69,26 +69,37 @@ export function AdminTicketDetails({
             </Badge>
           }
         />
-        {ticketDetails.botUuid && (
-          <NameValuePair title="Bot UUID" value={ticketDetails.botUuid} />
-        )}
+        <NameValuePair
+          title="Bot UUID"
+          value={
+            ticketDetails.botUuid ? (
+              <Button variant="link" asChild className="p-0">
+                <Link
+                  href={`/admin/bots/${ticketDetails.botUuid}`}
+                  className="decoration-dashed underline hover:decoration-baas-primary-500 hover:decoration-solid"
+                >
+                  {ticketDetails.botUuid}
+                </Link>
+              </Button>
+            ) : null
+          }
+        />
         <NameValuePair
           title="Created At"
           valueClassName="capitalize"
           value={formatRelativeDate(ticketDetails.createdAt)}
         />
-        {ticketDetails.resolvedAt && (
-          <NameValuePair
-            title="Resolved At"
-            valueClassName="capitalize"
-            value={formatRelativeDate(ticketDetails.resolvedAt)}
-          />
-        )}
+
         <NameValuePair
-          containerClassName="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4"
-          title="Details"
-          value={ticketDetails.details}
+          title="Resolved At"
+          valueClassName="capitalize"
+          value={
+            ticketDetails.resolvedAt
+              ? formatRelativeDate(ticketDetails.resolvedAt)
+              : null
+          }
         />
+
         <NameValuePair
           containerClassName="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4"
           title="Message Chain"
@@ -97,6 +108,7 @@ export function AdminTicketDetails({
               messageChain={ticketDetails.messageChain}
               ticketId={ticketId}
               status={ticketDetails.status}
+              isAdmin
             />
           }
         />

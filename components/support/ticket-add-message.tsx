@@ -18,8 +18,17 @@ import {
 } from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
 import { axiosPostInstance } from "@/lib/api-client";
-import { UPDATE_TICKET, UPDATE_TICKET_STATUS } from "@/lib/api-routes";
+import {
+  ADMIN_REPLY_TICKET,
+  UPDATE_TICKET,
+  UPDATE_TICKET_STATUS,
+} from "@/lib/api-routes";
 import { genericError } from "@/lib/errors";
+import {
+  type AdminReplyTicketRequest,
+  type AdminReplyTicketResponse,
+  adminReplyTicketResponseSchema,
+} from "@/lib/schemas/admin";
 import {
   type TicketDetails,
   type UpdateTicketFormData,
@@ -30,9 +39,14 @@ import {
 interface TicketAddMessageProps {
   ticketId: string;
   status: TicketDetails["status"];
+  isAdmin?: boolean;
 }
 
-export function TicketAddMessage({ ticketId, status }: TicketAddMessageProps) {
+export function TicketAddMessage({
+  ticketId,
+  status,
+  isAdmin = false,
+}: TicketAddMessageProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -91,14 +105,29 @@ export function TicketAddMessage({ ticketId, status }: TicketAddMessageProps) {
     try {
       setLoading(true);
 
-      await axiosPostInstance<{ ticketId: string; content: string }, void>(
-        UPDATE_TICKET,
-        {
-          ticketId,
-          content: data.content,
-        },
-        undefined,
-      );
+      if (isAdmin) {
+        // Admin reply endpoint
+        await axiosPostInstance<
+          AdminReplyTicketRequest,
+          AdminReplyTicketResponse
+        >(
+          ADMIN_REPLY_TICKET(ticketId),
+          {
+            content: data.content,
+          },
+          adminReplyTicketResponseSchema,
+        );
+      } else {
+        // Regular user update endpoint
+        await axiosPostInstance<{ ticketId: string; content: string }, void>(
+          UPDATE_TICKET,
+          {
+            ticketId,
+            content: data.content,
+          },
+          undefined,
+        );
+      }
 
       toast.success("Message added successfully");
       form.reset();
@@ -132,7 +161,7 @@ export function TicketAddMessage({ ticketId, status }: TicketAddMessageProps) {
                       aria-invalid={fieldState.invalid}
                     />
                     <InputGroupAddon align="block-end">
-                      <InputGroupText className="tabular-nums">
+                      <InputGroupText className="tabular-nums text-xs">
                         {contentValue.length}/2000 characters
                       </InputGroupText>
                       <InputGroupButton

@@ -8,17 +8,19 @@ interface TicketMessageChainProps {
   messageChain: TicketDetails["messageChain"];
   ticketId: string;
   status: TicketDetails["status"];
+  isAdmin?: boolean;
 }
 
 export function TicketMessageChain({
   messageChain,
   ticketId,
   status,
+  isAdmin = false,
 }: TicketMessageChainProps) {
   return (
     <div className="space-y-4">
       <TicketViewMessages messageChain={messageChain} />
-      <TicketAddMessage ticketId={ticketId} status={status} />
+      <TicketAddMessage ticketId={ticketId} status={status} isAdmin={isAdmin} />
     </div>
   );
 }

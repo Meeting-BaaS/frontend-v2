@@ -394,7 +394,7 @@ export function CreateSupportTicketDialog({
                             aria-invalid={fieldState.invalid}
                           />
                           <InputGroupAddon align="block-end">
-                            <InputGroupText className="tabular-nums">
+                            <InputGroupText className="tabular-nums text-xs">
                               {detailsValue.length}/2000 characters
                             </InputGroupText>
                           </InputGroupAddon>

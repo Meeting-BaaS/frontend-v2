@@ -34,7 +34,10 @@ export default async function TicketDetailsPage({
     },
   );
   const redirectSearchParams = new URLSearchParams();
-  redirectSearchParams.set("redirectTo", `/support-center`);
+  redirectSearchParams.set(
+    "redirectTo",
+    `/support-center/${requestParams.slug}`,
+  );
   if (!session) {
     return redirect(`/sign-in?${redirectSearchParams.toString()}`);
   }

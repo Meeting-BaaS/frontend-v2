@@ -427,3 +427,22 @@ export const updateTicketStatusResponseSchema = object({
 export type UpdateTicketStatusResponse = output<
   typeof updateTicketStatusResponseSchema
 >;
+
+export const adminReplyTicketRequestSchema = object({
+  content: string().trim().min(1).max(2000),
+});
+
+export type AdminReplyTicketRequest = output<
+  typeof adminReplyTicketRequestSchema
+>;
+
+export const adminReplyTicketResponseSchema = object({
+  success: literal(true),
+  data: object({
+    message: string(),
+  }),
+});
+
+export type AdminReplyTicketResponse = output<
+  typeof adminReplyTicketResponseSchema
+>;
