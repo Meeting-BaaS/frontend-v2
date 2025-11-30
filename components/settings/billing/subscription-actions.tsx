@@ -27,11 +27,10 @@ export function SubscriptionActions({ billingInfo }: SubscriptionActionsProps) {
 
   const planName = billingInfo.subscription.plan.name;
   const isPayg = planName === "payg";
-  const isEnterprise = planName === "enterprise";
   const cancelAtPeriodEnd = billingInfo.subscription.cancelAtPeriodEnd;
 
-  // Show upgrade for all non-enterprise plans
-  const showUpgrade = !isEnterprise;
+  // Show upgrade for all plans (users can switch between plans)
+  const showUpgrade = true;
 
   // Show cancel for non-PAYG plans that are not already canceled
   const showCancel = !isPayg && !cancelAtPeriodEnd;

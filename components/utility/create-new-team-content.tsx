@@ -70,12 +70,6 @@ export function CreateNewTeamContent({
       return;
     }
 
-    // Skip if Enterprise (should be handled differently)
-    if (selectedPlan.type === "enterprise") {
-      toast.info("Please contact sales for Enterprise plans");
-      return;
-    }
-
     try {
       setIsCreating(true);
 
@@ -211,12 +205,10 @@ export function CreateNewTeamContent({
                                 ` (${formatCurrency(plan.price, "usd")}/${plan.interval === "month" ? "mo" : "yr"})`}
                             </FieldTitle>
                             <FieldDescription>
-                              {plan.type === "enterprise"
-                                ? "For teams with specific needs. Contact sales for custom pricing."
-                                : plan.features.length > 0
-                                  ? plan.features.slice(0, 2).join(", ") +
-                                    (plan.features.length > 2 ? "..." : "")
-                                  : "Advanced features and support"}
+                              {plan.features.length > 0
+                                ? plan.features.slice(0, 2).join(", ") +
+                                  (plan.features.length > 2 ? "..." : "")
+                                : "Advanced features and support"}
                             </FieldDescription>
                           </FieldContent>
                           <RadioGroupItem

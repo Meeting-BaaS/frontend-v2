@@ -71,15 +71,9 @@ export function PlansDialog({
   const handleSelectPlan = async (plan: PlanInfo) => {
     const isCurrentPlan = currentPlan === plan.type;
     const isPayg = plan.type === "payg";
-    const isEnterprise = plan.type === "enterprise";
 
     if (activeTeam.isMember) {
       toast.error(permissionDeniedError);
-      return;
-    }
-
-    // Skip if Enterprise (handled by mailto link)
-    if (isEnterprise) {
       return;
     }
 

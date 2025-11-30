@@ -1,10 +1,9 @@
 "use client";
 
-import { Check, ExternalLink } from "lucide-react";
+import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/currency-helpers";
-import { BOOK_A_CALL_URL } from "@/lib/external-urls";
 import type { PlanInfo } from "@/lib/schemas/settings";
 import { cn } from "@/lib/utils";
 
@@ -41,10 +40,7 @@ export function PlanCard({
   let buttonVariant: "default" | "destructive" | "outline" | "link" = "default";
   let buttonDisabled = false;
 
-  if (isEnterprise) {
-    buttonText = "Contact us";
-    buttonVariant = "link";
-  } else if (isPayg && currentPlanIsNotPayg) {
+  if (isPayg && currentPlanIsNotPayg) {
     buttonText = "Activated upon cancellation";
     buttonVariant = "outline";
     buttonDisabled = true;
@@ -130,21 +126,8 @@ export function PlanCard({
           className="w-full"
           disabled={buttonDisabled}
           onClick={() => onSelectPlan(plan)}
-          asChild={isEnterprise}
         >
-          {isEnterprise ? (
-            <a
-              href={BOOK_A_CALL_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2"
-            >
-              {buttonText}
-              <ExternalLink className="size-4" />
-            </a>
-          ) : (
-            buttonText
-          )}
+          {buttonText}
         </Button>
       </div>
       {isEnterprise && (
