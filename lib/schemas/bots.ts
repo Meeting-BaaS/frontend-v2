@@ -32,24 +32,19 @@ export const speechToTextProviderSchema = zodEnum([
 
 // All possible bot statuses
 export const botStatusSchema = zodEnum([
-  "queued",
-  "joining_call",
-  "in_waiting_room",
-  "in_call_not_recording",
-  "in_call_recording",
-  "recording_paused",
-  "recording_resumed",
-  "call_ended",
-  "bot_rejected",
-  "bot_removed",
-  "waiting_room_timeout",
-  "invalid_meeting_url",
-  "meeting_error",
-  "recording_succeeded",
-  "recording_failed",
-  "transcribing",
-  "completed",
-  "failed",
+  "queued", // Set by backend when bot is created
+  "joining_call", // Sent by bots when starting to join
+  "in_waiting_room", // Sent by bots when in waiting room
+  "in_call_not_recording", // Sent by bots when in call but not recording yet
+  "in_call_recording", // Sent by bots when recording starts
+  "recording_paused", // Sent by meet-teams-bot when recording is paused
+  "recording_resumed", // Sent by meet-teams-bot when recording resumes
+  "call_ended", // Sent by bots when call ends
+  "recording_succeeded", // Sent by bots when recording completes successfully
+  "recording_failed", // Sent by bots when recording fails
+  "transcribing", // Set by backend during transcription processing
+  "completed", // Set by backend after successful processing
+  "failed", // Set by backend after failure processing
 ]);
 
 const artifactTypeSchema = zodEnum([

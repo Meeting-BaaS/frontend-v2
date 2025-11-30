@@ -2,13 +2,11 @@
 
 import { format } from "date-fns";
 import {
-  AlertCircle,
   CheckCircle2,
   Circle,
   Clapperboard,
   Clock,
   FileText,
-  Link as LinkIcon,
   Mic,
   MicOff,
   PlayCircle,
@@ -93,12 +91,6 @@ const statusConfigMap: Record<BotStatus, StatusConfig> = {
     color: "var(--color-amber-500)",
     badgeVariant: "outline",
   },
-  waiting_room_timeout: {
-    icon: AlertCircle,
-    description: "Waiting room timeout occurred",
-    color: "var(--color-amber-500)",
-    badgeVariant: "outline",
-  },
 
   // Processing state - Violet
   transcribing: {
@@ -134,30 +126,6 @@ const statusConfigMap: Record<BotStatus, StatusConfig> = {
   recording_failed: {
     icon: XCircle,
     description: "Recording failed",
-    color: "var(--color-red-500)",
-    badgeVariant: "destructive",
-  },
-  bot_rejected: {
-    icon: XCircle,
-    description: "Bot was rejected from the meeting",
-    color: "var(--color-red-500)",
-    badgeVariant: "destructive",
-  },
-  bot_removed: {
-    icon: XCircle,
-    description: "Bot was removed from the meeting",
-    color: "var(--color-red-500)",
-    badgeVariant: "destructive",
-  },
-  invalid_meeting_url: {
-    icon: LinkIcon,
-    description: "Invalid meeting URL provided",
-    color: "var(--color-red-500)",
-    badgeVariant: "destructive",
-  },
-  meeting_error: {
-    icon: AlertCircle,
-    description: "An error occurred with the meeting",
     color: "var(--color-red-500)",
     badgeVariant: "destructive",
   },

@@ -32,7 +32,6 @@ export const botColorVariants = cva("", {
 
       // Paused/Warning states - Amber
       recording_paused: "bg-amber-500/10 text-amber-500 fill-amber-500",
-      waiting_room_timeout: "bg-amber-500/10 text-amber-500 fill-amber-500",
 
       // Processing state - Violet
       transcribing: "bg-violet-500/10 text-violet-500 fill-violet-500",
@@ -46,10 +45,6 @@ export const botColorVariants = cva("", {
       // Error/Rejected states - Red/Destructive
       failed: "bg-red-500/10 text-red-500 fill-red-500",
       recording_failed: "bg-red-500/10 text-red-500 fill-red-500",
-      bot_rejected: "bg-red-500/10 text-red-500 fill-red-500",
-      bot_removed: "bg-red-500/10 text-red-500 fill-red-500",
-      invalid_meeting_url: "bg-red-500/10 text-red-500 fill-red-500",
-      meeting_error: "bg-red-500/10 text-red-500 fill-red-500",
     },
   },
   defaultVariants: {
