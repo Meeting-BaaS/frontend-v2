@@ -146,3 +146,5 @@ export const ADMIN_REPLY_TICKET = (ticketId: string) =>
   `${ADMIN_SUPPORT_BASE_PATH}/${ticketId}/reply`;
 export const ADMIN_UPDATE_TICKET_STATUS = (ticketId: string) =>
   `${ADMIN_SUPPORT_BASE_PATH}/${ticketId}/update-status`;
+export const ADMIN_MIGRATION_BASE_PATH = `${ADMIN_BASE_PATH}/migration`;
+export const ADMIN_MIGRATE_USERS = `${ADMIN_MIGRATION_BASE_PATH}/migrate-users`;

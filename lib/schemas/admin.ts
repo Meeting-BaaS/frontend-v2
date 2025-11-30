@@ -15,6 +15,7 @@ import {
   enum as zodEnum,
   unknown as zodUnknown,
 } from "zod";
+import { isDateBefore } from "@/lib/date-helpers";
 import {
   artifactWithSignedUrlSchema,
   botStatusHistoryEntry,
@@ -445,4 +446,37 @@ export const adminReplyTicketResponseSchema = object({
 
 export type AdminReplyTicketResponse = output<
   typeof adminReplyTicketResponseSchema
+>;
+
+// Admin user migration schema
+export const adminUserMigrationFormSchema = object({
+  botsCreatedAfter: iso.datetime(),
+  botsCreatedBefore: iso.datetime(),
+}).refine(
+  (data) => {
+    return isDateBefore(data.botsCreatedAfter, data.botsCreatedBefore);
+  },
+  {
+    message: "botsCreatedAfter must be before botsCreatedBefore",
+    path: ["botsCreatedAfter"],
+  },
+);
+
+export type AdminUserMigrationFormData = output<
+  typeof adminUserMigrationFormSchema
+>;
+
+export const adminUserMigrationResponseSchema = object({
+  success: literal(true),
+  data: object({
+    successEmails: array(string()),
+    erroredEmails: array(string()),
+    totalProcessed: number().int().nonnegative(),
+    totalSuccess: number().int().nonnegative(),
+    totalErrors: number().int().nonnegative(),
+  }),
+});
+
+export type AdminUserMigrationResponse = output<
+  typeof adminUserMigrationResponseSchema
 >;
