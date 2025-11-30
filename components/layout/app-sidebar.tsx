@@ -9,7 +9,6 @@ import {
   Logs,
   MessageSquare,
   Settings,
-  Shield,
   Users,
   Webhook,
 } from "lucide-react";
@@ -23,6 +22,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -133,25 +133,9 @@ export function AppSidebar({ sessionResponse }: AppSidebarProps) {
         </SidebarGroup>
         {isAdmin && (
           <SidebarGroup>
+            <SidebarGroupLabel>Admin</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={{
-                      children: "Admin",
-                      hidden: open || isMobile,
-                    }}
-                    className="text-muted-foreground"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      <span className="text-xs font-semibold uppercase">
-                        Admin
-                      </span>
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
                 {adminItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton

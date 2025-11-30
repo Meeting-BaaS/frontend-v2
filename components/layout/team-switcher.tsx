@@ -43,7 +43,7 @@ export function TeamSwitcher() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               {activeTeam.logo ? (
-                <div className="relative flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg border">
+                <div className="relative flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg border shrink-0">
                   <Image
                     src={activeTeam.logo}
                     alt={activeTeam.name}
