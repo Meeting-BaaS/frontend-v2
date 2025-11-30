@@ -30,11 +30,19 @@ export const speechToTextProviderSchema = zodEnum([
   "none",
 ]);
 
-// All possible bot statuses
+// All possible bot statuses (event codes)
+// These are the event_code values sent by bots to /bot-process/update-status
 export const botStatusSchema = zodEnum([
+  // Backend-set statuses
   "queued", // Set by backend when bot is created
+  "transcribing", // Set by backend during transcription processing
+  "completed", // Set by backend after successful processing
+  "failed", // Set by backend after failure processing
+
+  // Normal flow statuses (sent by both bots)
   "joining_call", // Sent by bots when starting to join
   "in_waiting_room", // Sent by bots when in waiting room
+  "in_waiting_for_host", // Sent by zoom-bot when waiting for host
   "in_call_not_recording", // Sent by bots when in call but not recording yet
   "in_call_recording", // Sent by bots when recording starts
   "recording_paused", // Sent by meet-teams-bot when recording is paused
@@ -42,9 +50,16 @@ export const botStatusSchema = zodEnum([
   "call_ended", // Sent by bots when call ends
   "recording_succeeded", // Sent by bots when recording completes successfully
   "recording_failed", // Sent by bots when recording fails
-  "transcribing", // Set by backend during transcription processing
-  "completed", // Set by backend after successful processing
-  "failed", // Set by backend after failure processing
+
+  // Intermediate error statuses (sent by meet-teams-bot before recording_failed)
+  // These are informational and all eventually lead to recording_failed
+  "api_request_stop", // Sent by meet-teams-bot when stopped via API
+  "bot_rejected", // Sent by meet-teams-bot when bot is rejected
+  "bot_removed", // Sent by meet-teams-bot when bot is removed
+  "bot_removed_too_early", // Sent by meet-teams-bot when bot removed too early
+  "waiting_room_timeout", // Sent by meet-teams-bot when waiting room times out
+  "invalid_meeting_url", // Sent by meet-teams-bot when meeting URL is invalid
+  "meeting_error", // Sent by meet-teams-bot for general meeting errors
 ]);
 
 const artifactTypeSchema = zodEnum([
