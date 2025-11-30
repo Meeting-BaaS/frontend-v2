@@ -206,9 +206,9 @@ export function CreateNewTeamContent({
                             </FieldTitle>
                             <FieldDescription>
                               {plan.features.length > 0
-                                ? plan.features.slice(0, 2).join(", ") +
-                                  (plan.features.length > 2 ? "..." : "")
-                                : "Advanced features and support"}
+                                  ? plan.features.slice(0, 2).join(", ") +
+                                    (plan.features.length > 2 ? "..." : "")
+                                  : "Advanced features and support"}
                             </FieldDescription>
                           </FieldContent>
                           <RadioGroupItem

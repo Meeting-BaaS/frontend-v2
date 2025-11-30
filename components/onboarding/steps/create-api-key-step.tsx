@@ -1,9 +1,17 @@
 "use client";
 
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
+import { Field, FieldLabel } from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { axiosPostInstance } from "@/lib/api-client";
 import { CREATE_API_KEY } from "@/lib/api-routes";
 import { genericError } from "@/lib/errors";
@@ -27,6 +35,8 @@ export function CreateApiKeyStep({
   onComplete,
 }: CreateApiKeyStepProps) {
   const [loading, setLoading] = useState(false);
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [show, setShow] = useState(false);
 
   const handleCreateApiKey = async () => {
     if (loading) return;
@@ -34,13 +44,13 @@ export function CreateApiKeyStep({
     try {
       setLoading(true);
       const response = await axiosPostInstance<
-        { name: string; permissions: string },
+        { name: string; permissions: "Sending access" | "Full access" },
         CreateApiKeyResponse
       >(
         CREATE_API_KEY,
         {
           name: "Onboarding",
-          permissions: "Full access", // Full access maps to read_write_delete
+          permissions: "Full access",
         },
         createApiKeyResponseSchema,
       );
@@ -49,7 +59,8 @@ export function CreateApiKeyStep({
         throw new Error("Failed to create API key");
       }
 
-      // Store the API key but don't show it to the user
+      // Store the API key to display it
+      setApiKey(response.data.key);
       onComplete(response.data.key);
       toast.success("API key created successfully!");
     } catch (error) {
@@ -110,9 +121,38 @@ export function CreateApiKeyStep({
             )}
           </Button>
         )}
-        {isCompleted && (
+        {isCompleted && apiKey && (
           <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-600 dark:text-green-400">
-            API key created successfully!
+            <Field>
+              <FieldLabel htmlFor="api-key">
+                API key created successfully!
+              </FieldLabel>
+              <InputGroup>
+                <InputGroupInput
+                  name="api-key"
+                  placeholder="API Key"
+                  className="disabled:opacity-100"
+                  value={apiKey}
+                  readOnly
+                  type={show ? "text" : "password"}
+                  disabled
+                />
+                <InputGroupAddon align="inline-end">
+                  <InputGroupButton
+                    size="icon-xs"
+                    aria-label="Show/Hide API Key"
+                    onClick={() => setShow(!show)}
+                  >
+                    {show ? <Eye /> : <EyeOff />}
+                  </InputGroupButton>
+                </InputGroupAddon>
+                <InputGroupAddon align="inline-end">
+                  <InputGroupButton size="icon-xs" asChild>
+                    <CopyButton text={apiKey} />
+                  </InputGroupButton>
+                </InputGroupAddon>
+              </InputGroup>
+            </Field>
           </div>
         )}
       </div>
