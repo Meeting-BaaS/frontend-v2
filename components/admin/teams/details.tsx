@@ -54,7 +54,7 @@ export function AdminTeamDetails({
     <section>
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
         <ItemHeading
-          title={teamDetails.teamName}
+          title={`${teamDetails.teamName} (ID: ${teamDetails.teamId})`}
           name={teamDetails.teamSlug}
           nameClassName="text-xl"
           containerClassName="md:flex-1"
