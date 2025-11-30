@@ -58,7 +58,7 @@ export function LayoutContent({
               }
               defaultOpen={sidebarState}
             >
-              <AppSidebar />
+              <AppSidebar sessionResponse={sessionResponse} />
               <main className="flex flex-col w-full h-screen">
                 <AppHeader />
                 <div className="flex-1 overflow-y-auto px-4 md:px-10 lg:px-20 py-8">

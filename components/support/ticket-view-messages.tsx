@@ -48,7 +48,7 @@ export function TicketViewMessages({ messageChain }: TicketViewMessagesProps) {
             >
               {isCurrentUser ? (
                 <div className="mb-4 flex items-center gap-2">
-                  <div className="ml-auto w-2/3 rounded-md bg-baas-primary-500/50 dark:bg-baas-primary-700 p-2 dark:text-white">
+                  <div className="ml-auto w-2/3 rounded-md bg-baas-primary-accent/20 border border-baas-primary-accent/20 text-baas-primary-accent dark:bg-baas-primary-accent/10 p-2">
                     <div className="text-sm whitespace-pre-wrap">
                       {message.content}
                     </div>

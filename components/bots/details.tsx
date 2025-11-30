@@ -1,5 +1,6 @@
 "use client";
 
+import { Coins, FileAudio, FileText, Radio } from "lucide-react";
 import { Artifacts } from "@/components/bots/artifacts";
 import { BotActions } from "@/components/bots/bot-actions";
 import { JsonPreview } from "@/components/bots/json-preview";
@@ -10,7 +11,13 @@ import { ZoomLogo } from "@/components/icons/zoom";
 import { DocsButton } from "@/components/layout/docs-button";
 import { ItemHeading } from "@/components/layout/item-heading";
 import { GradientIcon } from "@/components/ui/gradient-icon";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { NameValuePair } from "@/components/ui/name-value-pair";
+import { Separator } from "@/components/ui/separator";
 import { formatDuration, formatRelativeDate } from "@/lib/date-helpers";
 import type { BotDetails } from "@/lib/schemas/bots";
 import { readableRecordingMode } from "@/lib/utils";
@@ -24,6 +31,29 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
   const botDuration = botDetails.duration
     ? parseInt(botDetails.duration, 10)
     : 0;
+
+  // Format token values for display (returns precision string as-is)
+  const formatTokenValue = (value: string | null | undefined): string => {
+    return value ?? "0";
+  };
+
+  const recordingTokens = formatTokenValue(botDetails.recording_tokens);
+  const transcriptionTokens = formatTokenValue(botDetails.transcription_tokens);
+  const byokTranscriptionTokens = formatTokenValue(
+    botDetails.byok_transcription_tokens,
+  );
+  const inputStreamingTokens = formatTokenValue(
+    botDetails.streaming_input_tokens,
+  );
+  const outputStreamingTokens = formatTokenValue(
+    botDetails.streaming_output_tokens,
+  );
+  const totalTokens = formatTokenValue(botDetails.total_tokens);
+
+  // Determine which transcription token to show (only one is used)
+  const transcriptionTokenValue =
+    transcriptionTokens !== "0" ? transcriptionTokens : byokTranscriptionTokens;
+
   return (
     <section>
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
@@ -88,7 +118,51 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
         />
         <NameValuePair
           title="Consumed Tokens"
-          value={botDetails.total_tokens}
+          value={
+            botDetails.total_tokens ? (
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <span className="cursor-help">{totalTokens}</span>
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  <div className="space-y-2 px-2">
+                    <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                      <FileAudio className="size-3" />
+                      <span>Recording</span>
+                      <span className="ml-auto">{recordingTokens}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                      <FileText className="size-3" />
+                      <span>
+                        {transcriptionTokenValue
+                          ? "Transcription"
+                          : "BYOK Transcription"}
+                      </span>
+                      <span className="ml-auto">{transcriptionTokenValue}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                      <Radio className="size-3" />
+                      <span>Input Streaming</span>
+                      <span className="ml-auto">{inputStreamingTokens}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                      <Radio className="size-3" />
+                      <span>Output Streaming</span>
+                      <span className="ml-auto">{outputStreamingTokens}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex items-center gap-1 text-sm font-semibold">
+                      <Coins className="size-3" />
+                      <span>Total</span>
+                      <span className="ml-auto">{totalTokens}</span>
+                    </div>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            ) : (
+              "-"
+            )
+          }
         />
         <NameValuePair
           title="Extra Metadata"

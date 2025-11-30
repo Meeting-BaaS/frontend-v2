@@ -7,7 +7,7 @@ import type { OutputTranscription, Transcript } from "@/types/viewer.types";
 
 interface ViewerProps {
   videoUrl: string;
-  transcriptionUrl: string;
+  transcriptionUrl: string | null;
 }
 
 export function Viewer({ videoUrl, transcriptionUrl }: ViewerProps) {
@@ -19,6 +19,14 @@ export function Viewer({ videoUrl, transcriptionUrl }: ViewerProps) {
 
   // Download and transform transcription
   useEffect(() => {
+    // If no transcription URL, mark as not loading and show no transcript message
+    if (!transcriptionUrl) {
+      setIsLoadingTranscript(false);
+      setTranscriptError(null);
+      setTranscripts([]);
+      return;
+    }
+
     let cancelled = false;
 
     async function loadTranscription() {
@@ -27,6 +35,9 @@ export function Viewer({ videoUrl, transcriptionUrl }: ViewerProps) {
         setTranscriptError(null);
 
         // Download transcription file from S3
+        if (!transcriptionUrl) {
+          throw new Error("Transcription URL is required");
+        }
         const response = await fetch(transcriptionUrl);
         if (!response.ok) {
           throw new Error(

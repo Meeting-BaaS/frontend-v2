@@ -81,7 +81,7 @@ const artifactSchema = object({
   error_message: string().nullable(),
 });
 
-const artifactWithSignedUrlSchema = artifactSchema.extend({
+export const artifactWithSignedUrlSchema = artifactSchema.extend({
   signed_url: string().nullable(),
 });
 
@@ -184,6 +184,11 @@ export const botDetailsSchema = object({
   speech_to_text_provider: speechToTextProviderSchema,
   extra: record(string(), zodUnknown()).nullable(),
   total_tokens: string().nullable(),
+  recording_tokens: string().nullable(),
+  transcription_tokens: string().nullable(),
+  byok_transcription_tokens: string().nullable(),
+  streaming_input_tokens: string().nullable(),
+  streaming_output_tokens: string().nullable(),
   duration: string().nullable(),
   created_at: iso.datetime(),
   ended_at: iso.datetime().nullable(),

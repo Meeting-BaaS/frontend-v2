@@ -122,3 +122,25 @@ export const GET_TICKET_DETAILS = `${SUPPORT_BASE_PATH}/get-details`;
 export const UPDATE_TICKET = `${SUPPORT_BASE_PATH}/update`;
 export const UPDATE_TICKET_STATUS = `${SUPPORT_BASE_PATH}/update-status`;
 export const UPLOAD_ATTACHMENTS = `${SUPPORT_BASE_PATH}/upload-attachments`;
+
+// Admin routes
+export const ADMIN_BASE_PATH = `${BASE_PATH}/admin`;
+export const ADMIN_BOTS_BASE_PATH = `${ADMIN_BASE_PATH}/bots`;
+export const ADMIN_LIST_BOTS = `${ADMIN_BOTS_BASE_PATH}/list`;
+export const ADMIN_GET_BOT_DETAILS = (botId: string) =>
+  `${ADMIN_BOTS_BASE_PATH}/${botId}/details`;
+export const ADMIN_LEAVE_BOT = (botId: string) =>
+  `${ADMIN_BOTS_BASE_PATH}/${botId}/leave`;
+export const ADMIN_TEAMS_BASE_PATH = `${ADMIN_BASE_PATH}/teams`;
+export const ADMIN_LIST_TEAMS = `${ADMIN_TEAMS_BASE_PATH}/list`;
+export const ADMIN_GET_TEAM_DETAILS = (teamId: number) =>
+  `${ADMIN_TEAMS_BASE_PATH}/${teamId}/details`;
+export const ADMIN_UPDATE_RATE_LIMITS = (teamId: number) =>
+  `${ADMIN_TEAMS_BASE_PATH}/${teamId}/update-rate-limits`;
+export const ADMIN_TOKEN_OPERATIONS = (teamId: number) =>
+  `${ADMIN_TEAMS_BASE_PATH}/${teamId}/token-operations`;
+export const ADMIN_SUPPORT_BASE_PATH = `${ADMIN_BASE_PATH}/support`;
+export const ADMIN_LIST_SUPPORT_TICKETS = `${ADMIN_SUPPORT_BASE_PATH}/list`;
+export const ADMIN_GET_TICKET_DETAILS = `${ADMIN_SUPPORT_BASE_PATH}/get-details`;
+export const ADMIN_UPDATE_TICKET_STATUS = (ticketId: string) =>
+  `${ADMIN_SUPPORT_BASE_PATH}/${ticketId}/update-status`;
