@@ -12,7 +12,13 @@ import {
   listSupportTicketsResponseSchema,
 } from "@/lib/schemas/support";
 
-export default async function SupportCenterPage() {
+interface SupportCenterPageProps {
+  searchParams: Promise<{ bot_uuid?: string }>;
+}
+
+export default async function SupportCenterPage({
+  searchParams,
+}: SupportCenterPageProps) {
   // Redirect if user is not logged in
   // It is recommended to verify session on each page
   const cookieStore = await cookies();
@@ -41,9 +47,17 @@ export default async function SupportCenterPage() {
     },
   );
 
+  const params = await searchParams;
+  const botUuid = params.bot_uuid;
+
+  // Filter tickets by bot_uuid if provided
+  const filteredTickets = botUuid
+    ? (tickets.data || []).filter((ticket) => ticket.botUuid === botUuid)
+    : tickets.data || [];
+
   return (
     <section>
-      <SupportTicketsView tickets={tickets.data || []} />
+      <SupportTicketsView tickets={filteredTickets} />
     </section>
   );
 }

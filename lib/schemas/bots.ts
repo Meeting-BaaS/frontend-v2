@@ -218,6 +218,9 @@ export const botDetailsSchema = object({
   errors: array(record(string(), zodUnknown())).nullable(),
   updated_at: iso.datetime(),
   transcription_ids: array(string()).nullable(),
+  open_support_tickets: number().describe(
+    "Number of open support tickets for the bot",
+  ),
 });
 
 export const botDetailsResponseSchema = object({

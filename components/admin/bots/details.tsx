@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  AlertTriangle,
   Coins,
   Download,
   FileAudio,
@@ -19,6 +20,7 @@ import { GoogleMeetLogo } from "@/components/icons/google-meet";
 import { MicrosoftTeamsLogo } from "@/components/icons/microsoft-teams";
 import { ZoomLogo } from "@/components/icons/zoom";
 import { ItemHeading } from "@/components/layout/item-heading";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import {
@@ -110,6 +112,47 @@ export function AdminBotDetails({ botDetails, botUuid }: AdminBotDetailsProps) {
           </Button>
         </div>
       </div>
+
+      {/* Callback Error Alert */}
+      {botDetails.callbackError && (
+        <Alert variant="destructive" className="mt-6">
+          <AlertTriangle />
+          <AlertTitle>Callback Error</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>
+              An error occurred when trying to hit the configured callback URL.
+            </p>
+            <div className="space-y-1 text-sm">
+              <p>
+                <strong>Code:</strong> {botDetails.callbackError.error}
+              </p>
+              <p>
+                <strong>Message:</strong> {botDetails.callbackError.message}
+              </p>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Support Tickets Warning Alert */}
+      {botDetails.openSupportTickets > 0 && (
+        <Alert variant="warning" className="mt-6">
+          <AlertTriangle />
+          <AlertTitle>Open Support Tickets</AlertTitle>
+          <AlertDescription className="flex items-center justify-between gap-4">
+            <p>
+              There {botDetails.openSupportTickets === 1 ? "is" : "are"}{" "}
+              {botDetails.openSupportTickets} open support ticket
+              {botDetails.openSupportTickets === 1 ? "" : "s"} for this bot.
+            </p>
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/admin/support?botUuid=${botUuid}`}>
+                View tickets
+              </Link>
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid mt-10 md:mt-12 md:space-y-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <NameValuePair title="Meeting URL" value={botDetails.meetingUrl} />

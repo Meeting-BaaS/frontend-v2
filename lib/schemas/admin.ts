@@ -142,6 +142,9 @@ export const adminBotDetailsSchema = object({
   byokTranscriptionTokens: string().nullable(),
   streamingInputTokens: string().nullable(),
   streamingOutputTokens: string().nullable(),
+  openSupportTickets: number().describe(
+    "Number of open support tickets for the bot",
+  ),
 });
 
 export type AdminBotDetails = output<typeof adminBotDetailsSchema>;
@@ -350,6 +353,7 @@ export const listAllSupportTicketsRequestQuerySchema = object({
   }, array(supportTicketTypeEnum).nullable().default(null)),
   teamName: string().trim().nullable().default(null),
   teamId: integerPreprocess(number().int().positive()).nullable().default(null),
+  botUuid: uuid().nullable().default(null),
 }).nullable();
 
 export type ListAllSupportTicketsRequestQueryParams = output<

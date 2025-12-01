@@ -1,15 +1,27 @@
 "use client";
 
-import { Coins, FileAudio, FileText, Radio } from "lucide-react";
+import {
+  AlertTriangle,
+  Coins,
+  FileAudio,
+  FileText,
+  Radio,
+  RefreshCw,
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 import { Artifacts } from "@/components/bots/artifacts";
 import { BotActions } from "@/components/bots/bot-actions";
 import { JsonPreview } from "@/components/bots/json-preview";
+import { RetryCallbackDialog } from "@/components/bots/retry-callback-dialog";
 import { StatusHistory } from "@/components/bots/status-history";
 import { GoogleMeetLogo } from "@/components/icons/google-meet";
 import { MicrosoftTeamsLogo } from "@/components/icons/microsoft-teams";
 import { ZoomLogo } from "@/components/icons/zoom";
 import { DocsButton } from "@/components/layout/docs-button";
 import { ItemHeading } from "@/components/layout/item-heading";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import {
   HoverCard,
@@ -28,6 +40,7 @@ interface BotDetailsProps {
 }
 
 export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
+  const [openRetryDialog, setOpenRetryDialog] = useState(false);
   const botDuration = botDetails.duration
     ? parseInt(botDetails.duration, 10)
     : 0;
@@ -83,6 +96,55 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
           />
         </div>
       </div>
+
+      {/* Callback Error Alert */}
+      {botDetails.callback_error && (
+        <Alert variant="destructive" className="mt-6">
+          <AlertTriangle />
+          <AlertTitle>Callback Error</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>
+              We faced an error when trying to hit the configured callback URL.
+            </p>
+            <div className="space-y-1 text-sm">
+              <p>
+                <strong>Code:</strong> {botDetails.callback_error.error}
+              </p>
+              <p>
+                <strong>Message:</strong> {botDetails.callback_error.message}
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setOpenRetryDialog(true)}
+              className="mt-2"
+            >
+              <RefreshCw className="size-4" /> Retry callback
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Support Tickets Warning Alert */}
+      {botDetails.open_support_tickets > 0 && (
+        <Alert variant="warning" className="mt-6">
+          <AlertTriangle />
+          <AlertTitle>Open Support Tickets</AlertTitle>
+          <AlertDescription className="flex items-center justify-between gap-4">
+            <p>
+              There {botDetails.open_support_tickets === 1 ? "is" : "are"}{" "}
+              {botDetails.open_support_tickets} open support ticket
+              {botDetails.open_support_tickets === 1 ? "" : "s"} for this bot.
+            </p>
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/support-center?bot_uuid=${botUuid}`}>
+                View tickets
+              </Link>
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid mt-10 md:mt-12 md:space-y-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <NameValuePair title="Meeting URL" value={botDetails.meeting_url} />
@@ -181,6 +243,11 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
           value={<Artifacts botDetails={botDetails} botUuid={botUuid} />}
         />
       </div>
+      <RetryCallbackDialog
+        botUuid={botUuid}
+        open={openRetryDialog}
+        onOpenChange={setOpenRetryDialog}
+      />
     </section>
   );
 }
