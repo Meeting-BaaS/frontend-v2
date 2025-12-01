@@ -113,6 +113,11 @@ export const columns: ColumnDef<AdminSupportTicketListItem>[] = [
       return (
         <div className="truncate max-w-sm" title={row.original.subject}>
           {row.original.subject}
+          {row.original.botUuid && (
+            <div className="text-muted-foreground text-xs">
+              Bot: {row.original.botUuid}
+            </div>
+          )}
         </div>
       );
     },

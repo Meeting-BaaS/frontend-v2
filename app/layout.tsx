@@ -4,7 +4,7 @@ import "./globals.css";
 
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
-import { AUTH_URL } from "@/lib/external-urls";
+import { env } from "@/env";
 
 const sofiaSans = Sofia_Sans({
   subsets: ["latin"],
@@ -13,8 +13,8 @@ const sofiaSans = Sofia_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(AUTH_URL),
-  title: "Meeting BaaS Dashboard | Single Sign On",
+  metadataBase: new URL(env.NEXT_PUBLIC_FRONTEND_BASEURL),
+  title: "Dashboard | Meeting BaaS",
   description:
     "Access the full Meeting BaaS suite of tools for meeting bots, real-time transcription, and analytics across Google Meet, Teams, and Zoom platforms",
   keywords: [
@@ -31,25 +31,25 @@ export const metadata: Metadata = {
   authors: [{ name: "Meeting BaaS Team" }],
   openGraph: {
     type: "website",
-    title: "Meeting BaaS Authentication | Single Sign On",
+    title: "Dashboard | Meeting BaaS",
     description:
       "Access the full Meeting BaaS suite of tools for meeting bots, real-time transcription, and analytics",
     siteName: "Meeting BaaS",
-    url: "https://auth.meetingbaas.com",
+    url: env.NEXT_PUBLIC_FRONTEND_BASEURL,
     locale: "en_US",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Meeting BaaS Authentication",
+        alt: "Dashboard | Meeting BaaS",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Meeting BaaS Authentication | Single Sign On",
+    title: "Dashboard | Meeting BaaS",
     description:
       "Deploy meeting bots in seconds, get analytics, automatic transcription, and monitoring across video conference platforms",
     images: ["/og-image.png"],
