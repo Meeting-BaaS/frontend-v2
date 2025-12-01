@@ -104,6 +104,8 @@ export const GET_TOKEN_PACKS = `${SETTINGS_BASE_PATH}/token-packs`;
 export const PURCHASE_TOKEN_PACK = `${SETTINGS_BASE_PATH}/token-packs/purchase`;
 export const UPDATE_AUTO_REFILL_SETTINGS = `${SETTINGS_BASE_PATH}/token-settings/auto-refill`;
 export const UPDATE_REMINDER_SETTINGS = `${SETTINGS_BASE_PATH}/token-settings/reminder`;
+export const GET_V1_AVAILABLE_TOKENS = `${SETTINGS_BASE_PATH}/tokens/v1-available`;
+export const IMPORT_TOKENS_FROM_V1 = `${SETTINGS_BASE_PATH}/tokens/import-from-v1`;
 
 // Account routes
 export const ACCOUNT_BASE_PATH = `${BASE_PATH}/account`;

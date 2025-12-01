@@ -2,6 +2,7 @@
 
 import { Info } from "lucide-react";
 import { PlansDialog } from "@/components/settings/usage/plans/plans-dialog";
+import { ImportV1TokensDialog } from "@/components/settings/usage/tokens/import-v1-tokens-dialog";
 import { TokenPacksDialog } from "@/components/settings/usage/tokens/token-packs-dialog";
 import { TokenSettingsDialog } from "@/components/settings/usage/tokens/token-settings-dialog";
 import { TokenUsageRatesSheet } from "@/components/settings/usage/tokens/token-usage-rates-sheet";
@@ -158,7 +159,7 @@ export function UsageContent({ usageStats, searchParams }: UsageContentProps) {
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="w-1/2 sm:w-auto"
+                  className="w-1/3 sm:w-auto"
                 >
                   {usageStats.plan.reminderEnabled ||
                   usageStats.plan.autoPurchaseEnabled
@@ -171,11 +172,21 @@ export function UsageContent({ usageStats, searchParams }: UsageContentProps) {
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="w-1/2 sm:w-auto"
+                  className="w-1/3 sm:w-auto"
                 >
                   Buy tokens
                 </Button>
               </TokenPacksDialog>
+              <ButtonGroupSeparator />
+              <ImportV1TokensDialog>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="w-1/3 sm:w-auto"
+                >
+                  Import from v1
+                </Button>
+              </ImportV1TokensDialog>
             </ButtonGroup>
           </div>
         </div>

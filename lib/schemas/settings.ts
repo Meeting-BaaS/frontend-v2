@@ -42,6 +42,7 @@ export const usageStatsSchema = object({
     reminderThreshold: number().nullable(),
     reminderEmail: string().nullable(),
     stripeCustomerId: string(),
+    isV1SubscriptionActive: boolean(),
   }),
   usage: object({
     botsCreatedToday: number(),
@@ -286,4 +287,35 @@ export const listActiveSubscriptionsResponseSchema = array(
 export type ActiveSubscription = output<typeof activeSubscriptionSchema>;
 export type ListActiveSubscriptionsResponse = output<
   typeof listActiveSubscriptionsResponseSchema
+>;
+
+// V1 token import schemas
+export const getV1AvailableTokensResponseSchema = object({
+  success: literal(true),
+  data: object({
+    availableTokens: string(),
+    email: string(),
+  }),
+});
+
+export const importTokensFromV1RequestSchema = object({
+  amount: number().positive("Amount must be greater than 0"),
+});
+
+export const importTokensFromV1ResponseSchema = object({
+  success: literal(true),
+  data: object({
+    tokensImported: string(),
+    newBalance: string(),
+  }),
+});
+
+export type GetV1AvailableTokensResponse = output<
+  typeof getV1AvailableTokensResponseSchema
+>;
+export type ImportTokensFromV1Request = output<
+  typeof importTokensFromV1RequestSchema
+>;
+export type ImportTokensFromV1Response = output<
+  typeof importTokensFromV1ResponseSchema
 >;
