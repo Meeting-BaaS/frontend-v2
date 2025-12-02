@@ -16,7 +16,7 @@ export function CalendarsView({ params }: CalendarsViewProps) {
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
         <PageHeading title="Calendars" containerClassName="md:flex-1" />
         <div className="flex w-full sm:w-auto flex-col gap-2 sm:flex-row sm:items-center">
-          <DocsButton />
+          <DocsButton uriSuffix="api-v2/reference/calendars/list-calendars" />
         </div>
       </div>
 

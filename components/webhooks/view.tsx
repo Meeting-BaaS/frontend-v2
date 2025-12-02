@@ -52,7 +52,7 @@ export function WebhooksView({
           >
             <Plus /> Add webhook
           </Button>
-          <DocsButton />
+          <DocsButton name="Docs" keyBinding="D" uriSuffix="api-v2/webhooks" />
         </div>
       </div>
       <WebhooksTable

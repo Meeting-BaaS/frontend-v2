@@ -16,7 +16,7 @@ export function BotsView({ params }: BotsViewProps) {
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
         <PageHeading title="Bots" containerClassName="md:flex-1" />
         <div className="flex w-full sm:w-auto flex-col gap-2 sm:flex-row sm:items-center">
-          <DocsButton />
+          <DocsButton uriSuffix="api-v2/reference/bots/list-bots" />
         </div>
       </div>
       <TableFilters params={params} />

@@ -91,7 +91,7 @@ export default async function CalendarDetailsPage({
           }
         />
         <div className="flex w-full sm:w-auto gap-2 flex-row sm:items-center">
-          <DocsButton />
+          <DocsButton uriSuffix="api-v2/reference/calendars/list-events" />
         </div>
       </div>
 

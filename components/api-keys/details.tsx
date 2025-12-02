@@ -36,7 +36,7 @@ export function ViewApiKeyDetails({ apiKeyDetails }: ApiKeyDetailsProps) {
           }
         />
         <div className="flex w-full sm:w-auto gap-2 flex-row sm:items-center">
-          <DocsButton />
+          <DocsButton name="Docs" keyBinding="D" uriSuffix="api-v2/api-keys" />
           <TableActions apiKey={apiKeyDetails} buttonVariant="outline" />
         </div>
       </div>

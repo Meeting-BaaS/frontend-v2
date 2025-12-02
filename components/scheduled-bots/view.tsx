@@ -16,7 +16,7 @@ export function ScheduledBotsView({ params }: ScheduledBotsViewProps) {
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
         <PageHeading title="Scheduled Bots" containerClassName="md:flex-1" />
         <div className="flex w-full sm:w-auto flex-col gap-2 sm:flex-row sm:items-center">
-          <DocsButton />
+          <DocsButton uriSuffix="api-v2/reference/bots/list-scheduled-bots" />
         </div>
       </div>
 
