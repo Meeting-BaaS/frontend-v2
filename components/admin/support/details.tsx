@@ -46,7 +46,7 @@ export function AdminTicketDetails({
         <NameValuePair
           title="Team"
           value={
-            <Button variant="link" asChild className="p-0">
+            <Button variant="link" asChild className="p-0 h-auto">
               <Link
                 href={`/admin/teams/${ticketDetails.teamId}`}
                 className="decoration-dashed underline hover:decoration-baas-primary-500 hover:decoration-solid"
@@ -73,7 +73,11 @@ export function AdminTicketDetails({
           title="Bot UUID"
           value={
             ticketDetails.botUuid ? (
-              <Button variant="link" asChild className="p-0">
+              <Button
+                variant="link"
+                asChild
+                className="p-0 h-auto whitespace-break-spaces"
+              >
                 <Link
                   href={`/admin/bots/${ticketDetails.botUuid}`}
                   className="decoration-dashed underline hover:decoration-baas-primary-500 hover:decoration-solid"
