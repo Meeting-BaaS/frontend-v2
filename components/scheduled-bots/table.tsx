@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/empty";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { useDataTable } from "@/hooks/use-data-table";
+import { DOCS_URL } from "@/lib/external-urls";
 import type {
   ListScheduledBotsRequestQueryParams,
   ScheduledBotListEntry,
@@ -79,8 +80,12 @@ export function ScheduledBotsTable({
         </EmptyHeader>
         <EmptyContent>
           <Button variant="primary" size="sm" className="font-medium" asChild>
-            <Link href="/bots">
-              <ClipboardList /> View active bots
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`${DOCS_URL}/api-v2/getting-started/sending-a-bot#scheduled-bot`}
+            >
+              <ClipboardList /> Go to docs
             </Link>
           </Button>
         </EmptyContent>

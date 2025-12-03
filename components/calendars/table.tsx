@@ -81,8 +81,11 @@ export function CalendarsTable({
         </EmptyHeader>
         <EmptyContent>
           <Button variant="primary" size="sm" className="font-medium" asChild>
-            {/* TODO: Add a link to the calendar docs */}
-            <Link target="_blank" rel="noopener noreferrer" href={DOCS_URL}>
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`${DOCS_URL}/api-v2/getting-started/calendars`}
+            >
               Go to docs <ExternalLink />
             </Link>
           </Button>
