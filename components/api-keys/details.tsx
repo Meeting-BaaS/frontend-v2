@@ -10,9 +10,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { NameValuePair } from "@/components/ui/name-value-pair";
+import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { formatRelativeDate } from "@/lib/date-helpers";
 import { type ApiKeyDetails, permissionMap } from "@/lib/schemas/api-keys";
-import { Tooltip, TooltipContent } from "../ui/tooltip";
 
 interface ApiKeyDetailsProps {
   apiKeyDetails: ApiKeyDetails;
@@ -31,12 +31,12 @@ export function ViewApiKeyDetails({ apiKeyDetails }: ApiKeyDetailsProps) {
           containerClassName="md:flex-1"
           gradientIcon={
             <GradientIcon color="var(--color-orange-300)" size="xl">
-              <KeyRound className="text-white" size={32} />
+              <KeyRound size={32} />
             </GradientIcon>
           }
         />
         <div className="flex w-full sm:w-auto gap-2 flex-row sm:items-center">
-          <DocsButton className="w-full sm:w-auto" />
+          <DocsButton name="Docs" keyBinding="D" uriSuffix="api-v2/api-keys" />
           <TableActions apiKey={apiKeyDetails} buttonVariant="outline" />
         </div>
       </div>
@@ -58,18 +58,20 @@ export function ViewApiKeyDetails({ apiKeyDetails }: ApiKeyDetailsProps) {
           title="Last Used"
           valueClassName="capitalize"
           value={
-            apiKeyDetails.requestUuid ? (
+            apiKeyDetails.requestId ? (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
                       className="flex gap-3 items-center decoration-dashed underline hover:decoration-baas-primary-500 hover:decoration-solid"
-                      href={`/logs/${apiKeyDetails.requestUuid}`}
+                      href={`/logs/${apiKeyDetails.requestId?.toString()}`}
                     >
                       {lastRequest}
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent>View the last used log</TooltipContent>
+                  <TooltipContent side="left">
+                    View the last used log
+                  </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             ) : (

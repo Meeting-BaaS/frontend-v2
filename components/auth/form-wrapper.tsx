@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { RainbowBadge } from "@/components/ui/rainbow-badge";
 import { itemVariant } from "@/lib/animations/auth-forms";
 
 interface FormWrapperProps {
@@ -10,6 +11,7 @@ interface FormWrapperProps {
   subtitle?: string;
   redirectLink?: ReactNode;
   children: ReactNode;
+  v2Badge?: boolean;
 }
 
 export default function FormWrapper({
@@ -17,6 +19,7 @@ export default function FormWrapper({
   subtitle,
   redirectLink,
   children,
+  v2Badge,
 }: FormWrapperProps) {
   return (
     <>
@@ -49,15 +52,20 @@ export default function FormWrapper({
       >
         {title || "Welcome"}
       </motion.h1>
-      <motion.p
+      <motion.div
         variants={itemVariant}
         initial="hidden"
         animate="visible"
         exit="hidden"
-        className="text-muted-foreground text-sm"
+        className="text-muted-foreground items-center justify-center text-sm flex gap-3"
       >
-        {subtitle || "Unlock all the features of Meeting BaaS"}
-      </motion.p>
+        {subtitle || "Unlock all the features of"}
+        {v2Badge && (
+          <RainbowBadge>
+            Meeting BaaS <span className="font-bold">v2</span>
+          </RainbowBadge>
+        )}
+      </motion.div>
       {children}
       {redirectLink && (
         <motion.div

@@ -3,15 +3,18 @@
 import {
   Bot,
   Calendar,
-  ChartColumn,
-  FlaskConical,
+  CalendarClock,
+  // ChartColumn,
   KeyRound,
   Logs,
+  MessageSquare,
   Settings,
+  Users,
   Webhook,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { NavUser } from "@/components/layout/nav-user";
 import { TeamSwitcher } from "@/components/layout/team-switcher";
 import {
   Sidebar,
@@ -19,15 +22,14 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import type { User } from "@/lib/schemas/session";
-import type { TeamDetails } from "@/lib/schemas/teams";
-import { NavUser } from "./nav-user";
+import type { SessionResponse } from "@/lib/schemas/session";
 
 const items = [
   {
@@ -36,15 +38,21 @@ const items = [
     icon: Bot,
   },
   {
+    title: "Scheduled Bots",
+    url: "/scheduled-bots",
+    icon: CalendarClock,
+  },
+  {
     title: "Calendars",
     url: "/calendars",
     icon: Calendar,
   },
-  {
-    title: "Analytics",
-    url: "/analytics",
-    icon: ChartColumn,
-  },
+  // Will be implemented in the future
+  // {
+  //   title: "Analytics",
+  //   url: "/analytics",
+  //   icon: ChartColumn,
+  // },
   {
     title: "Logs",
     url: "/logs",
@@ -61,30 +69,43 @@ const items = [
     icon: KeyRound,
   },
   {
-    title: "Playground",
-    url: "/playground",
-    icon: FlaskConical,
-  },
-  {
     title: "Settings",
     url: "/settings",
     icon: Settings,
   },
 ];
 
+const adminItems = [
+  {
+    title: "All Bots",
+    url: "/admin/bots",
+    icon: Bot,
+  },
+  {
+    title: "All Teams",
+    url: "/admin/teams",
+    icon: Users,
+  },
+  {
+    title: "Support Panel",
+    url: "/admin/support",
+    icon: MessageSquare,
+  },
+];
+
 interface AppSidebarProps {
-  user: User;
-  teamDetails: TeamDetails;
+  sessionResponse?: SessionResponse | null;
 }
 
-export function AppSidebar({ user, teamDetails }: AppSidebarProps) {
+export function AppSidebar({ sessionResponse }: AppSidebarProps) {
   const pathname = usePathname();
   const { open, isMobile } = useSidebar();
+  const isAdmin = sessionResponse?.user.role === "admin";
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="z-30">
       <SidebarHeader>
-        <TeamSwitcher teamDetails={teamDetails} />
+        <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -110,9 +131,35 @@ export function AppSidebar({ user, teamDetails }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith(item.url)}
+                      tooltip={{
+                        children: item.title,
+                        hidden: open || isMobile,
+                      }}
+                    >
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} teamDetails={teamDetails} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

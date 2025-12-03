@@ -50,7 +50,7 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
               control={form.control}
               name="name"
               render={({ field, fieldState }) => (
-                <Field>
+                <Field data-invalid={fieldState.invalid}>
                   <FieldContent>
                     <FormControl>
                       <Input
@@ -73,7 +73,10 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
             control={form.control}
             name="email"
             render={({ field, fieldState }) => (
-              <Field className={cn(formType === "reset-password" && "hidden")}>
+              <Field
+                data-invalid={fieldState.invalid}
+                className={cn(formType === "reset-password" && "hidden")}
+              >
                 <FieldContent>
                   <FormControl>
                     <Input
@@ -96,15 +99,22 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
           {["sign-in", "sign-up", "reset-password"].includes(formType) && (
             <PasswordField
               loading={loading}
-              formType={formType}
               name="password"
+              placeholder="Password"
+              autoComplete={
+                formType === "sign-up" || formType === "reset-password"
+                  ? "new-password"
+                  : "current-password"
+              }
+              showForgotPasswordLink={formType === "sign-in"}
             />
           )}
           {formType === "reset-password" && (
             <PasswordField
               loading={loading}
-              formType={formType}
               name="confirmPassword"
+              placeholder="Confirm password"
+              autoComplete="new-password"
             />
           )}
         </FieldGroup>

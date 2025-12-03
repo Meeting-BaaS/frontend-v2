@@ -5,13 +5,13 @@ import { axiosGetInstance } from "@/lib/api-client";
 import { GET_API_KEY_DETAILS, GET_SESSION } from "@/lib/api-routes";
 import {
   type GetApiKeyDetailsResponse,
+  getApiKeyDetailsRequestParamsSchema,
   getApiKeyDetailsResponseSchema,
 } from "@/lib/schemas/api-keys";
 import {
   type SessionResponse,
   sessionResponseSchema,
 } from "@/lib/schemas/session";
-import { parseApiKeySlug } from "@/lib/utils";
 
 interface ApiKeyDetailsPageProps {
   params: Promise<{ slug: string }>;
@@ -20,6 +20,8 @@ interface ApiKeyDetailsPageProps {
 export default async function ApiKeyDetailsPage({
   params,
 }: ApiKeyDetailsPageProps) {
+  const requestParams = await params;
+
   // Redirect if user is not logged in
   // It is recommended to verify session on each page
   const cookieStore = await cookies();
@@ -32,16 +34,18 @@ export default async function ApiKeyDetailsPage({
       },
     },
   );
+  const redirectSearchParams = new URLSearchParams();
+  // We haven't validated the request params yet, so we shouldn't redirect to the specific api key details page
+  redirectSearchParams.set("redirectTo", `/api-keys`);
   if (!session) {
-    return redirect("/sign-in");
+    return redirect(`/sign-in?${redirectSearchParams.toString()}`);
   }
 
-  const { slug } = await params;
-
-  // Parse and validate the slug
-  const parsed = parseApiKeySlug(slug);
-  if (!parsed) {
-    notFound();
+  // Parse and validate the request params
+  const { success, data: validatedParams } =
+    getApiKeyDetailsRequestParamsSchema.safeParse(requestParams);
+  if (!success) {
+    return notFound();
   }
 
   const apiKeyDetails = await axiosGetInstance<GetApiKeyDetailsResponse>(
@@ -52,8 +56,8 @@ export default async function ApiKeyDetailsPage({
         Cookie: cookieStore.toString(),
       },
       params: {
-        timestamp: parsed.timestamp.toString(),
-        id: parsed.id.toString(),
+        timestamp: validatedParams.slug.timestamp,
+        id: validatedParams.slug.id,
       },
     },
   );

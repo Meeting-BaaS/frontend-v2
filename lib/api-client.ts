@@ -1,8 +1,9 @@
 // /lib/apiClient.ts
 
-import axios, { type AxiosRequestConfig } from "axios";
+import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import type { ZodType } from "zod";
 import { env } from "@/env";
+import { type ErrorResponse, errorResponseSchema } from "@/lib/schemas/common";
 
 export const api = axios.create({
   baseURL: env.NEXT_PUBLIC_API_SERVER_BASEURL,
@@ -10,6 +11,34 @@ export const api = axios.create({
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
+
+/**
+ * Extended Error type for API errors with code and original error
+ */
+export interface APIError extends Error {
+  errorResponse: ErrorResponse;
+}
+
+// Response interceptor to extract error messages from API responses
+api.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    // Validate and extract error message from API response
+    if (error.response?.data) {
+      const parsed = errorResponseSchema.safeParse(error.response.data);
+      if (parsed.success) {
+        const apiError = new Error(parsed.data.error) as APIError;
+        // Attach error response and preserve original error for debugging
+        apiError.errorResponse = parsed.data;
+        return Promise.reject(apiError);
+      } else {
+        console.error("Invalid API response:", parsed.error);
+      }
+    }
+    // Otherwise, return the original error
+    return Promise.reject(error);
+  },
+);
 
 export async function axiosGetInstance<T>(
   url: string,
@@ -33,13 +62,18 @@ export async function axiosGetInstance<T>(
 export async function axiosPostInstance<TRequest, TResponse>(
   url: string,
   data: TRequest,
-  schema: ZodType<TResponse>,
+  schema?: ZodType<TResponse>,
   options?: AxiosRequestConfig,
-): Promise<TResponse> {
+): Promise<TResponse | null> {
   const response = await api.post(url, data, options);
 
   // To do: remove before production
   console.log(url, "Response:", JSON.stringify(response.data, null, 2));
+
+  // If no schema is provided (response is not expected), return null
+  if (!schema) {
+    return null;
+  }
 
   const parsed = schema.safeParse(response.data);
   if (!parsed.success) {
@@ -73,4 +107,41 @@ export async function axiosPutInstance<TRequest, TResponse>(
   }
 
   return parsed.data;
+}
+
+export async function axiosPatchInstance<TRequest, TResponse>(
+  url: string,
+  data: TRequest,
+  schema?: ZodType<TResponse>,
+  options?: AxiosRequestConfig,
+): Promise<TResponse | null> {
+  const response = await api.patch(url, data, options);
+
+  // To do: remove before production
+  console.log(url, "Response:", JSON.stringify(response.data, null, 2));
+
+  // If no schema is provided (response is not expected), return null
+  if (!schema) {
+    return null;
+  }
+
+  const parsed = schema.safeParse(response.data);
+  if (!parsed.success) {
+    console.error("Invalid API response:", parsed.error);
+    throw new Error("API response validation failed");
+  }
+
+  return parsed.data;
+}
+
+export async function axiosDeleteInstance(
+  url: string,
+  options?: AxiosRequestConfig,
+): Promise<null> {
+  const response = await api.delete(url, options);
+
+  // To do: remove before production
+  console.log(url, "Response:", JSON.stringify(response.data, null, 2));
+
+  return null;
 }

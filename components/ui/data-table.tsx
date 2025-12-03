@@ -2,8 +2,15 @@
 
 import { flexRender, type Table } from "@tanstack/react-table";
 import { Search } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import {
   InputGroup,
   InputGroupAddon,
@@ -18,21 +25,42 @@ import {
   TableRow,
   Table as UITable,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+
+// Extend ColumnMeta type to include className
+declare module "@tanstack/react-table" {
+  // biome-ignore lint/correctness/noUnusedVariables: We need to extend the ColumnMeta type to include className
+  interface ColumnMeta<TData, TValue> {
+    className?: string;
+  }
+}
 
 interface DataTableProps<TData> {
   table: Table<TData>;
-  enableSearch?: boolean;
+  clientSideSearch?: boolean;
   searchColumn?: string;
   searchPlaceholder?: string;
-  additionalFilters?: React.ReactNode;
+  clientSideFilters?: React.ReactNode;
+  serverSidePagination?: boolean;
+  prevIteratorLink?: string | null;
+  nextIteratorLink?: string | null;
+  rowCellClassName?: string;
+  tableContainerClassName?: string;
+  scrollOnPageChange?: boolean;
 }
 
 export function DataTable<TData>({
   table,
-  enableSearch = true,
+  clientSideSearch = false,
   searchColumn = "email",
   searchPlaceholder = "Search...",
-  additionalFilters,
+  clientSideFilters,
+  serverSidePagination = false,
+  prevIteratorLink,
+  nextIteratorLink,
+  rowCellClassName,
+  tableContainerClassName,
+  scrollOnPageChange = true,
 }: DataTableProps<TData>) {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -51,111 +79,167 @@ export function DataTable<TData>({
 
   return (
     <div>
-      <div className="flex mt-4 sm:mt-0 gap-2 w-full flex-col md:flex-row items-center py-4">
-        {enableSearch && (
-          <InputGroup className="flex-1">
-            <InputGroupInput
-              ref={searchInputRef}
-              placeholder={searchPlaceholder}
-              value={
-                (table.getColumn(searchColumn)?.getFilterValue() as string) ??
-                ""
-              }
-              onChange={(event) =>
-                table
-                  .getColumn(searchColumn)
-                  ?.setFilterValue(event.target.value)
-              }
-            />
-            <InputGroupAddon>
-              <Search />
-            </InputGroupAddon>
-            <InputGroupAddon align="inline-end">
-              <KbdGroup>
-                <Kbd>⌘</Kbd>
-                <Kbd>S</Kbd>
-              </KbdGroup>
-            </InputGroupAddon>
-          </InputGroup>
-        )}
-        {additionalFilters}
-      </div>
-      <div className="overflow-hidden">
-        <UITable className="m-0 w-max min-w-full border-separate border-spacing-0 border-none p-0 text-left md:w-full">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className="h-8 !bg-secondary dark:!bg-input/30 border-b border-t border-input first:rounded-l-md first:border-l last:rounded-r-md last:border-r text-muted-foreground"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-transparent"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className="py-3 h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-3 text-sm"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+      {serverSidePagination && (
+        // Hidden links are rendered at the top of the page so that NextJS can prefetch the next and previous pages
+        <div className="hidden">
+          <Link href={prevIteratorLink ?? ""}>Previous</Link>
+
+          <Link href={nextIteratorLink ?? ""}>Next</Link>
+        </div>
+      )}
+      {(clientSideSearch || clientSideFilters) && (
+        <div className="flex mt-4 sm:mt-0 gap-2 w-full flex-col md:flex-row items-center py-4">
+          {clientSideSearch && searchColumn && (
+            <InputGroup className="flex-1">
+              <InputGroupInput
+                name={searchColumn ?? "search"}
+                ref={searchInputRef}
+                placeholder={searchPlaceholder}
+                value={
+                  (table.getColumn(searchColumn)?.getFilterValue() as string) ??
+                  ""
+                }
+                onChange={(event) =>
+                  table
+                    .getColumn(searchColumn)
+                    ?.setFilterValue(event.target.value)
+                }
+              />
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+              <InputGroupAddon align="inline-end">
+                <KbdGroup>
+                  <Kbd>⌘</Kbd>
+                  <Kbd>S</Kbd>
+                </KbdGroup>
+              </InputGroupAddon>
+            </InputGroup>
+          )}
+          {clientSideFilters}
+        </div>
+      )}
+      <div className={cn("overflow-hidden", tableContainerClassName)}>
+        {table.getRowModel().rows?.length === 0 ? (
+          <Empty className="border rounded-lg">
+            <EmptyHeader>
+              <EmptyTitle>No results found</EmptyTitle>
+              <EmptyDescription>
+                Try adjusting your filters, date range or search query
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <UITable className="m-0 border-separate border-spacing-0 border-none p-0 text-left">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className={cn(
+                          "h-8 px-3 !bg-secondary dark:!bg-input/30 border-b border-t border-input first:rounded-l-md first:border-l last:rounded-r-md last:border-r last:text-right text-muted-foreground",
+                          header.column.columnDef.meta?.className,
+                        )}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={table.getAllColumns().length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </UITable>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length > 0 &&
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="hover:bg-transparent"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className={cn(
+                          "py-3 h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-3 text-sm last:text-right",
+                          cell.column.columnDef.meta?.className,
+                          rowCellClassName,
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </UITable>
+        )}
       </div>
       <div className="flex items-center md:justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-1/2 md:w-auto"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-1/2 md:w-auto"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+        {serverSidePagination ? (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-1/2 md:w-auto"
+              asChild={Boolean(prevIteratorLink)}
+              disabled={!prevIteratorLink}
+            >
+              {prevIteratorLink ? (
+                <Link href={prevIteratorLink} scroll={scrollOnPageChange}>
+                  Previous
+                </Link>
+              ) : (
+                "Previous"
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-1/2 md:w-auto"
+              asChild={Boolean(nextIteratorLink)}
+              disabled={!nextIteratorLink}
+            >
+              {nextIteratorLink ? (
+                <Link href={nextIteratorLink} scroll={scrollOnPageChange}>
+                  Next
+                </Link>
+              ) : (
+                "Next"
+              )}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-1/2 md:w-auto"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-1/2 md:w-auto"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

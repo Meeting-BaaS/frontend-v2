@@ -31,7 +31,7 @@ export const SETTINGS_URL = `https://settings.${environment}${BASE_DOMAIN}`;
 export const LOGS_URL = createUrl("logs");
 export const BOT_ANALYTICS_URL = createUrl("analytics");
 export const USAGE_URL = `${BOT_ANALYTICS_URL}/usage`;
-export const PRICING_URL = createUrl("pricing");
+export const PRICING_URL = "https://meetingbaas.com/pricing";
 export const BILLING_URL = `${PRICING_URL}/billing`;
 export const CREDENTIALS_URL = `${SETTINGS_URL}/credentials`;
 export const STATUS_URL = createUrl("status");
@@ -83,3 +83,9 @@ export const getGrafanaLogsUrl = (bot_uuid?: string) =>
 
 // Webhook testing URL
 export const WEBHOOK_TEST_URL = "https://webhook.cool";
+export const BOOK_A_CALL_URL = "https://www.meetingbaas.com/en/company/contact";
+
+export const BRANDING_IMAGE_URL =
+  "https://branding-template.s3.fr-par.scw.cloud/branding_template.png";
+
+export const V1_BAAS_URL = "https://auth.meetingbaas.com";

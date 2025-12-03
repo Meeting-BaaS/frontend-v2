@@ -1,5 +1,5 @@
 import { createEnv } from "@t3-oss/env-nextjs";
-import { url } from "zod";
+import { email, url } from "zod";
 
 export const env = createEnv({
   server: {
@@ -10,10 +10,12 @@ export const env = createEnv({
     // Client-side environment variables (must be prefixed with NEXT_PUBLIC_)
     NEXT_PUBLIC_FRONTEND_BASEURL: url().default("http://localhost:3000"),
     NEXT_PUBLIC_API_SERVER_BASEURL: url().default("http://localhost:3001"),
+    NEXT_PUBLIC_SUPPORT_EMAIL: email().default("support@meetingbaas.com"),
   },
   runtimeEnv: {
     // Map environment variables to their actual values
     NEXT_PUBLIC_FRONTEND_BASEURL: process.env.NEXT_PUBLIC_FRONTEND_BASEURL,
     NEXT_PUBLIC_API_SERVER_BASEURL: process.env.NEXT_PUBLIC_API_SERVER_BASEURL,
+    NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
   },
 });

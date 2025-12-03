@@ -16,6 +16,8 @@ interface UseDataTableProps<TData, TValue> {
   initialColumnFilters?: ColumnFiltersState;
   initialSorting?: SortingState;
   getRowId?: (row: TData) => string;
+  manualPagination?: boolean;
+  meta?: Record<string, unknown>;
 }
 
 export function useDataTable<TData, TValue>({
@@ -24,6 +26,8 @@ export function useDataTable<TData, TValue>({
   initialColumnFilters = [],
   initialSorting = [],
   getRowId,
+  manualPagination = false,
+  meta,
 }: UseDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>(initialSorting);
   const [columnFilters, setColumnFilters] =
@@ -33,12 +37,14 @@ export function useDataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    manualPagination,
     getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getRowId,
+    meta,
     state: {
       sorting,
       columnFilters,

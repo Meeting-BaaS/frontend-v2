@@ -24,11 +24,24 @@ const generateApiKeySlug = (id: number, createdAt: Date): string => {
   return `${id}A${timestamp}`;
 };
 
+// Column width configuration
+export const columnWidths = {
+  name: "min-w-[220px] max-w-[300px] w-[30%]",
+  start: "min-w-[120px] max-w-[150px] w-[15%]",
+  permissions: "min-w-[140px] max-w-[180px] w-[18%]",
+  lastRequest: "min-w-[130px] max-w-[160px] w-[16%]",
+  createdAt: "min-w-[120px] max-w-[150px] w-[15%]",
+  actions: "min-w-[100px] max-w-[100px] w-[6%]",
+} as const;
+
 export const columns: ColumnDef<ApiKey>[] = [
   {
     id: "name",
     accessorKey: "name",
     header: "Name",
+    meta: {
+      className: columnWidths.name,
+    },
     cell: ({ row }) => {
       return (
         <div className="flex gap-1 items-center group">
@@ -38,9 +51,9 @@ export const columns: ColumnDef<ApiKey>[] = [
               className="flex gap-3 items-center decoration-dashed underline group-hover:decoration-baas-primary-500 group-hover:decoration-solid"
             >
               <GradientIcon color="var(--color-orange-300)">
-                <KeyRound className="dark:text-foreground/60 text-white" />
+                <KeyRound />
               </GradientIcon>
-              {row.original.name}
+              <span className="truncate max-w-sm">{row.original.name}</span>
             </Link>
           </Button>
           <Button
@@ -59,6 +72,9 @@ export const columns: ColumnDef<ApiKey>[] = [
     id: "start",
     accessorKey: "start",
     header: "Token",
+    meta: {
+      className: columnWidths.start,
+    },
     cell: ({ row }) => {
       return <Badge variant="secondary">{row.original.start}...</Badge>;
     },
@@ -70,11 +86,17 @@ export const columns: ColumnDef<ApiKey>[] = [
       return permissionMap[permissions];
     },
     header: "Permission",
+    meta: {
+      className: columnWidths.permissions,
+    },
   },
   {
     id: "lastRequest",
     accessorKey: "lastRequest",
     header: "Last Used",
+    meta: {
+      className: columnWidths.lastRequest,
+    },
     cell: ({ row }) => {
       const value = row.original.lastRequest;
       if (!value) {
@@ -111,6 +133,9 @@ export const columns: ColumnDef<ApiKey>[] = [
     id: "createdAt",
     accessorKey: "createdAt",
     header: "Created At",
+    meta: {
+      className: columnWidths.createdAt,
+    },
     cell: ({ row }) => (
       <div className="capitalize">
         {formatRelativeDate(row.original.createdAt)}
@@ -119,6 +144,9 @@ export const columns: ColumnDef<ApiKey>[] = [
   },
   {
     id: "actions",
+    meta: {
+      className: columnWidths.actions,
+    },
     cell: ({ row }) => <TableActions apiKey={row.original} />,
   },
 ];

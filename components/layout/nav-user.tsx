@@ -3,6 +3,7 @@
 import {
   CircleUserRound,
   EllipsisVertical,
+  ExternalLink,
   Fish,
   ListCheck,
   LogOut,
@@ -11,8 +12,8 @@ import {
   Sun,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useMemo } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -31,30 +32,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useUser } from "@/hooks/use-user";
 import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
-import type { User } from "@/lib/schemas/session";
+import { V1_BAAS_URL } from "@/lib/external-urls";
 import type { TeamDetails } from "@/lib/schemas/teams";
 import type { Theme } from "@/types/common.types";
 
-interface NavUserProps {
-  user: User;
-  teamDetails: TeamDetails;
-}
-
 const higherPlanMap: Record<TeamDetails[number]["plan"], string | null> = {
-  PAYG: "Pro",
-  Pro: "Scale",
-  Scale: "Enterprise",
-  Enterprise: null,
+  payg: "pro",
+  pro: "scale",
+  scale: "enterprise",
+  enterprise: null,
 };
 
-export function NavUser({ user, teamDetails }: NavUserProps) {
+export function NavUser() {
   const { isMobile, open } = useSidebar();
-  const pathname = usePathname();
   const { setTheme, resolvedTheme } = useTheme();
-
-  const activeTeam = teamDetails.find((team) => team.isActive);
+  const { user, activeTeam } = useUser();
+  const higherPlan = useMemo(
+    () => higherPlanMap[activeTeam?.plan ?? "payg"],
+    [activeTeam],
+  );
 
   const handleSignOut = async () => {
     const signedOut = await authClient.signOut();
@@ -62,7 +61,9 @@ export function NavUser({ user, teamDetails }: NavUserProps) {
       toast.error(genericError);
       return;
     }
-    window.location.href = `/sign-in?redirectTo=${pathname}`;
+    const redirectSearchParams = new URLSearchParams();
+    redirectSearchParams.set("redirectTo", "/bots");
+    window.location.href = `/sign-in?${redirectSearchParams.toString()}`;
   };
 
   const handleChangeTheme = async (theme: Theme) => {
@@ -115,17 +116,20 @@ export function NavUser({ user, teamDetails }: NavUserProps) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/settings?page=account">
+                <Link href="/account">
                   <CircleUserRound />
                   My Account
                   <DropdownMenuShortcut>M</DropdownMenuShortcut>
                 </Link>
               </DropdownMenuItem>
-              {activeTeam?.plan !== "Enterprise" && (
+              {activeTeam?.plan !== "enterprise" && (
                 <DropdownMenuItem asChild>
-                  <Link href="/settings?page=upgrade">
+                  <Link href="/settings/usage?api_plans=true">
                     <Sparkles />
-                    Upgrade to {higherPlanMap[activeTeam?.plan ?? "Pro"]}
+                    <div>
+                      Upgrade to{" "}
+                      <span className="capitalize">{higherPlan}</span>
+                    </div>
                     <DropdownMenuShortcut>U</DropdownMenuShortcut>
                   </Link>
                 </DropdownMenuItem>
@@ -156,10 +160,24 @@ export function NavUser({ user, teamDetails }: NavUserProps) {
                   <DropdownMenuShortcut>S</DropdownMenuShortcut>
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={V1_BAAS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink />
+                  Access Meeting BaaS v1
+                  <DropdownMenuShortcut>V</DropdownMenuShortcut>
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
-              <LogOut />
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="text-destructive hover:!text-destructive hover:!bg-destructive/10"
+            >
+              <LogOut className="text-destructive" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

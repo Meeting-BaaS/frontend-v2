@@ -170,6 +170,7 @@ export default function SignUpForm({
         >
           <Button
             type="submit"
+            size="sm"
             disabled={loading}
             aria-label={loading ? "Creating account..." : "Create an account"}
             aria-busy={isSignUpLoading}

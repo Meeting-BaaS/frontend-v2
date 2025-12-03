@@ -24,6 +24,7 @@ export default async function SignUpPage({
   return (
     <FormWrapper
       key="sign-up"
+      v2Badge
       redirectLink={
         <>
           Already have an account?{" "}

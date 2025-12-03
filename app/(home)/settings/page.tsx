@@ -1,9 +1,6 @@
-import { PageHeading } from "@/components/layout/page-heading";
+import { redirect } from "next/navigation";
 
-export default async function SettingsPage() {
-  return (
-    <section>
-      <PageHeading title="Settings" />
-    </section>
-  );
+export default function SettingsPage() {
+  // Redirect to the default tab (usage)
+  redirect("/settings/usage");
 }

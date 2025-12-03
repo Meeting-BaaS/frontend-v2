@@ -89,6 +89,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         >
           <Button
             type="submit"
+            size="sm"
             disabled={isResetPasswordLoading}
             aria-label={
               isResetPasswordLoading

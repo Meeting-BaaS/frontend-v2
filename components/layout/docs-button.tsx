@@ -9,6 +9,7 @@ import { DOCS_URL } from "@/lib/external-urls";
 
 interface DocsButtonProps {
   href?: string;
+  uriSuffix?: string;
   keyBinding?: string;
   name?: string;
   className?: string;
@@ -24,9 +25,10 @@ interface DocsButtonProps {
 
 export function DocsButton({
   href = DOCS_URL,
+  uriSuffix = "",
   keyBinding = "A",
   name = "API",
-  className,
+  className = "grow-1 sm:grow-0",
   size = "sm",
   variant = "outline",
 }: DocsButtonProps) {
@@ -49,12 +51,7 @@ export function DocsButton({
       // Handle the specified key binding
       if (event.key.toLowerCase() === keyBinding.toLowerCase()) {
         // Only trigger if no modifier keys are pressed
-        if (
-          !event.ctrlKey &&
-          !event.metaKey &&
-          !event.altKey &&
-          !event.shiftKey
-        ) {
+        if (!event.ctrlKey && !event.metaKey && !event.altKey) {
           event.preventDefault();
           buttonRef.current?.click();
         }
@@ -69,7 +66,7 @@ export function DocsButton({
     <Button variant={variant} size={size} className={className} asChild>
       <Link
         ref={buttonRef}
-        href={href}
+        href={`${href}/${uriSuffix.startsWith("/") ? uriSuffix.slice(1) : uriSuffix}`}
         target="_blank"
         rel="noopener noreferrer"
       >

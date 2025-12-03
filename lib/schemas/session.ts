@@ -18,7 +18,9 @@ export const session = object({
   userAgent: string().nullable(),
   userId: string().transform((str) => Number.parseInt(str, 10)),
   impersonatedBy: string().nullable(),
-  activeOrganizationId: string().transform((str) => Number.parseInt(str, 10)),
+  activeOrganizationId: string()
+    .transform((str) => Number.parseInt(str, 10))
+    .nullable(),
   id: string().transform((str) => Number.parseInt(str, 10)),
 });
 

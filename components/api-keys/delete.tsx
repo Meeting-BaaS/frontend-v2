@@ -4,6 +4,7 @@ import { SendHorizontal } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,12 +15,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Field,
+  FieldContent,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
 import type { ApiKey } from "@/lib/schemas/api-keys";
-import { Field, FieldContent, FieldGroup, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
+import { CopyButton } from "../ui/copy-button";
 
 interface DeleteAPIKeyDialogProps {
   open: boolean;
@@ -100,10 +107,28 @@ export function DeleteAPIKeyDialog({
             </div>
             <FieldGroup>
               <Field>
-                <FieldLabel>Type "delete" to confirm</FieldLabel>
+                <FieldLabel htmlFor="delete-confirmation">
+                  Type{" "}
+                  <Badge
+                    variant="warning"
+                    className="flex items-center gap-2 py-1 text-sm"
+                  >
+                    delete
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-3 [&_svg]:size-3 [&_svg]:text-foreground"
+                      asChild
+                    >
+                      <CopyButton text="delete" />
+                    </Button>
+                  </Badge>{" "}
+                  to confirm
+                </FieldLabel>
                 <FieldContent>
                   <Input
                     value={typedText}
+                    id="delete-confirmation"
                     onChange={(e) => setTypedText(e.target.value)}
                     disabled={loading}
                     aria-label="Type 'delete' to confirm"

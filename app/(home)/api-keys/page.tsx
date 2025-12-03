@@ -33,8 +33,10 @@ export default async function ApiKeysPage({
       },
     },
   );
+  const redirectSearchParams = new URLSearchParams();
+  redirectSearchParams.set("redirectTo", "/api-keys");
   if (!session) {
-    return redirect("/sign-in");
+    return redirect(`/sign-in?${redirectSearchParams.toString()}`);
   }
 
   const apiKeys = await axiosGetInstance<ApiKeyListResponse>(
@@ -49,7 +51,7 @@ export default async function ApiKeysPage({
 
   return (
     <section>
-      <ApiKeysView apiKeys={apiKeys} newKey={isNew} />
+      <ApiKeysView apiKeys={apiKeys.data ?? []} newKey={isNew} />
     </section>
   );
 }

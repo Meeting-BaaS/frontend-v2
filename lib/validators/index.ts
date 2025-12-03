@@ -1,3 +1,4 @@
+export * from "@/lib/validators/create-new-team-schema";
 export * from "@/lib/validators/forgot-password-schema";
 export * from "@/lib/validators/reset-password-schema";
 export * from "@/lib/validators/sign-in-schema";

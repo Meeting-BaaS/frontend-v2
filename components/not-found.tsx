@@ -6,23 +6,27 @@ import { spotlightVariant } from "@/lib/animations/background";
 
 export default function SharedNotFound() {
   return (
-    <div className="relative flex max-h-screen max-w-screen grow flex-col items-center justify-center">
-      <div className="z-10 flex flex-col items-center justify-center gap-10 p-4 text-center">
-        <h1 className="font-bold text-3xl">Page not found...</h1>
-        <Image
-          src="/not-found.svg"
-          alt="Illustration showing a 404 - page not found"
-          width={363}
-          height={242}
-          priority
-        />
-        <div className="max-w-4xl space-y-1 text-lg">
-          <p>Looks like you found a page that doesn&apos;t yet exist.</p>
-          <p>Let&apos;s get you back to something fishy!</p>
-          <Button variant="link" asChild className="h-auto p-0 text-lg">
-            <Link href="/">Back to Home</Link>
-          </Button>
+    <div className="relative flex min-h-screen items-center justify-center p-4">
+      <div className="z-10 w-full max-w-md space-y-6 text-center">
+        <div className="flex justify-center">
+          <Image
+            src="/not-found.svg"
+            alt="Illustration showing a 404 - page not found"
+            width={242}
+            height={161}
+            className="h-auto w-auto"
+          />
         </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold">Page not found</h1>
+          <p className="text-sm text-muted-foreground">
+            Looks like you found a page that doesn&apos;t yet exist. Let&apos;s
+            get you back to something fishy!
+          </p>
+        </div>
+        <Button variant="outline" asChild className="w-full">
+          <Link href="/bots">Back to Home</Link>
+        </Button>
       </div>
       <motion.div
         className="-translate-1/2 absolute top-1/2 left-1/2 h-48 w-48 rounded-full blur-3xl"

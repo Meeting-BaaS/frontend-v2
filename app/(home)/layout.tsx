@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { AppHeader } from "@/components/layout/app-header";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { UserProvider } from "@/contexts/user-context";
+import { LayoutContent } from "@/components/layout/layout-content";
 import { axiosGetInstance } from "@/lib/api-client";
 import { GET_SESSION, GET_TEAM_DETAILS } from "@/lib/api-routes";
 import {
@@ -39,7 +35,11 @@ export default async function HomeLayout({
     },
   );
   if (!session) {
-    return redirect("/sign-in");
+    // Important: This is allowed to pass through
+    // Because the expectation is that each individual page will handle the redirection
+    // And will have a session check on the page itself
+    // As per Next.js, that is the correct approach
+    return children;
   }
 
   const teamDetails = await axiosGetInstance<TeamDetailsResponse>(
@@ -52,27 +52,18 @@ export default async function HomeLayout({
     },
   );
 
+  const sidebarState =
+    cookieStore.get("sidebar_state") === undefined
+      ? true
+      : cookieStore.get("sidebar_state")?.value === "true";
+
   return (
-    <UserProvider
-      user={session.user}
-      session={session.session}
+    <LayoutContent
+      sessionResponse={session}
       teamDetails={teamDetails.data}
+      sidebarState={sidebarState}
     >
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "15.5rem",
-          } as React.CSSProperties
-        }
-      >
-        <AppSidebar user={session.user} teamDetails={teamDetails.data} />
-        <main className="flex flex-col w-full h-screen">
-          <AppHeader />
-          <div className="flex-1 overflow-y-auto px-10 lg:px-20 xl:px-32 py-8">
-            {children}
-          </div>
-        </main>
-      </SidebarProvider>
-    </UserProvider>
+      {children}
+    </LayoutContent>
   );
 }
