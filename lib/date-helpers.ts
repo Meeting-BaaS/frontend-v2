@@ -3,7 +3,7 @@ import {
   formatDistanceToNow,
   intervalToDuration,
   isBefore,
-  isThisISOWeek,
+  isToday,
   parseISO,
 } from "date-fns";
 
@@ -51,11 +51,11 @@ export function formatUNIXDate(
 export function formatRelativeDate(isoString: string): string {
   const date = parseISO(isoString);
 
-  if (isThisISOWeek(date)) {
+  if (isToday(date)) {
     return formatDistanceToNow(date, { addSuffix: true });
   }
 
-  // Show locale date if it's not this week, otherwise show relative time
+  // Show locale date if it's not today, otherwise show relative time
   return format(date, "MMM d, yyyy hh:mm a");
 }
 
