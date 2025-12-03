@@ -85,7 +85,11 @@ export function AppHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
         <Button variant="link" asChild>
-          <Link href={DOCS_URL} target="_blank" rel="noopener noreferrer">
+          <Link
+            href={`${DOCS_URL}/api-v2`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Docs
           </Link>
         </Button>
