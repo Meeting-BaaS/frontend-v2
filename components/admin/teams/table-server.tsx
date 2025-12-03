@@ -25,20 +25,10 @@ export async function AdminTeamsTableServer({
         Cookie: cookieStore.toString(),
       },
       params: {
-        cursor: params?.cursor ?? null,
         searchEmail: params?.searchEmail ?? null,
-        searchTeamName: params?.searchTeamName ?? null,
-        limit: params?.limit ?? 50,
       },
     },
   );
 
-  return (
-    <AdminTeamsTable
-      teams={teamsList.data}
-      prevCursor={teamsList.prev_cursor}
-      nextCursor={teamsList.cursor}
-      params={params}
-    />
-  );
+  return <AdminTeamsTable teams={teamsList.data} />;
 }

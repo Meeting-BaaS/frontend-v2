@@ -44,7 +44,7 @@ export function ApiKeysView({ apiKeys, newKey }: ApiKeysViewProps) {
           >
             <Plus /> Create API key
           </Button>
-          <DocsButton name="Docs" keyBinding="D" uriSuffix="api-v2/api-keys" />
+          <DocsButton uriSuffix="api-v2/api-keys" />
         </div>
       </div>
       <ApiKeysTable

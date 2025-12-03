@@ -32,7 +32,7 @@ const tableHeaders = [
 
 export function AdminTeamsTableSkeleton() {
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden mt-4">
       <UITable className="m-0 w-full table-fixed border-separate border-spacing-0 border-none p-0 text-left">
         <TableHeader>
           <TableRow className="hover:bg-transparent">

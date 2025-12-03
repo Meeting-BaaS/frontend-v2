@@ -74,6 +74,18 @@ export const columns: ColumnDef<AdminTeamListItem>[] = [
     meta: {
       className: columnWidths.lastBotCreatedAt,
     },
+    sortingFn: (rowA, rowB) => {
+      const a = rowA.original.lastBotCreatedAt;
+      const b = rowB.original.lastBotCreatedAt;
+
+      // Handle nulls - put them last
+      if (!a && !b) return 0;
+      if (!a) return 1; // a is null, put it after b
+      if (!b) return -1; // b is null, put it after a
+
+      // Both have values, compare dates
+      return new Date(a).getTime() - new Date(b).getTime();
+    },
     cell: ({ row }) => (
       <div className="capitalize">
         {row.original.lastBotCreatedAt ? (

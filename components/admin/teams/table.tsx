@@ -2,7 +2,6 @@
 
 import { Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
 import { columns } from "@/components/admin/teams/columns";
 import { DataTable } from "@/components/ui/data-table";
 import {
@@ -14,50 +13,25 @@ import {
 } from "@/components/ui/empty";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { useDataTable } from "@/hooks/use-data-table";
-import type {
-  AdminTeamListItem,
-  ListAllTeamsRequestQueryParams,
-} from "@/lib/schemas/admin";
+import type { AdminTeamListItem } from "@/lib/schemas/admin";
 
 interface AdminTeamsTableProps {
   teams: AdminTeamListItem[];
-  prevCursor: string | null;
-  nextCursor: string | null;
-  params: ListAllTeamsRequestQueryParams | null;
 }
 
-export function AdminTeamsTable({
-  teams,
-  prevCursor,
-  nextCursor,
-  params,
-}: AdminTeamsTableProps) {
+export function AdminTeamsTable({ teams }: AdminTeamsTableProps) {
   const searchParams = useSearchParams();
-  const cursor = params?.cursor ?? null;
+
   const { table } = useDataTable({
     data: teams || [],
     columns: columns,
     getRowId: (row) => row.teamId.toString(),
-    manualPagination: true,
+    manualPagination: false,
+    initialSorting: [
+      { id: "lastBotCreatedAt", desc: false },
+      { id: "createdAt", desc: true },
+    ],
   });
-
-  const prevCursorLink = useMemo(() => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    if (cursor && prevCursor) {
-      newSearchParams.set("cursor", prevCursor);
-      return `/admin/teams?${newSearchParams.toString()}`;
-    }
-    return null;
-  }, [cursor, prevCursor, searchParams]);
-
-  const nextCursorLink = useMemo(() => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    if (nextCursor) {
-      newSearchParams.set("cursor", nextCursor);
-      return `/admin/teams?${newSearchParams.toString()}`;
-    }
-    return null;
-  }, [nextCursor, searchParams]);
 
   if (!searchParams.toString() && (!teams || teams.length === 0)) {
     return (
@@ -78,9 +52,9 @@ export function AdminTeamsTable({
   return (
     <DataTable
       table={table}
-      serverSidePagination
-      prevIteratorLink={prevCursorLink}
-      nextIteratorLink={nextCursorLink}
+      clientSideSearch
+      searchColumn="team"
+      searchPlaceholder="Search by team name..."
     />
   );
 }
