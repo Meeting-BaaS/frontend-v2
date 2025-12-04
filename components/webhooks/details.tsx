@@ -66,7 +66,7 @@ export function ViewWebhookDetails({
           }
         />
         <div className="flex w-full sm:w-auto gap-2 flex-row sm:items-center">
-          <DocsButton name="Docs" keyBinding="D" uriSuffix="api-v2/webhooks" />
+          <DocsButton uriSuffix="api-v2/webhooks" />
           <WebhookActions
             webhookEndpoint={webhookEndpoint}
             allWebhookEvents={allWebhookEvents}

@@ -182,10 +182,7 @@ export const adminTeamListItemSchema = object({
 export type AdminTeamListItem = output<typeof adminTeamListItemSchema>;
 
 export const listAllTeamsRequestQuerySchema = object({
-  limit: integerPreprocess(number().int().positive().max(250).default(50)),
-  cursor: CursorSchema,
   searchEmail: string().trim().nullable().default(null),
-  searchTeamName: string().trim().nullable().default(null),
 }).nullable();
 
 export type ListAllTeamsRequestQueryParams = output<

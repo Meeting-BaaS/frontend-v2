@@ -16,10 +16,7 @@ const AdminTeamsView = dynamic(
 
 interface AdminTeamsPageProps {
   searchParams: Promise<{
-    cursor?: string | string[] | undefined;
     searchEmail?: string | string[] | undefined;
-    searchTeamName?: string | string[] | undefined;
-    limit?: string | string[] | undefined;
   }>;
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, ClipboardList } from "lucide-react";
+import { CalendarClock, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
@@ -85,7 +85,7 @@ export function ScheduledBotsTable({
               rel="noopener noreferrer"
               href={`${DOCS_URL}/api-v2/getting-started/sending-a-bot#scheduled-bot`}
             >
-              <ClipboardList /> Go to docs
+              Go to docs <ExternalLink />
             </Link>
           </Button>
         </EmptyContent>
