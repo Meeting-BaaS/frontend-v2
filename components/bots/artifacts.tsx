@@ -58,9 +58,6 @@ const artifactTypeConfig: Record<
 };
 
 export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
-  const hasTranscription = botDetails.artifacts?.some(
-    (artifact) => artifact.type === "transcription",
-  );
   const artifacts =
     botDetails.artifacts
       ?.filter((artifact) => artifact.uploaded)
@@ -86,7 +83,6 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
             url={artifact.signed_url ?? null}
             fileName={fileName}
             botUuid={botUuid}
-            hasTranscription={hasTranscription}
             isVideo={artifact.type === "video"}
           />
         );
