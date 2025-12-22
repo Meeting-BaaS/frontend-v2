@@ -5,6 +5,7 @@ import {
   Calendar,
   CalendarClock,
   // ChartColumn,
+  FileText,
   KeyRound,
   Logs,
   MessageSquare,
@@ -46,6 +47,11 @@ const items = [
     title: "Calendars",
     url: "/calendars",
     icon: Calendar,
+  },
+  {
+    title: "Transcripts",
+    url: "/transcripts",
+    icon: FileText,
   },
   // Will be implemented in the future
   // {

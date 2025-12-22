@@ -47,21 +47,25 @@ export const statusEnum = zodEnum([
 export type Status = output<typeof statusEnum>;
 
 // Support ticket file schema
-export const supportTicketFileSchema = zodInstanceOf(File, {
-  message: "Invalid file",
-})
-  .refine(
-    (file: File) =>
-      ALLOWED_SUPPORT_FILE_TYPES.includes(
-        file.type as (typeof ALLOWED_SUPPORT_FILE_TYPES)[number],
-      ),
-    {
-      message: `File type must be one of: ${ALLOWED_SUPPORT_FILE_TYPES.join(", ")}`,
-    },
-  )
-  .refine((file: File) => file.size <= MAX_SUPPORT_FILE_SIZE, {
-    message: `File size must be less than ${MAX_SUPPORT_FILE_SIZE / 1024 / 1024}MB`,
-  });
+// Use a function to avoid referencing File at module evaluation time (server-side compatibility)
+export const supportTicketFileSchema =
+  typeof File !== "undefined"
+    ? zodInstanceOf(File, {
+        message: "Invalid file",
+      })
+        .refine(
+          (file: File) =>
+            ALLOWED_SUPPORT_FILE_TYPES.includes(
+              file.type as (typeof ALLOWED_SUPPORT_FILE_TYPES)[number],
+            ),
+          {
+            message: `File type must be one of: ${ALLOWED_SUPPORT_FILE_TYPES.join(", ")}`,
+          },
+        )
+        .refine((file: File) => file.size <= MAX_SUPPORT_FILE_SIZE, {
+          message: `File size must be less than ${MAX_SUPPORT_FILE_SIZE / 1024 / 1024}MB`,
+        })
+    : (null as any); // Server-side placeholder (won't be used)
 
 // Create support ticket form schema (frontend form with files)
 export const createSupportTicketFormSchema = object({
