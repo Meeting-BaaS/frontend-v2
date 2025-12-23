@@ -3,8 +3,8 @@
 import {
   AlertTriangle,
   Coins,
+  Download,
   FileAudio,
-  FileCode,
   FileText,
   LogOut,
   Radio,
@@ -232,9 +232,9 @@ export function AdminBotDetails({ botDetails, botUuid }: AdminBotDetailsProps) {
                 asChild
                 className="px-0 has-[>svg]:px-0 py-0 h-auto"
               >
-                <Link href={`/bot-logs/${botUuid}`} target="_blank">
-                  <FileCode className="size-4" />
-                  View logs
+                <Link href={botDetails.logFileUrl} target="_blank">
+                  <Download className="size-4" />
+                  Download logs
                 </Link>
               </Button>
             ) : (
