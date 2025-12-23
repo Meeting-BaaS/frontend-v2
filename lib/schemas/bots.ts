@@ -26,7 +26,11 @@ export const recordingModeSchema = zodEnum([
 ]);
 export const speechToTextProviderSchema = zodEnum([
   "gladia",
-  "assembly",
+  "assemblyai",
+  "deepgram",
+  "azure-stt",
+  "openai-whisper",
+  "speechmatics",
   "none",
 ]);
 
