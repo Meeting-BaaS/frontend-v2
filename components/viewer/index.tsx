@@ -57,10 +57,10 @@ export function Viewer({ videoUrl, transcriptionUrl }: ViewerProps) {
         const transformedTranscripts: Transcript[] = data.result.utterances.map(
           (utterance, utteranceIndex) => {
             // Map words from utterance.words to the expected Word format
-            // Each word keeps its own start_time and end_time (like in the original)
-            const words = utterance.words.map((word) => ({
+            // SDK uses word.text for the word content
+            const words = (utterance.words ?? []).map((word) => ({
               id: wordIdCounter++,
-              text: word.word,
+              text: word.text,
               start_time: word.start,
               end_time: word.end,
             }));
