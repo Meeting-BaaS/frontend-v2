@@ -218,31 +218,6 @@
     animation: rotate 9s linear infinite;
     pointer-events: none;
   }
-
-  /* Log content line numbering */
-  .log-content {
-    counter-reset: line;
-  }
-
-  .log-line {
-    counter-increment: line;
-    position: relative;
-    padding-left: 5rem;
-    min-height: 1.5em;
-  }
-
-  .log-line::before {
-    content: counter(line);
-    position: absolute;
-    left: 0;
-    width: 4rem;
-    text-align: right;
-    color: #666;
-    user-select: none;
-    padding-right: 0.5rem;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
 }
 
 @media (prefers-reduced-motion: no-preference) {
