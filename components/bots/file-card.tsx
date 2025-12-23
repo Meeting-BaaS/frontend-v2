@@ -19,6 +19,7 @@ interface FileCardProps {
   url: string | null;
   fileName: string;
   isVideo?: boolean;
+  hasTranscription?: boolean;
   botUuid?: string;
   fileTitleClassName?: string;
 }
@@ -33,6 +34,7 @@ export function FileCard({
   isVideo = false,
   fileTitleClassName,
   botUuid,
+  hasTranscription = false,
 }: FileCardProps) {
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -86,7 +88,10 @@ export function FileCard({
           asChild
           aria-label={`View ${title}`}
         >
-          <Link href={`/viewer/${botUuid}`} target="_blank">
+          <Link
+            href={hasTranscription ? `/viewer/${botUuid}` : url}
+            target="_blank"
+          >
             <Eye className="size-4" />
           </Link>
         </Button>
