@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { axiosPostInstance } from "@/lib/api-client";
+import { AFTER_LEAVE_CLEANUP } from "@/lib/api-routes";
 import { authClient } from "@/lib/auth-client";
 import { genericError } from "@/lib/errors";
 import type { InputRole } from "@/lib/schemas/teams";
@@ -222,6 +224,23 @@ export function useLeaveTeam() {
 
       if (leaveError) {
         throw new Error(leaveError.message || genericError);
+      }
+
+      // After successfully leaving, clean up resources (e.g., API keys)
+      // This is done after leaving because the user is no longer a member,
+      // so we need a separate endpoint that doesn't require team membership
+      try {
+        await axiosPostInstance<{ teamId: number }, null>(
+          AFTER_LEAVE_CLEANUP,
+          {
+            teamId: Number.parseInt(variables.organizationId, 10),
+          },
+          undefined, // No response schema expected (204 No Content)
+        );
+      } catch (cleanupError) {
+        // Log cleanup error but don't fail the leave operation
+        // The user has already left the team, so cleanup failure shouldn't block them
+        console.error("Error during after-leave cleanup:", cleanupError);
       }
 
       toast.success("Left team successfully");
