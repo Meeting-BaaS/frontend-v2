@@ -2,6 +2,7 @@ import {
   array,
   iso,
   literal,
+  number,
   object,
   type output,
   preprocess,
@@ -37,6 +38,8 @@ export const errorResponseSchema = object({
   success: literal(false),
   error: string(),
   code: string(),
+  statusCode: number().int().positive().optional().nullable(),
+  message: string().nullable().optional(),
   details: union([
     string(),
     array(errorDetailItemSchema),

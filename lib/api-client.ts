@@ -27,7 +27,7 @@ api.interceptors.response.use(
     if (error.response?.data) {
       const parsed = errorResponseSchema.safeParse(error.response.data);
       if (parsed.success) {
-        const apiError = new Error(parsed.data.error) as APIError;
+        const apiError = new Error(parsed.data.message || parsed.data.error) as APIError;
         // Attach error response and preserve original error for debugging
         apiError.errorResponse = parsed.data;
         return Promise.reject(apiError);
