@@ -15,8 +15,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Allow nginx proxy from production domain to local dev server
-  allowedDevOrigins: ["dashboard.gmeetrecorder.com"],
 };
 
 export default nextConfig;

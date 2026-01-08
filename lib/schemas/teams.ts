@@ -188,26 +188,22 @@ export const MAX_LOGO_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 /**
  * Schema for validating team logo file uploads (standalone validation)
  * Validates mimetype and file size
- * Use a conditional to avoid referencing File at module evaluation time (server-side compatibility)
  */
-export const teamLogoFileSchema =
-  typeof File !== "undefined"
-    ? zodInstanceOf(File, {
-        error: "File is required",
-      })
-        .refine(
-          (file) =>
-            ALLOWED_LOGO_MIME_TYPES.includes(
-              file.type as (typeof ALLOWED_LOGO_MIME_TYPES)[number],
-            ),
-          {
-            message: `File type must be one of: PNG, JPEG, JPG, or WebP`,
-          },
-        )
-        .refine((file) => file.size > 0 && file.size <= MAX_LOGO_FILE_SIZE, {
-          message: `File size must be between 1 byte and ${MAX_LOGO_FILE_SIZE / (1024 * 1024)}MB`,
-        })
-    : (null as any); // Server-side placeholder (won't be used)
+export const teamLogoFileSchema = zodInstanceOf(File, {
+  error: "File is required",
+})
+  .refine(
+    (file) =>
+      ALLOWED_LOGO_MIME_TYPES.includes(
+        file.type as (typeof ALLOWED_LOGO_MIME_TYPES)[number],
+      ),
+    {
+      message: `File type must be one of: PNG, JPEG, JPG, or WebP`,
+    },
+  )
+  .refine((file) => file.size > 0 && file.size <= MAX_LOGO_FILE_SIZE, {
+    message: `File size must be between 1 byte and ${MAX_LOGO_FILE_SIZE / (1024 * 1024)}MB`,
+  });
 
 /**
  * Schema for team logo form
