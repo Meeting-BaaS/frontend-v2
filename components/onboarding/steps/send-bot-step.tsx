@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { env } from "@/env";
 import { genericError } from "@/lib/errors";
 import { BRANDING_IMAGE_URL } from "@/lib/external-urls";
 import {
@@ -52,29 +51,26 @@ export function SendBotStep({
       setLoading(true);
 
       // Just an onboarding bot, we don't need to create a bot config for it
-      const response = await fetch(
-        `${env.NEXT_PUBLIC_API_SERVER_BASEURL}/v2/bots`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-meeting-baas-api-key": apiKey,
-          },
-          body: JSON.stringify({
-            bot_name: "My First Bot",
-            bot_image: BRANDING_IMAGE_URL,
-            meeting_url: values.meeting_url.trim(),
-            recording_mode: "speaker_view",
-            allow_multiple_bots: true,
-            transcription_enabled: true,
-            transcription_config: {
-              provider: "gladia",
-            },
-            streaming_enabled: false,
-            callback_enabled: false,
-          }),
+      const response = await fetch("/api/public/bots", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-meeting-baas-api-key": apiKey,
         },
-      );
+        body: JSON.stringify({
+          bot_name: "My First Bot",
+          bot_image: BRANDING_IMAGE_URL,
+          meeting_url: values.meeting_url.trim(),
+          recording_mode: "speaker_view",
+          allow_multiple_bots: true,
+          transcription_enabled: true,
+          transcription_config: {
+            provider: "gladia",
+          },
+          streaming_enabled: false,
+          callback_enabled: false,
+        }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
