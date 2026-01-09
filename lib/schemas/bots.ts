@@ -138,20 +138,14 @@ export const ListBotsRequestQuerySchema = object({
   .nullable();
 
 // Bot list entry (snake_case to match BFF API)
+// Simplified schema - only includes fields returned by BFF list bots endpoint
 export const botListEntry = object({
   bot_id: uuid(),
   bot_name: string(),
-  meeting_url: url(),
   meeting_platform: meetingPlatformSchema,
-  extra: record(string(), zodUnknown()).nullable(),
   duration: number().nullable(),
   created_at: iso.datetime(),
-  ended_at: iso.datetime().nullable(),
-  joined_at: iso.datetime().nullable(),
-  exited_at: iso.datetime().nullable(),
   status: botStatusSchema,
-  error_code: string().nullable(),
-  error_message: string().nullable(),
 });
 
 export const botsListResponseSchema = object({
