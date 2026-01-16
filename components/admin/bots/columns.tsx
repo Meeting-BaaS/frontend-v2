@@ -15,8 +15,8 @@ import type { AdminBotListItem } from "@/lib/schemas/admin";
 import { cn } from "@/lib/utils";
 
 export const columnWidths = {
-  bot_id: "min-w-[320px] max-w-[400px] w-[40%]",
-  status: "min-w-[120px] max-w-[150px] w-[15%]",
+  bot_id: "w-[350px]",
+  status: "min-w-[150px] max-w-[200px] w-[20%]",
   team_name: "min-w-[160px] max-w-[180px] w-[18%]",
   duration: "min-w-[100px] max-w-[120px] w-[12%]",
   created_at: "min-w-[140px] max-w-[150px] w-[15%]",

@@ -14,11 +14,11 @@ import { cn } from "@/lib/utils";
 const tableHeaders = [
   {
     label: "Bot UUID",
-    width: "min-w-[320px] w-[40%]",
+    width: "w-[350px]",
   },
   {
     label: "Status",
-    width: "min-w-[120px] w-[15%]",
+    width: "min-w-[150px] max-w-[200px] w-[20%]",
   },
   {
     label: "Bot Name",

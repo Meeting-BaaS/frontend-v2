@@ -63,7 +63,8 @@ export function LeaveTeamDialog({ open, onOpenChange }: LeaveTeamDialogProps) {
           <DialogTitle>Leave Team</DialogTitle>
           <DialogDescription>
             Are you sure you want to leave this team? You will lose access to
-            all team data and resources.
+            all team data and resources. The API keys you created for this team
+            will also be deleted.
           </DialogDescription>
         </DialogHeader>
         <form

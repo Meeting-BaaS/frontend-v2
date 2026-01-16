@@ -1,4 +1,3 @@
-import { columnWidths } from "@/components/admin/bots/columns";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   TableBody,
@@ -10,27 +9,28 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-// Column headers matching the columns definition
+// Column widths - must be written explicitly for Tailwind JIT to detect them
+// These match the widths defined in columns.tsx
 const tableHeaders = [
   {
     label: "Bot ID",
-    width: columnWidths.bot_id,
+    width: "w-[350px]",
   },
   {
     label: "Status",
-    width: columnWidths.status,
+    width: "min-w-[150px] max-w-[200px] w-[20%]",
   },
   {
     label: "Team Name",
-    width: columnWidths.team_name,
+    width: "min-w-[160px] max-w-[180px] w-[18%]",
   },
   {
     label: "Duration",
-    width: columnWidths.duration,
+    width: "min-w-[100px] max-w-[120px] w-[12%]",
   },
   {
     label: "Created At",
-    width: columnWidths.created_at,
+    width: "min-w-[140px] max-w-[150px] w-[15%]",
   },
 ] as const;
 

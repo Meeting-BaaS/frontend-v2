@@ -19,6 +19,7 @@ export const DELETE_TEAM = `${TEAMS_BASE_PATH}/delete`;
 export const GET_INVITATION = `${TEAMS_BASE_PATH}/invitation`;
 export const CREATE_DEFAULT_TEAM = `${TEAMS_BASE_PATH}/create-default`;
 export const CREATE_NEW_TEAM = `${TEAMS_BASE_PATH}/create-new`;
+export const AFTER_LEAVE_CLEANUP = `${TEAMS_BASE_PATH}/after-leave-cleanup`;
 
 // API keys routes
 export const API_KEYS_BASE_PATH = `${BASE_PATH}/api-keys`;
@@ -26,6 +27,7 @@ export const LIST_API_KEYS = `${API_KEYS_BASE_PATH}/list`;
 export const CREATE_API_KEY = `${API_KEYS_BASE_PATH}/create`;
 export const UPDATE_API_KEY = `${API_KEYS_BASE_PATH}/update`;
 export const GET_API_KEY_DETAILS = `${API_KEYS_BASE_PATH}/details`;
+export const DELETE_API_KEY = `${API_KEYS_BASE_PATH}/delete`;
 
 // Webhook routes
 export const WEBHOOKS_BASE_PATH = `${BASE_PATH}/webhooks`;

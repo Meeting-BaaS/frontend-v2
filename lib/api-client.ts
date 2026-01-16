@@ -27,7 +27,7 @@ api.interceptors.response.use(
     if (error.response?.data) {
       const parsed = errorResponseSchema.safeParse(error.response.data);
       if (parsed.success) {
-        const apiError = new Error(parsed.data.error) as APIError;
+        const apiError = new Error(parsed.data.message || parsed.data.error) as APIError;
         // Attach error response and preserve original error for debugging
         apiError.errorResponse = parsed.data;
         return Promise.reject(apiError);
@@ -47,9 +47,6 @@ export async function axiosGetInstance<T>(
 ): Promise<T> {
   const response = await api.get(url, options);
 
-  // To do: remove before production
-  console.log(url, "Response:", JSON.stringify(response.data, null, 2));
-
   const parsed = schema.safeParse(response.data);
   if (!parsed.success) {
     console.error("Invalid API response:", parsed.error);
@@ -66,9 +63,6 @@ export async function axiosPostInstance<TRequest, TResponse>(
   options?: AxiosRequestConfig,
 ): Promise<TResponse | null> {
   const response = await api.post(url, data, options);
-
-  // To do: remove before production
-  console.log(url, "Response:", JSON.stringify(response.data, null, 2));
 
   // If no schema is provided (response is not expected), return null
   if (!schema) {
@@ -92,9 +86,6 @@ export async function axiosPutInstance<TRequest, TResponse>(
 ): Promise<TResponse | null> {
   const response = await api.put(url, data, options);
 
-  // To do: remove before production
-  console.log(url, "Response:", JSON.stringify(response.data, null, 2));
-
   // If no schema is provided (response is not expected), return null
   if (!schema) {
     return null;
@@ -117,9 +108,6 @@ export async function axiosPatchInstance<TRequest, TResponse>(
 ): Promise<TResponse | null> {
   const response = await api.patch(url, data, options);
 
-  // To do: remove before production
-  console.log(url, "Response:", JSON.stringify(response.data, null, 2));
-
   // If no schema is provided (response is not expected), return null
   if (!schema) {
     return null;
@@ -138,10 +126,7 @@ export async function axiosDeleteInstance(
   url: string,
   options?: AxiosRequestConfig,
 ): Promise<null> {
-  const response = await api.delete(url, options);
-
-  // To do: remove before production
-  console.log(url, "Response:", JSON.stringify(response.data, null, 2));
+  await api.delete(url, options);
 
   return null;
 }

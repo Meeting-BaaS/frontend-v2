@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { authClient } from "@/lib/auth-client";
+import { axiosDeleteInstance } from "@/lib/api-client";
+import { DELETE_API_KEY } from "@/lib/api-routes";
 import { genericError } from "@/lib/errors";
 import type { ApiKey } from "@/lib/schemas/api-keys";
 import { CopyButton } from "../ui/copy-button";
@@ -54,13 +55,11 @@ export function DeleteAPIKeyDialog({
     try {
       setLoading(true);
 
-      const { data, error } = await authClient.apiKey.delete({
-        keyId: apiKey.id,
+      await axiosDeleteInstance(DELETE_API_KEY, {
+        params: {
+          id: apiKey.id,
+        },
       });
-
-      if (error || !data.success) {
-        throw new Error(error?.message || "Failed to delete API key");
-      }
 
       if (pathname.endsWith("/api-keys")) {
         router.refresh();
