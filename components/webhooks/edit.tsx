@@ -55,7 +55,6 @@ export function EditWebhookDialog({
   const [loading, setLoading] = useState(false);
 
   const isDirty = form.formState.isDirty;
-  console.log(form.formState.errors);
 
   const onSubmit = async (data: UpdateWebhookFormData) => {
     if (loading) return;

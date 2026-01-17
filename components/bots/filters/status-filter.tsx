@@ -44,13 +44,6 @@ export function StatusFilter({ status }: StatusFilterProps) {
   const hasStatusFilter = status && status.length > 0;
   const initialStatuses = hasStatusFilter ? status : ALL_STATUSES; // Show all selected when no filter
 
-  console.log("[StatusFilter] Render:", {
-    statusProp: status,
-    hasStatusFilter,
-    initialStatuses,
-    searchParamsString: searchParams.toString(),
-  });
-
   // Local state for immediate UI updates (optimistic UI)
   const [localStatuses, setLocalStatuses] =
     useState<BotStatus[]>(initialStatuses);

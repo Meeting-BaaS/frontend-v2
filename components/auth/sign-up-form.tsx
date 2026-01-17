@@ -140,7 +140,7 @@ export default function SignUpForm({
             router.push(`/verify-email?${searchParams.toString()}`);
           },
           onError: (ctx) => {
-            console.log(ctx.error);
+            console.error("Error creating account", ctx.error);
             toast.error(ctx.error.message || genericError);
           },
         },

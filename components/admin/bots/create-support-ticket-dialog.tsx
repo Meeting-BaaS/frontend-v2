@@ -19,6 +19,7 @@ import {
 import {
   Field,
   FieldContent,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -197,8 +198,8 @@ export function CreateAdminSupportTicketDialog({
         <DialogHeader>
           <DialogTitle>Create Support Ticket (Admin)</DialogTitle>
           <DialogDescription>
-            Create a support ticket on behalf of a team member. This is used for
-            external support requests (Discord, email, etc.)
+            Create a support ticket on behalf of a team member. Can be used to
+            track external support requests (Discord, email, etc.)
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -226,9 +227,8 @@ export function CreateAdminSupportTicketDialog({
                           </div>
                         ) : (
                           <Select
-                            value={
-                              field.value ? String(field.value) : undefined
-                            }
+                            name={field.name}
+                            value={field.value ? String(field.value) : ""}
                             onValueChange={(value) =>
                               field.onChange(Number(value))
                             }
@@ -267,6 +267,7 @@ export function CreateAdminSupportTicketDialog({
                     <FieldContent>
                       <FormControl>
                         <Select
+                          name={field.name}
                           value={field.value}
                           onValueChange={field.onChange}
                           disabled={loading}
@@ -303,6 +304,7 @@ export function CreateAdminSupportTicketDialog({
                     <FieldContent>
                       <FormControl>
                         <Select
+                          name={field.name}
                           value={field.value}
                           onValueChange={field.onChange}
                           disabled={loading}
@@ -347,6 +349,10 @@ export function CreateAdminSupportTicketDialog({
                           />
                         </InputGroup>
                       </FormControl>
+                      <FieldDescription>
+                        The subject entered here is appended to the email sent
+                        to the user.
+                      </FieldDescription>
                       <FieldError />
                     </FieldContent>
                   </Field>
@@ -371,8 +377,8 @@ export function CreateAdminSupportTicketDialog({
                             disabled={loading}
                             {...field}
                           />
-                          <InputGroupAddon>
-                            <span className="text-xs text-muted-foreground">
+                          <InputGroupAddon align="block-end">
+                            <span className="tabular-nums text-xs text-muted-foreground">
                               {detailsValue.length} / 2000
                             </span>
                           </InputGroupAddon>

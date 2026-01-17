@@ -56,9 +56,8 @@ export function AdminBotActions({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant={buttonVariant} className="h-9 px-3">
+          <Button variant={buttonVariant} className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
-            <span className="mr-2">Actions</span>
             <MoreHorizontal />
           </Button>
         </DropdownMenuTrigger>
