@@ -1,6 +1,7 @@
 "use client";
 
 import Convert from "ansi-to-html";
+import DOMPurify from "dompurify";
 import { useEffect, useRef } from "react";
 
 interface LogViewerProps {
@@ -39,10 +40,17 @@ export function LogViewer({ logFileUrl }: LogViewerProps) {
         // Convert ANSI to HTML for this line
         const htmlLine = converterRef.current?.toHtml(line) ?? line;
 
+        // Sanitize HTML to prevent XSS while allowing ANSI color spans
+        // Only allow span tags with style attribute for ANSI colors
+        const sanitizedHtml = DOMPurify.sanitize(htmlLine, {
+          ALLOWED_TAGS: ["span"],
+          ALLOWED_ATTR: ["style"],
+        });
+
         // Create a div for this line with the log-line class
         const lineDiv = document.createElement("div");
         lineDiv.className = "log-line";
-        lineDiv.innerHTML = htmlLine;
+        lineDiv.innerHTML = sanitizedHtml;
 
         // Append to the pre element
         preElement.appendChild(lineDiv);
