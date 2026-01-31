@@ -6,14 +6,11 @@ import {
   FileAudio,
   FileCode,
   FileText,
-  LogOut,
   Radio,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 import { AdminArtifacts } from "@/components/admin/bots/artifacts";
+import { AdminBotActions } from "@/components/admin/bots/bot-actions";
 import { JsonPreview } from "@/components/bots/json-preview";
 import { StatusHistory } from "@/components/bots/status-history";
 import { GoogleMeetLogo } from "@/components/icons/google-meet";
@@ -30,10 +27,7 @@ import {
 } from "@/components/ui/hover-card";
 import { NameValuePair } from "@/components/ui/name-value-pair";
 import { Separator } from "@/components/ui/separator";
-import { axiosPostInstance } from "@/lib/api-client";
-import { ADMIN_LEAVE_BOT } from "@/lib/api-routes";
 import { formatDuration, formatRelativeDate } from "@/lib/date-helpers";
-import { genericError } from "@/lib/errors";
 import type { AdminBotDetails as AdminBotDetailsType } from "@/lib/schemas/admin";
 import { readableRecordingMode } from "@/lib/utils";
 
@@ -43,24 +37,6 @@ interface AdminBotDetailsProps {
 }
 
 export function AdminBotDetails({ botDetails, botUuid }: AdminBotDetailsProps) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-
-  const handleLeaveBot = async () => {
-    if (loading) return;
-
-    try {
-      setLoading(true);
-      await axiosPostInstance(ADMIN_LEAVE_BOT(botUuid), null, undefined);
-      toast.success("Bot leave request sent successfully");
-      router.refresh();
-    } catch (error) {
-      console.error("Error leaving bot", error);
-      toast.error(error instanceof Error ? error.message : genericError);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const botDuration = botDetails.duration ?? 0;
 
@@ -107,9 +83,11 @@ export function AdminBotDetails({ botDetails, botUuid }: AdminBotDetailsProps) {
           }
         />
         <div className="flex w-full sm:w-auto gap-2 flex-row sm:items-center">
-          <Button variant="outline" onClick={handleLeaveBot} disabled={loading}>
-            <LogOut /> Make bot leave
-          </Button>
+          <AdminBotActions
+            botUuid={botUuid}
+            teamId={botDetails.teamId}
+            buttonVariant="outline"
+          />
         </div>
       </div>
 

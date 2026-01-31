@@ -143,6 +143,8 @@ export const ADMIN_UPDATE_RATE_LIMITS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/update-rate-limits`;
 export const ADMIN_TOKEN_OPERATIONS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/token-operations`;
+export const ADMIN_CREATE_SUPPORT_TICKET = (teamId: number) =>
+  `${ADMIN_TEAMS_BASE_PATH}/${teamId}/support-tickets/create`;
 export const ADMIN_SUPPORT_BASE_PATH = `${ADMIN_BASE_PATH}/support`;
 export const ADMIN_LIST_SUPPORT_TICKETS = `${ADMIN_SUPPORT_BASE_PATH}/list`;
 export const ADMIN_GET_TICKET_DETAILS = `${ADMIN_SUPPORT_BASE_PATH}/get-details`;

@@ -53,7 +53,6 @@ export function AutoRefillTokenForm({
   tokenPacksLoading,
   onClose,
 }: AutoRefillTokenFormProps) {
-  console.log("usageStats", usageStats);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const form = useForm<UpdateAutoRefillSettings>({
