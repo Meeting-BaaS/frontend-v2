@@ -34,9 +34,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { env } from "@/env";
 import { genericError } from "@/lib/errors";
 import { BRANDING_IMAGE_URL } from "@/lib/external-urls";
 import { cn } from "@/lib/utils";
+
+const DEFAULT_BOT_IMAGE =
+  env.NEXT_PUBLIC_DEFAULT_BOT_IMAGE || BRANDING_IMAGE_URL;
 
 // ─── SDK-derived types & constants ───────────────────────────────────────────
 // The canonical API body type, extracted from the SDK's Zod 3 schema.
@@ -157,7 +161,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
       // a new required field, this line will fail to compile.
       const body = {
         bot_name: values.bot_name,
-        bot_image: values.bot_image || BRANDING_IMAGE_URL,
+        bot_image: values.bot_image || DEFAULT_BOT_IMAGE,
         meeting_url: values.meeting_url.trim(),
         recording_mode: values.recording_mode,
         allow_multiple_bots: values.allow_multiple_bots,
