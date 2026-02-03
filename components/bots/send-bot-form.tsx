@@ -287,29 +287,57 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
           )}
         />
 
-        {/* ── Recording Mode ── */}
+        {/* ── Bot Image ── */}
         <FormField
           control={form.control}
-          name="recording_mode"
+          name="bot_image"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Recording Mode</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                disabled={loading}
-              >
+              <FormLabel>Bot Image URL</FormLabel>
+              <div className="flex items-center gap-3">
+                <img
+                  src={field.value || DEFAULT_BOT_IMAGE}
+                  alt="Bot avatar"
+                  className="h-10 w-10 rounded-md border object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = DEFAULT_BOT_IMAGE;
+                  }}
+                />
                 <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
+                  <Input
+                    type="url"
+                    placeholder={DEFAULT_BOT_IMAGE}
+                    disabled={loading}
+                    {...field}
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="speaker_view">Speaker View</SelectItem>
-                  <SelectItem value="gallery_view">Gallery View</SelectItem>
-                  <SelectItem value="audio_only">Audio Only</SelectItem>
-                </SelectContent>
-              </Select>
+              </div>
+              <FormDescription className="text-xs">
+                Leave empty to use the default image
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* ── Entry Message ── */}
+        <FormField
+          control={form.control}
+          name="entry_message"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Entry Message</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Hi, I'm recording this meeting"
+                  disabled={loading}
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription className="text-xs">
+                Chat message sent when the bot joins (max{" "}
+                {ENTRY_MESSAGE_MAX} chars)
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -332,6 +360,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
                   checked={field.value}
                   onCheckedChange={field.onChange}
                   disabled={loading}
+                  className="data-[state=checked]:bg-baas-primary-500"
                 />
               </FormControl>
             </FormItem>
@@ -355,44 +384,29 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
 
         {showAdvanced && (
           <div className="space-y-4 rounded-md border p-3">
-            {/* ── Bot Image ── */}
+            {/* ── Recording Mode ── */}
             <FormField
               control={form.control}
-              name="bot_image"
+              name="recording_mode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bot Image URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="url"
-                      placeholder="https://example.com/avatar.png"
-                      disabled={loading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* ── Entry Message ── */}
-            <FormField
-              control={form.control}
-              name="entry_message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Entry Message</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Hi, I'm recording this meeting"
-                      disabled={loading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription className="text-xs">
-                    Chat message sent when the bot joins (max{" "}
-                    {ENTRY_MESSAGE_MAX} chars)
-                  </FormDescription>
+                  <FormLabel>Recording Mode</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={loading}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="speaker_view">Speaker View</SelectItem>
+                      <SelectItem value="gallery_view">Gallery View</SelectItem>
+                      <SelectItem value="audio_only">Audio Only</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -412,6 +426,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       disabled={loading}
+                      className="data-[state=checked]:bg-baas-primary-500"
                     />
                   </FormControl>
                 </FormItem>
@@ -562,6 +577,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       disabled={loading}
+                      className="data-[state=checked]:bg-baas-primary-500"
                     />
                   </FormControl>
                 </FormItem>
@@ -654,6 +670,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       disabled={loading}
+                      className="data-[state=checked]:bg-baas-primary-500"
                     />
                   </FormControl>
                 </FormItem>
