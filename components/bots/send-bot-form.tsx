@@ -298,7 +298,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
                 <img
                   src={field.value || DEFAULT_BOT_IMAGE}
                   alt="Bot avatar"
-                  className="h-10 w-10 rounded-md border object-cover"
+                  className="h-10 w-10 rounded-md border dark:border-white/15 object-cover"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = DEFAULT_BOT_IMAGE;
                   }}
@@ -348,7 +348,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
           control={form.control}
           name="transcription_enabled"
           render={({ field }) => (
-            <FormItem className="flex items-center justify-between rounded-md border p-3">
+            <FormItem className="flex items-center justify-between rounded-md border dark:border-white/15 p-3">
               <div className="space-y-0.5">
                 <FormLabel className="text-sm">Transcription</FormLabel>
                 <FormDescription className="text-xs">
@@ -383,7 +383,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
         </button>
 
         {showAdvanced && (
-          <div className="space-y-4 rounded-md border p-3">
+          <div className="space-y-4 rounded-md border dark:border-white/15 p-3">
             {/* ── Recording Mode ── */}
             <FormField
               control={form.control}
@@ -511,7 +511,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
 
             {/* ── Transcription Config (when enabled) ── */}
             {transcriptionEnabled && (
-              <div className="space-y-2 rounded-md border p-3">
+              <div className="space-y-2 rounded-md border dark:border-white/15 p-3">
                 <p className="text-sm font-medium">Transcription Config</p>
                 <FormField
                   control={form.control}
@@ -585,7 +585,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
             />
 
             {streamingEnabled && (
-              <div className="space-y-2 rounded-md border p-3">
+              <div className="space-y-2 rounded-md border dark:border-white/15 p-3">
                 <p className="text-sm font-medium">Streaming Config</p>
                 <FormField
                   control={form.control}
@@ -678,7 +678,7 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
             />
 
             {callbackEnabled && (
-              <div className="space-y-2 rounded-md border p-3">
+              <div className="space-y-2 rounded-md border dark:border-white/15 p-3">
                 <p className="text-sm font-medium">Callback Config</p>
                 <FormField
                   control={form.control}

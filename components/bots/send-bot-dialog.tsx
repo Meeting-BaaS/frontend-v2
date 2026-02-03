@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Send } from "lucide-react";
+import { KeyRound, Loader2, Send } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { SendBotForm } from "@/components/bots/send-bot-form";
@@ -20,6 +20,11 @@ import {
   type CreateApiKeyResponse,
   createApiKeyResponseSchema,
 } from "@/lib/schemas/api-keys";
+
+function maskApiKey(key: string) {
+  if (key.length <= 8) return `${key.slice(0, 2)}${"*".repeat(key.length - 2)}`;
+  return `${key.slice(0, 4)}${"*".repeat(key.length - 8)}${key.slice(-4)}`;
+}
 
 export function SendBotDialog() {
   const [open, setOpen] = useState(false);
@@ -72,13 +77,19 @@ export function SendBotDialog() {
           Manual
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Send a Bot</DialogTitle>
           <DialogDescription>
             Enter a meeting URL to send a bot that will join and record the
             meeting.
           </DialogDescription>
+          {apiKey && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1">
+              <KeyRound className="h-3 w-3" />
+              <span className="font-mono">{maskApiKey(apiKey)}</span>
+            </div>
+          )}
         </DialogHeader>
         {loading ? (
           <div className="flex items-center justify-center py-6">
@@ -87,6 +98,17 @@ export function SendBotDialog() {
         ) : apiKey ? (
           <SendBotForm apiKey={apiKey} onSuccess={() => setOpen(false)} />
         ) : null}
+        <p className="text-center text-xs text-muted-foreground">
+          Entirely built with the{" "}
+          <a
+            href="https://docs.meetingbaas.com/typescript-sdk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-foreground transition-colors"
+          >
+            Meeting BaaS TypeScript SDK
+          </a>
+        </p>
       </DialogContent>
     </Dialog>
   );
