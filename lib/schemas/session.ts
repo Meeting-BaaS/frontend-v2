@@ -35,7 +35,7 @@ export const user = object({
   banned: boolean(),
   banReason: string().nullable(),
   banExpires: iso.datetime().nullable(),
-  stripeCustomerId: string().nullable(),
+  stripeCustomerId: string().nullable().optional(),
   lastActiveTeamId: number().nullable(),
   id: string().transform((str) => Number.parseInt(str, 10)),
 });

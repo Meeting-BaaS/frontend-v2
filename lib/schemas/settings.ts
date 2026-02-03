@@ -41,7 +41,7 @@ export const usageStatsSchema = object({
     reminderEnabled: boolean(),
     reminderThreshold: number().nullable(),
     reminderEmail: string().nullable(),
-    stripeCustomerId: string(),
+    stripeCustomerId: string().nullable().optional(),
     isV1SubscriptionActive: boolean(),
   }),
   usage: object({
