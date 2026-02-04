@@ -29,7 +29,7 @@ export function AdminTeamsTable({ teams }: AdminTeamsTableProps) {
     manualPagination: false,
     initialSorting: [
       { id: "lastBotCreatedAt", desc: false },
-      { id: "createdAt", desc: true },
+      { id: "createdAt", desc: false },
     ],
   });
 

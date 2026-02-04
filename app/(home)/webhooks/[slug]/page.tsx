@@ -1,63 +1,62 @@
-import { cookies } from "next/headers";
-import { notFound, redirect } from "next/navigation";
-import { ViewWebhookDetails } from "@/components/webhooks/details";
-import { axiosGetInstance } from "@/lib/api-client";
+import type { Metadata } from "next"
+import { cookies } from "next/headers"
+import { notFound, redirect } from "next/navigation"
+import { ViewWebhookDetails } from "@/components/webhooks/details"
+import { axiosGetInstance } from "@/lib/api-client"
 import {
   GET_SESSION,
   GET_WEBHOOK_ENDPOINT_DETAILS,
   LIST_WEBHOOK_EVENTS,
-  LIST_WEBHOOK_MESSAGES,
-} from "@/lib/api-routes";
-import { slugRequestParamsSchema } from "@/lib/schemas/common";
-import {
-  type SessionResponse,
-  sessionResponseSchema,
-} from "@/lib/schemas/session";
+  LIST_WEBHOOK_MESSAGES
+} from "@/lib/api-routes"
+import { createPageMetadata } from "@/lib/metadata"
+import { slugRequestParamsSchema } from "@/lib/schemas/common"
+import { type SessionResponse, sessionResponseSchema } from "@/lib/schemas/session"
 import {
   type GetWebhookEndpointDetailsResponse,
   getWebhookEndpointDetailsResponseSchema,
   type ListWebhookEventsResponse,
   type ListWebhookMessagesResponse,
   listWebhookEventsResponseSchema,
-  listWebhookMessagesResponseSchema,
-} from "@/lib/schemas/webhooks";
+  listWebhookMessagesResponseSchema
+} from "@/lib/schemas/webhooks"
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Webhook Details",
+  description: "View and manage your webhook endpoint"
+})
 
 interface WebhookDetailsPageProps {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ iterator?: string }>;
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ iterator?: string }>
 }
 
 export default async function WebhookDetailsPage({
   params,
-  searchParams,
+  searchParams
 }: WebhookDetailsPageProps) {
-  const requestParams = await params;
-  const { iterator } = await searchParams;
+  const requestParams = await params
+  const { iterator } = await searchParams
 
   // Redirect if user is not logged in
   // It is recommended to verify session on each page
-  const cookieStore = await cookies();
-  const session = await axiosGetInstance<SessionResponse>(
-    GET_SESSION,
-    sessionResponseSchema,
-    {
-      headers: {
-        Cookie: cookieStore.toString(),
-      },
-    },
-  );
-  const redirectSearchParams = new URLSearchParams();
+  const cookieStore = await cookies()
+  const session = await axiosGetInstance<SessionResponse>(GET_SESSION, sessionResponseSchema, {
+    headers: {
+      Cookie: cookieStore.toString()
+    }
+  })
+  const redirectSearchParams = new URLSearchParams()
   // We haven't validated the request params yet, so we shouldn't redirect to the specific webhook details page
-  redirectSearchParams.set("redirectTo", `/webhooks`);
+  redirectSearchParams.set("redirectTo", "/webhooks")
   if (!session) {
-    return redirect(`/sign-in?${redirectSearchParams.toString()}`);
+    return redirect(`/sign-in?${redirectSearchParams.toString()}`)
   }
 
   // Parse and validate the request params
-  const { success, data: validatedParams } =
-    slugRequestParamsSchema.safeParse(requestParams);
+  const { success, data: validatedParams } = slugRequestParamsSchema.safeParse(requestParams)
   if (!success) {
-    return notFound();
+    return notFound()
   }
 
   const [webhookDetails, webhookEvents, webhookMessages] = await Promise.all([
@@ -66,13 +65,13 @@ export default async function WebhookDetailsPage({
       getWebhookEndpointDetailsResponseSchema,
       {
         headers: { Cookie: cookieStore.toString() },
-        params: { endpointId: validatedParams.slug },
-      },
+        params: { endpointId: validatedParams.slug }
+      }
     ),
     axiosGetInstance<ListWebhookEventsResponse>(
       LIST_WEBHOOK_EVENTS,
       listWebhookEventsResponseSchema,
-      { headers: { Cookie: cookieStore.toString() } },
+      { headers: { Cookie: cookieStore.toString() } }
     ),
     axiosGetInstance<ListWebhookMessagesResponse>(
       LIST_WEBHOOK_MESSAGES,
@@ -81,11 +80,11 @@ export default async function WebhookDetailsPage({
         headers: { Cookie: cookieStore.toString() },
         params: {
           endpointId: validatedParams.slug,
-          iterator: iterator ?? null,
-        },
-      },
-    ),
-  ]);
+          iterator: iterator ?? null
+        }
+      }
+    )
+  ])
 
   return (
     <ViewWebhookDetails
@@ -95,5 +94,5 @@ export default async function WebhookDetailsPage({
       prevIterator={webhookMessages.prevIterator}
       nextIterator={webhookMessages.nextIterator}
     />
-  );
+  )
 }

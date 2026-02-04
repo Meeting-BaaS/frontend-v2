@@ -4,6 +4,9 @@
 export const BASE_PATH = "/v2-internal";
 export const BFF_BASE_PATH = "/bff";
 
+// Configuration route (no auth required, public info)
+export const GET_CONFIGURATION = `${BASE_PATH}/configuration`;
+
 // Auth routes
 export const AUTH_BASE_PATH = `${BASE_PATH}/auth`;
 export const GET_SESSION = `${AUTH_BASE_PATH}/get-session`;

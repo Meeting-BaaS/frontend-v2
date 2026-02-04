@@ -4,10 +4,13 @@ import { BarChart3, CreditCard, Plug, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useConfiguration } from "@/hooks/use-configuration";
 
 export function SettingsTabs() {
   const pathname = usePathname();
   const currentTab = pathname.split("/").pop() || "usage";
+  const { configuration } = useConfiguration();
+  const showBilling = configuration?.features?.stripe ?? false;
 
   return (
     <Tabs value={currentTab}>
@@ -18,12 +21,14 @@ export function SettingsTabs() {
             Usage
           </Link>
         </TabsTrigger>
-        <TabsTrigger value="billing" className="gap-2" asChild>
-          <Link href="/settings/billing">
-            <CreditCard className="size-4" />
-            Billing
-          </Link>
-        </TabsTrigger>
+        {showBilling && (
+          <TabsTrigger value="billing" className="gap-2" asChild>
+            <Link href="/settings/billing">
+              <CreditCard className="size-4" />
+              Billing
+            </Link>
+          </TabsTrigger>
+        )}
         <TabsTrigger value="team" className="gap-2" asChild>
           <Link href="/settings/team">
             <Users className="size-4" />

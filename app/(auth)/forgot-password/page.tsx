@@ -3,11 +3,12 @@ import Link from "next/link";
 import ForgotPasswordForm from "@/components/auth/forgot-password-form";
 import FormWrapper from "@/components/auth/form-wrapper";
 import { Button } from "@/components/ui/button";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Forgot Password | Meeting BaaS",
+export const metadata: Metadata = createPageMetadata({
+  title: "Forgot Password",
   description: "Forgot Password to Meeting BaaS",
-};
+});
 
 export default async function ForgotPasswordPage() {
   return (

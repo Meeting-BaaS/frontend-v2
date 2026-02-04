@@ -3,11 +3,12 @@ import Link from "next/link";
 import FormWrapper from "@/components/auth/form-wrapper";
 import SignUpForm from "@/components/auth/sign-up-form";
 import { Button } from "@/components/ui/button";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Sign up | Meeting BaaS",
+export const metadata: Metadata = createPageMetadata({
+  title: "Sign up",
   description: "Sign up to Meeting BaaS",
-};
+});
 
 export default async function SignUpPage({
   searchParams,

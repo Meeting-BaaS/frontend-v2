@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   Bot,
@@ -9,13 +9,15 @@ import {
   Logs,
   MessageSquare,
   Settings,
+  ShieldCheck,
   Users,
-  Webhook,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { NavUser } from "@/components/layout/nav-user";
-import { TeamSwitcher } from "@/components/layout/team-switcher";
+  Webhook
+} from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useMemo } from "react"
+import { NavUser } from "@/components/layout/nav-user"
+import { TeamSwitcher } from "@/components/layout/team-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -27,80 +29,94 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import type { SessionResponse } from "@/lib/schemas/session";
+  useSidebar
+} from "@/components/ui/sidebar"
+import { useConfiguration } from "@/hooks/use-configuration"
+import type { SessionResponse } from "@/lib/schemas/session"
 
-const items = [
-  {
-    title: "Bots",
-    url: "/bots",
-    icon: Bot,
-  },
+const allItems = [
+  { title: "Bots", url: "/bots", icon: Bot, featureKey: null },
   {
     title: "Scheduled Bots",
     url: "/scheduled-bots",
     icon: CalendarClock,
+    featureKey: null
   },
   {
     title: "Calendars",
     url: "/calendars",
     icon: Calendar,
+    featureKey: "calendar"
   },
-  // Will be implemented in the future
-  // {
-  //   title: "Analytics",
-  //   url: "/analytics",
-  //   icon: ChartColumn,
-  // },
   {
     title: "Logs",
     url: "/logs",
     icon: Logs,
+    featureKey: null
   },
   {
     title: "Webhooks",
     url: "/webhooks",
     icon: Webhook,
+    featureKey: "svix"
   },
   {
     title: "API Keys",
     url: "/api-keys",
     icon: KeyRound,
+    featureKey: null
   },
   {
     title: "Settings",
     url: "/settings",
     icon: Settings,
-  },
-];
+    featureKey: null
+  }
+]
 
 const adminItems = [
   {
     title: "All Bots",
     url: "/admin/bots",
-    icon: Bot,
+    icon: Bot
   },
   {
     title: "All Teams",
     url: "/admin/teams",
-    icon: Users,
+    icon: Users
+  },
+  {
+    title: "Admins",
+    url: "/admin/admins",
+    icon: ShieldCheck
   },
   {
     title: "Support Panel",
     url: "/admin/support",
-    icon: MessageSquare,
-  },
-];
+    icon: MessageSquare
+  }
+]
 
 interface AppSidebarProps {
-  sessionResponse?: SessionResponse | null;
+  sessionResponse?: SessionResponse | null
 }
 
 export function AppSidebar({ sessionResponse }: AppSidebarProps) {
-  const pathname = usePathname();
-  const { open, isMobile } = useSidebar();
-  const isAdmin = sessionResponse?.user.role === "admin";
+  const pathname = usePathname()
+  const { open, isMobile } = useSidebar()
+  const isAdmin = sessionResponse?.user.role === "admin"
+  const { configuration } = useConfiguration()
+
+  const items = useMemo(() => {
+    const features = configuration?.features
+    if (!features) return allItems
+    return allItems.filter((item) => {
+      if (!item.featureKey) return true
+      if (item.featureKey === "svix") return features.svix
+      if (item.featureKey === "calendar") return features.calendar
+      return true
+    })
+  }, [configuration?.features])
 
   return (
     <Sidebar collapsible="icon" className="z-30">
@@ -118,7 +134,7 @@ export function AppSidebar({ sessionResponse }: AppSidebarProps) {
                     isActive={pathname.startsWith(item.url)}
                     tooltip={{
                       children: item.title,
-                      hidden: open || isMobile,
+                      hidden: open || isMobile
                     }}
                   >
                     <Link href={item.url}>
@@ -143,7 +159,7 @@ export function AppSidebar({ sessionResponse }: AppSidebarProps) {
                       isActive={pathname.startsWith(item.url)}
                       tooltip={{
                         children: item.title,
-                        hidden: open || isMobile,
+                        hidden: open || isMobile
                       }}
                     >
                       <Link href={item.url}>
@@ -162,5 +178,5 @@ export function AppSidebar({ sessionResponse }: AppSidebarProps) {
         <NavUser />
       </SidebarFooter>
     </Sidebar>
-  );
+  )
 }
