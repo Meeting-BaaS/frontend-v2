@@ -77,7 +77,7 @@ export function SendBotDialog() {
           Manual
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Send a Bot</DialogTitle>
           <DialogDescription>

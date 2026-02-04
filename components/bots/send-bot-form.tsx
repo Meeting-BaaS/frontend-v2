@@ -34,9 +34,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { env } from "@/env";
 import { genericError } from "@/lib/errors";
 import { BRANDING_IMAGE_URL } from "@/lib/external-urls";
+import { platformLinks } from "@/lib/platform-links";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_BOT_IMAGE =
@@ -268,6 +275,33 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
                   {...field}
                 />
               </FormControl>
+              <div className="flex items-center gap-1.5 pt-0.5">
+                <span className="text-xs text-muted-foreground">
+                  Need a meeting?
+                </span>
+                <TooltipProvider>
+                  {platformLinks.map((p) => (
+                    <Tooltip key={p.name}>
+                      <TooltipTrigger asChild>
+                        <a
+                          href={p.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={cn(
+                            "rounded p-1 transition-colors",
+                            p.color,
+                          )}
+                        >
+                          <p.icon className="h-4 w-4" />
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>{p.name}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+                </TooltipProvider>
+              </div>
               <FormMessage />
             </FormItem>
           )}
