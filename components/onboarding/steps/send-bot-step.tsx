@@ -48,7 +48,7 @@ export function SendBotStep({
           </p>
         </div>
         {isEnabled && apiKey ? (
-          <SendBotForm apiKey={apiKey} />
+          <SendBotForm apiKey={apiKey} showPlatformLinks={false} />
         ) : (
           <p className="text-sm text-muted-foreground">
             Complete the previous steps to continue.

@@ -121,9 +121,14 @@ type SendBotFormValues = output<typeof sendBotFormSchema>;
 interface SendBotFormProps {
   apiKey: string;
   onSuccess?: () => void;
+  showPlatformLinks?: boolean;
 }
 
-export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
+export function SendBotForm({
+  apiKey,
+  onSuccess,
+  showPlatformLinks = true,
+}: SendBotFormProps) {
   const [loading, setLoading] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const form = useForm<SendBotFormValues>({
@@ -275,33 +280,35 @@ export function SendBotForm({ apiKey, onSuccess }: SendBotFormProps) {
                   {...field}
                 />
               </FormControl>
-              <div className="flex items-center gap-1.5 pt-0.5">
-                <span className="text-xs text-muted-foreground">
-                  Need a meeting?
-                </span>
-                <TooltipProvider>
-                  {platformLinks.map((p) => (
-                    <Tooltip key={p.name}>
-                      <TooltipTrigger asChild>
-                        <a
-                          href={p.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={cn(
-                            "rounded p-1 transition-colors",
-                            p.color,
-                          )}
-                        >
-                          <p.icon className="h-4 w-4" />
-                        </a>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">
-                        <p>{p.name}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </TooltipProvider>
-              </div>
+              {showPlatformLinks && (
+                <div className="flex items-center gap-1.5 pt-0.5">
+                  <span className="text-xs text-muted-foreground">
+                    Need a meeting?
+                  </span>
+                  <TooltipProvider>
+                    {platformLinks.map((p) => (
+                      <Tooltip key={p.name}>
+                        <TooltipTrigger asChild>
+                          <a
+                            href={p.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={cn(
+                              "rounded p-1 transition-colors",
+                              p.color,
+                            )}
+                          >
+                            <p.icon className="h-4 w-4" />
+                          </a>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p>{p.name}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </TooltipProvider>
+                </div>
+              )}
               <FormMessage />
             </FormItem>
           )}
