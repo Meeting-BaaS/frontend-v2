@@ -19,11 +19,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { TeamAvatar } from "@/components/ui/team-avatar";
+import { useConfiguration } from "@/hooks/use-configuration";
 import { useUser } from "@/hooks/use-user";
 import type { TeamDetails } from "@/lib/schemas/teams";
 
 export function TeamSwitcher() {
+  const { configuration } = useConfiguration();
   const { activeTeam, teamDetails, setActiveTeam } = useUser();
+  const stripeEnabled = configuration?.features?.stripe ?? false;
   const { isMobile, open } = useSidebar();
 
   const onTeamClick = async (team: TeamDetails[number]) => {
@@ -107,8 +110,8 @@ export function TeamSwitcher() {
                 {team.isActive && <Check className="ml-auto size-4" />}
               </DropdownMenuItem>
             ))}
-            {/* Only show add team button if there are less than 10 teams. Backend only allows up to 10 teams per user. */}
-            {teamDetails.length < 10 && (
+            {/* Only show add team when Stripe is enabled and under team limit. Backend only allows up to 10 teams per user. */}
+            {stripeEnabled && teamDetails.length < 10 && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="gap-2 p-1" asChild>

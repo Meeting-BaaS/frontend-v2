@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import FormWrapper from "@/components/auth/form-wrapper";
 import ResetPasswordForm from "@/components/auth/reset-password-form";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Reset Password | Meeting BaaS",
+export const metadata: Metadata = createPageMetadata({
+  title: "Reset Password",
   description: "Reset Password to Meeting BaaS",
-};
+});
 
 export default async function ResetPasswordPage({
   searchParams,

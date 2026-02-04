@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Verify email | Meeting BaaS",
+export const metadata: Metadata = createPageMetadata({
+  title: "Verify email",
   description: "Verify email",
-};
+});
 
 export default async function VerifyEmailPage({
   searchParams,

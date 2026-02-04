@@ -5,11 +5,12 @@ import FormWrapper from "@/components/auth/form-wrapper";
 import SignInForm from "@/components/auth/sign-in-form";
 import { Button } from "@/components/ui/button";
 import type { errorDescription } from "@/lib/errors";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Login | Meeting BaaS",
+export const metadata: Metadata = createPageMetadata({
+  title: "Login",
   description: "Login to Meeting BaaS",
-};
+});
 
 interface SignInPageProps {
   searchParams: Promise<{

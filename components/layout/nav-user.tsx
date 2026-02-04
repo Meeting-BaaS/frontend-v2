@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   CircleUserRound,
@@ -9,13 +9,13 @@ import {
   LogOut,
   Moon,
   Sparkles,
-  Sun,
-} from "lucide-react";
-import Link from "next/link";
-import { useTheme } from "next-themes";
-import { useMemo } from "react";
-import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+  Sun
+} from "lucide-react"
+import Link from "next/link"
+import { useTheme } from "next-themes"
+import { useMemo } from "react"
+import { toast } from "sonner"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,61 +24,61 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import { useUser } from "@/hooks/use-user";
-import { authClient } from "@/lib/auth-client";
-import { genericError } from "@/lib/errors";
-import { V1_BAAS_URL } from "@/lib/external-urls";
-import type { TeamDetails } from "@/lib/schemas/teams";
-import type { Theme } from "@/types/common.types";
+  useSidebar
+} from "@/components/ui/sidebar"
+import { useConfiguration } from "@/hooks/use-configuration"
+import { useUser } from "@/hooks/use-user"
+import { authClient } from "@/lib/auth-client"
+import { genericError } from "@/lib/errors"
+import { V1_BAAS_URL } from "@/lib/external-urls"
+import type { TeamDetails } from "@/lib/schemas/teams"
+import type { Theme } from "@/types/common.types"
 
 const higherPlanMap: Record<TeamDetails[number]["plan"], string | null> = {
   payg: "pro",
   pro: "scale",
   scale: "enterprise",
-  enterprise: null,
-};
+  enterprise: null
+}
 
 export function NavUser() {
-  const { isMobile, open } = useSidebar();
-  const { setTheme, resolvedTheme } = useTheme();
-  const { user, activeTeam } = useUser();
-  const higherPlan = useMemo(
-    () => higherPlanMap[activeTeam?.plan ?? "payg"],
-    [activeTeam],
-  );
+  const { isMobile, open } = useSidebar()
+  const { setTheme, resolvedTheme } = useTheme()
+  const { user, activeTeam } = useUser()
+  const { configuration } = useConfiguration()
+  const showStripe = configuration?.features?.stripe ?? false
+  const higherPlan = useMemo(() => higherPlanMap[activeTeam?.plan ?? "payg"], [activeTeam])
 
   const handleSignOut = async () => {
-    const signedOut = await authClient.signOut();
+    const signedOut = await authClient.signOut()
     if (!signedOut) {
-      toast.error(genericError);
-      return;
+      toast.error(genericError)
+      return
     }
-    const redirectSearchParams = new URLSearchParams();
-    redirectSearchParams.set("redirectTo", "/bots");
-    window.location.href = `/sign-in?${redirectSearchParams.toString()}`;
-  };
+    const redirectSearchParams = new URLSearchParams()
+    redirectSearchParams.set("redirectTo", "/bots")
+    window.location.href = `/sign-in?${redirectSearchParams.toString()}`
+  }
 
   const handleChangeTheme = async (theme: Theme) => {
     function update() {
-      setTheme(theme);
+      setTheme(theme)
     }
 
     if (document.startViewTransition && theme !== resolvedTheme) {
-      document.documentElement.style.viewTransitionName = "theme-transition";
-      await document.startViewTransition(update).finished;
-      document.documentElement.style.viewTransitionName = "";
+      document.documentElement.style.viewTransitionName = "theme-transition"
+      await document.startViewTransition(update).finished
+      document.documentElement.style.viewTransitionName = ""
     } else {
-      update();
+      update()
     }
-  };
+  }
 
   return (
     <SidebarMenu>
@@ -93,7 +93,7 @@ export function NavUser() {
                 className={`transition-all duration-300 ease-in-out ${open ? "size-6" : "size-8"}`}
               >
                 <AvatarImage src={user.image ?? ""} alt={user.name} />
-                <AvatarFallback className="bg-gradient-to-br from-baas-primary-500 via-baas-primary-700 to-baas-black text-white font-bold">
+                <AvatarFallback className="bg-linear-to-br from-baas-primary-500 via-baas-primary-700 to-baas-black text-white font-bold">
                   {user.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
@@ -122,13 +122,12 @@ export function NavUser() {
                   <DropdownMenuShortcut>M</DropdownMenuShortcut>
                 </Link>
               </DropdownMenuItem>
-              {activeTeam?.plan !== "enterprise" && (
+              {showStripe && activeTeam?.plan !== "enterprise" && (
                 <DropdownMenuItem asChild>
                   <Link href="/settings/usage?api_plans=true">
                     <Sparkles />
                     <div>
-                      Upgrade to{" "}
-                      <span className="capitalize">{higherPlan}</span>
+                      Upgrade to <span className="capitalize">{higherPlan}</span>
                     </div>
                     <DropdownMenuShortcut>U</DropdownMenuShortcut>
                   </Link>
@@ -138,9 +137,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem
-                onClick={() =>
-                  handleChangeTheme(resolvedTheme === "dark" ? "light" : "dark")
-                }
+                onClick={() => handleChangeTheme(resolvedTheme === "dark" ? "light" : "dark")}
               >
                 {resolvedTheme === "dark" ? <Sun /> : <Moon />}
                 Toggle Theme
@@ -161,11 +158,7 @@ export function NavUser() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link
-                  href={V1_BAAS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link href={V1_BAAS_URL} target="_blank" rel="noopener noreferrer">
                   <ExternalLink />
                   Access Meeting BaaS v1
                   <DropdownMenuShortcut>V</DropdownMenuShortcut>
@@ -175,7 +168,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleSignOut}
-              className="text-destructive hover:!text-destructive hover:!bg-destructive/10"
+              className="text-destructive hover:text-destructive! hover:bg-destructive/10!"
             >
               <LogOut className="text-destructive" />
               Log out
@@ -184,5 +177,5 @@ export function NavUser() {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  );
+  )
 }
