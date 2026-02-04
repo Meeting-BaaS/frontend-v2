@@ -1,36 +1,40 @@
-import dynamic from "next/dynamic";
-import { redirect } from "next/navigation";
-import { Suspense } from "react";
-import { Spinner } from "@/components/ui/spinner";
-import { listAllTeamsRequestQuerySchema } from "@/lib/schemas/admin";
+import type { Metadata } from "next"
+import dynamic from "next/dynamic"
+import { redirect } from "next/navigation"
+import { Suspense } from "react"
+import { Spinner } from "@/components/ui/spinner"
+import { createPageMetadata } from "@/lib/metadata"
+import { listAllTeamsRequestQuerySchema } from "@/lib/schemas/admin"
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Admin Teams",
+  description: "Manage all teams"
+})
 
 const AdminTeamsView = dynamic(
   () =>
     import("@/components/admin/teams/view").then((mod) => ({
-      default: mod.AdminTeamsView,
+      default: mod.AdminTeamsView
     })),
   {
-    loading: () => <Spinner />,
-  },
-);
+    loading: () => <Spinner />
+  }
+)
 
 interface AdminTeamsPageProps {
   searchParams: Promise<{
-    searchEmail?: string | string[] | undefined;
-  }>;
+    searchEmail?: string | string[] | undefined
+  }>
 }
 
-export default async function AdminTeamsPage({
-  searchParams,
-}: AdminTeamsPageProps) {
-  const params = await searchParams;
+export default async function AdminTeamsPage({ searchParams }: AdminTeamsPageProps) {
+  const params = await searchParams
 
-  const { success, data: validatedParams } =
-    listAllTeamsRequestQuerySchema.safeParse(params);
+  const { success, data: validatedParams } = listAllTeamsRequestQuerySchema.safeParse(params)
 
   if (!success) {
     // If params aren't valid, return teams without any filtering/pagination
-    return redirect("/admin/teams");
+    return redirect("/admin/teams")
   }
 
   return (
@@ -39,5 +43,5 @@ export default async function AdminTeamsPage({
         <AdminTeamsView params={validatedParams ?? null} />
       </Suspense>
     </section>
-  );
+  )
 }

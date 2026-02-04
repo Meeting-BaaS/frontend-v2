@@ -1,11 +1,18 @@
+import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { CreateNewTeamContent } from "@/components/utility/create-new-team-content"
 import { axiosGetInstance } from "@/lib/api-client"
 import { GET_PLANS, GET_SESSION } from "@/lib/api-routes"
+import { createPageMetadata } from "@/lib/metadata"
 import { type SessionResponse, sessionResponseSchema } from "@/lib/schemas/session"
 import { type PlansResponse, plansResponseSchema } from "@/lib/schemas/settings"
 import { createNewTeamSearchParamsSchema } from "@/lib/validators"
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Create New Team",
+  description: "Create a new team and choose a plan"
+})
 
 interface CreateNewTeamPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>

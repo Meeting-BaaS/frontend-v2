@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import { notFound, redirect } from "next/navigation"
 import { Suspense } from "react"
@@ -9,8 +10,14 @@ import { Spinner } from "@/components/ui/spinner"
 import { axiosGetInstance } from "@/lib/api-client"
 import { GET_SESSION } from "@/lib/api-routes"
 import { getConfiguration } from "@/lib/get-configuration"
+import { createPageMetadata } from "@/lib/metadata"
 import { type SessionResponse, sessionResponseSchema } from "@/lib/schemas/session"
 import { settingsPageTabsSchema } from "@/lib/schemas/settings"
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Settings",
+  description: "Manage your account and team settings"
+})
 
 interface SettingsTabPageProps {
   params: Promise<{ tab: string }>

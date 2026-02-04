@@ -1,54 +1,53 @@
-import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
-import { LogViewer } from "@/components/utility/log-viewer";
-import { axiosGetInstance } from "@/lib/api-client";
-import { ADMIN_GET_BOT_DETAILS, GET_SESSION } from "@/lib/api-routes";
+import type { Metadata } from "next"
+import { cookies } from "next/headers"
+import { notFound } from "next/navigation"
+import { LogViewer } from "@/components/utility/log-viewer"
+import { axiosGetInstance } from "@/lib/api-client"
+import { ADMIN_GET_BOT_DETAILS, GET_SESSION } from "@/lib/api-routes"
+import { createPageMetadata } from "@/lib/metadata"
 import {
   type GetAdminBotDetailsResponse,
-  getAdminBotDetailsResponseSchema,
-} from "@/lib/schemas/admin";
-import { slugRequestParamsSchema } from "@/lib/schemas/common";
-import {
-  type SessionResponse,
-  sessionResponseSchema,
-} from "@/lib/schemas/session";
+  getAdminBotDetailsResponseSchema
+} from "@/lib/schemas/admin"
+import { slugRequestParamsSchema } from "@/lib/schemas/common"
+import { type SessionResponse, sessionResponseSchema } from "@/lib/schemas/session"
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Bot Logs",
+  description: "View a bot's logs"
+})
 
 interface LogsPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }
 
 export default async function LogsPage({ params }: LogsPageProps) {
-  const requestParams = await params;
-  const cookieStore = await cookies();
+  const requestParams = await params
+  const cookieStore = await cookies()
 
   // Parse and validate the request params
-  const { success, data: validatedParams } =
-    slugRequestParamsSchema.safeParse(requestParams);
+  const { success, data: validatedParams } = slugRequestParamsSchema.safeParse(requestParams)
   if (!success) {
-    return notFound();
+    return notFound()
   }
 
-  const botUuid = validatedParams.slug;
+  const botUuid = validatedParams.slug
 
   // Session check - users must be signed in
-  const session = await axiosGetInstance<SessionResponse>(
-    GET_SESSION,
-    sessionResponseSchema,
-    {
-      headers: {
-        Cookie: cookieStore.toString(),
-      },
-    },
-  );
+  const session = await axiosGetInstance<SessionResponse>(GET_SESSION, sessionResponseSchema, {
+    headers: {
+      Cookie: cookieStore.toString()
+    }
+  })
 
   // Redirect if user is not logged in
   if (!session) {
-    return notFound();
+    return notFound()
   }
 
   // Check if user is admin
   if (session.user.role !== "admin") {
-    return notFound();
+    return notFound()
   }
 
   // Fetch admin bot details to get the log file URL
@@ -57,15 +56,15 @@ export default async function LogsPage({ params }: LogsPageProps) {
     getAdminBotDetailsResponseSchema,
     {
       headers: {
-        Cookie: cookieStore.toString(),
-      },
-    },
-  );
+        Cookie: cookieStore.toString()
+      }
+    }
+  )
 
   // Check if log file URL exists
   if (!botDetails.data.logFileUrl) {
-    return notFound();
+    return notFound()
   }
 
-  return <LogViewer logFileUrl={botDetails.data.logFileUrl} />;
+  return <LogViewer logFileUrl={botDetails.data.logFileUrl} />
 }
