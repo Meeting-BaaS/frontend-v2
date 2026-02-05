@@ -1,5 +1,6 @@
 "use client"
 
+import { uniqBy } from "lodash-es"
 import { Plus } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { InviteUserDialog } from "@/components/admin/users/invite-user-dialog"
@@ -24,7 +25,11 @@ export function AdminUsersView() {
         LIST_TEAM_MEMBERS,
         teamMembersListResponseSchema
       )
-      setMembers(response.data.members)
+      // Prefer member rows (userId set) over invitation-only; then dedupe by email
+      const sorted = [...response.data.members].sort((a, b) =>
+        (a.userId != null ? 0 : 1) - (b.userId != null ? 0 : 1)
+      )
+      setMembers(uniqBy(sorted, (m) => m.email.toLowerCase()))
     } catch (err) {
       console.error("Failed to fetch team members", err)
       setMembers([])
