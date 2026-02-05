@@ -41,8 +41,10 @@ export function AdminTeamDetails({
       teamDetails.members.map((member) => ({
         id: member.userId,
         invitationId: null,
+        userId: member.userId,
         email: member.userEmail,
         role: member.role as TeamMember["role"],
+        banned: null,
         createdAt: member.createdAt,
         invitationStatus: null,
         expiresAt: null,
