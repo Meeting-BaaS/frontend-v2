@@ -75,25 +75,21 @@ const allItems = [
 ]
 
 const adminItems = [
+  { title: "All Bots", url: "/admin/bots", icon: Bot, featureKey: null },
+  { title: "All Teams", url: "/admin/teams", icon: Users, featureKey: null },
+  { title: "Admins", url: "/admin/admins", icon: ShieldCheck, featureKey: null },
   {
-    title: "All Bots",
-    url: "/admin/bots",
-    icon: Bot
-  },
-  {
-    title: "All Teams",
-    url: "/admin/teams",
-    icon: Users
-  },
-  {
-    title: "Admins",
-    url: "/admin/admins",
-    icon: ShieldCheck
+    title: "Users",
+    url: "/admin/users",
+    icon: Users,
+    featureKey: "multitenant",
+    showWhenFalse: true
   },
   {
     title: "Support Panel",
     url: "/admin/support",
-    icon: MessageSquare
+    icon: MessageSquare,
+    featureKey: null
   }
 ]
 
@@ -152,23 +148,31 @@ export function AppSidebar({ sessionResponse }: AppSidebarProps) {
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {adminItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith(item.url)}
-                      tooltip={{
-                        children: item.title,
-                        hidden: open || isMobile
-                      }}
-                    >
-                      <Link href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {adminItems
+                  .filter((item) => {
+                    const key = item.featureKey
+                    if (!key) return true
+                    const value =
+                      configuration?.features?.[key as keyof typeof configuration.features]
+                    return item.showWhenFalse ? value === false : Boolean(value)
+                  })
+                  .map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname.startsWith(item.url)}
+                        tooltip={{
+                          children: item.title,
+                          hidden: open || isMobile
+                        }}
+                      >
+                        <Link href={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

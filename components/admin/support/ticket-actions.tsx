@@ -1,29 +1,32 @@
-"use client";
+"use client"
 
-import { MoreHorizontal, Paperclip, SendToBack } from "lucide-react";
-import { useState } from "react";
-import { UpdateTicketStatusDialog } from "@/components/admin/support/update-status-dialog";
-import { TicketAttachmentsSheet } from "@/components/support/ticket-attachments-sheet";
-import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Paperclip, SendToBack } from "lucide-react"
+import { useState } from "react"
+import { UpdateTicketStatusDialog } from "@/components/admin/support/update-status-dialog"
+import { TicketAttachmentsSheet } from "@/components/support/ticket-attachments-sheet"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { AdminTicketDetails } from "@/lib/schemas/admin";
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { useConfiguration } from "@/hooks/use-configuration"
+import type { AdminTicketDetails } from "@/lib/schemas/admin"
 
 interface AdminTicketActionsProps {
-  ticketDetails: AdminTicketDetails;
-  buttonVariant?: "ghost" | "outline" | "default";
+  ticketDetails: AdminTicketDetails
+  buttonVariant?: "ghost" | "outline" | "default"
 }
 
 export function AdminTicketActions({
   ticketDetails,
-  buttonVariant = "ghost",
+  buttonVariant = "ghost"
 }: AdminTicketActionsProps) {
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
-  const [attachmentsSheetOpen, setAttachmentsSheetOpen] = useState(false);
+  const { configuration } = useConfiguration()
+  const isSupportBucketConfigured = configuration?.isSupportBucketConfigured ?? true
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+  const [attachmentsSheetOpen, setAttachmentsSheetOpen] = useState(false)
 
   return (
     <>
@@ -35,19 +38,23 @@ export function AdminTicketActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setAttachmentsSheetOpen(true)}>
-            <Paperclip /> View attachments
-          </DropdownMenuItem>
+          {isSupportBucketConfigured && (
+            <DropdownMenuItem onClick={() => setAttachmentsSheetOpen(true)}>
+              <Paperclip /> View attachments
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onClick={() => setStatusDialogOpen(true)}>
             <SendToBack /> Change Status
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <TicketAttachmentsSheet
-        attachments={ticketDetails.attachments}
-        open={attachmentsSheetOpen}
-        onOpenChange={setAttachmentsSheetOpen}
-      />
+      {isSupportBucketConfigured && (
+        <TicketAttachmentsSheet
+          attachments={ticketDetails.attachments}
+          open={attachmentsSheetOpen}
+          onOpenChange={setAttachmentsSheetOpen}
+        />
+      )}
       <UpdateTicketStatusDialog
         ticketId={ticketDetails.ticketId}
         currentStatus={ticketDetails.status}
@@ -55,5 +62,5 @@ export function AdminTicketActions({
         onOpenChange={setStatusDialogOpen}
       />
     </>
-  );
+  )
 }

@@ -235,6 +235,8 @@ export const adminTeamDetailsSchema = object({
   customBillingEmail: email().nullable(),
   reminderEmail: email().nullable(),
   reminderEnabled: boolean(),
+  deleted: boolean(),
+  deletedAt: iso.datetime().nullable(),
 });
 
 export type AdminTeamDetails = output<typeof adminTeamDetailsSchema>;

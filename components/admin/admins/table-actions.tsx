@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { useUser } from "@/hooks/use-user"
 import type { AdminListUser } from "@/types/admin-users"
 
 interface AdminTableActionsProps {
@@ -21,13 +22,22 @@ interface AdminTableActionsProps {
 }
 
 export function AdminTableActions({
-  user,
+  user: rowUser,
   onSuccess,
   buttonVariant = "ghost"
 }: AdminTableActionsProps) {
+  const { user: currentUser } = useUser()
   const [openDemote, setOpenDemote] = useState(false)
   const [openBan, setOpenBan] = useState(false)
   const [openUnban, setOpenUnban] = useState(false)
+
+  const isCurrentUser =
+    currentUser?.email != null &&
+    rowUser.email.toLowerCase() === currentUser.email.toLowerCase()
+
+  if (isCurrentUser) {
+    return null
+  }
 
   return (
     <>
@@ -42,7 +52,7 @@ export function AdminTableActions({
           <DropdownMenuItem onClick={() => setOpenDemote(true)}>
             <UserMinus /> Demote user
           </DropdownMenuItem>
-          {user.banned ? (
+          {rowUser.banned ? (
             <DropdownMenuItem onClick={() => setOpenUnban(true)}>
               <UserX /> Unban user
             </DropdownMenuItem>
@@ -60,7 +70,7 @@ export function AdminTableActions({
         <AdminTableActionsDemoteDialog
           open={openDemote}
           onOpenChange={setOpenDemote}
-          user={user}
+          user={rowUser}
           onSuccess={onSuccess}
         />
       )}
@@ -68,7 +78,7 @@ export function AdminTableActions({
         <AdminTableActionsBanDialog
           open={openBan}
           onOpenChange={setOpenBan}
-          user={user}
+          user={rowUser}
           onSuccess={onSuccess}
         />
       )}
@@ -76,7 +86,7 @@ export function AdminTableActions({
         <AdminTableActionsUnbanDialog
           open={openUnban}
           onOpenChange={setOpenUnban}
-          user={user}
+          user={rowUser}
           onSuccess={onSuccess}
         />
       )}

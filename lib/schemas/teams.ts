@@ -108,8 +108,10 @@ export type UpdateTeamName = output<typeof updateTeamNameSchema>
 export const teamMemberSchema = object({
   id: number().nullable(),
   invitationId: number().nullable(),
+  userId: number().nullable(),
   email: email(),
   role: roleEnum,
+  banned: boolean().nullable(),
   createdAt: iso.datetime().nullable(),
   invitationStatus: invitationStatusEnum.nullable(),
   expiresAt: iso.datetime().nullable()

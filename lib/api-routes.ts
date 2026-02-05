@@ -136,12 +136,16 @@ export const ADMIN_BOTS_BASE_PATH = `${ADMIN_BASE_PATH}/bots`;
 export const ADMIN_LIST_BOTS = `${ADMIN_BOTS_BASE_PATH}/list`;
 export const ADMIN_GET_BOT_DETAILS = (botId: string) =>
   `${ADMIN_BOTS_BASE_PATH}/${botId}/details`;
+export const ADMIN_GET_BOT_SCREENSHOTS = (botId: string) =>
+  `${ADMIN_BOTS_BASE_PATH}/${botId}/screenshots`;
 export const ADMIN_LEAVE_BOT = (botId: string) =>
   `${ADMIN_BOTS_BASE_PATH}/${botId}/leave`;
 export const ADMIN_TEAMS_BASE_PATH = `${ADMIN_BASE_PATH}/teams`;
 export const ADMIN_LIST_TEAMS = `${ADMIN_TEAMS_BASE_PATH}/list`;
 export const ADMIN_GET_TEAM_DETAILS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/details`;
+export const ADMIN_REVERT_TEAM_DELETION = (teamId: number) =>
+  `${ADMIN_TEAMS_BASE_PATH}/${teamId}/revert-deletion`;
 export const ADMIN_UPDATE_RATE_LIMITS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/update-rate-limits`;
 export const ADMIN_TOKEN_OPERATIONS = (teamId: number) =>

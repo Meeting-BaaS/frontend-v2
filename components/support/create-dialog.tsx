@@ -40,6 +40,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import { useConfiguration } from "@/hooks/use-configuration";
 import { axiosPostInstance } from "@/lib/api-client";
 import { CREATE_SUPPORT_TICKET } from "@/lib/api-routes";
 import { genericError } from "@/lib/errors";
@@ -81,6 +82,9 @@ export function CreateSupportTicketDialog({
   initialModule,
 }: CreateSupportTicketDialogProps) {
   const router = useRouter();
+  const { configuration } = useConfiguration();
+  const isSupportBucketConfigured =
+    configuration?.isSupportBucketConfigured ?? true;
   const [loading, setLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -416,73 +420,78 @@ export function CreateSupportTicketDialog({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="files"
-                render={({ fieldState }) => (
-                  <Field
-                    data-invalid={fieldState.invalid}
-                    className="col-span-1 md:col-span-2"
-                  >
-                    <FieldLabel htmlFor="file-input">Attachments</FieldLabel>
-                    <FieldContent>
-                      <FormControl>
-                        <Input
-                          ref={fileInputRef}
-                          id="file-input"
-                          type="file"
-                          accept={ALLOWED_SUPPORT_FILE_TYPES.join(",")}
-                          multiple
-                          disabled={
-                            loading || selectedFiles.length >= MAX_SUPPORT_FILES
-                          }
-                          onChange={handleFileChange}
-                          className="cursor-pointer"
-                        />
-                      </FormControl>
-                      <FieldDescription className="text-xs">
-                        JPEG, JPG, PNG, PDF, TXT (max 5MB each, up to{" "}
-                        {MAX_SUPPORT_FILES} files)
-                      </FieldDescription>
-                      {selectedFiles.length > 0 && (
-                        <div className="mt-2 space-y-2">
-                          {selectedFiles.map((file) => (
-                            <div
-                              key={`${file.name}-${file.size}-${file.lastModified}`}
-                              className="flex items-center gap-2 p-2 border rounded-md bg-muted/50"
-                            >
-                              {getFileIcon(file)}
-                              <span className="flex-1 text-sm truncate">
-                                {file.name}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {(file.size / 1024 / 1024).toFixed(2)} MB
-                              </span>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                onClick={() =>
-                                  handleRemoveFile(selectedFiles.indexOf(file))
-                                }
-                                disabled={loading}
-                                aria-label="Remove file"
+              {isSupportBucketConfigured && (
+                <FormField
+                  control={form.control}
+                  name="files"
+                  render={({ fieldState }) => (
+                    <Field
+                      data-invalid={fieldState.invalid}
+                      className="col-span-1 md:col-span-2"
+                    >
+                      <FieldLabel htmlFor="file-input">Attachments</FieldLabel>
+                      <FieldContent>
+                        <FormControl>
+                          <Input
+                            ref={fileInputRef}
+                            id="file-input"
+                            type="file"
+                            accept={ALLOWED_SUPPORT_FILE_TYPES.join(",")}
+                            multiple
+                            disabled={
+                              loading ||
+                              selectedFiles.length >= MAX_SUPPORT_FILES
+                            }
+                            onChange={handleFileChange}
+                            className="cursor-pointer"
+                          />
+                        </FormControl>
+                        <FieldDescription className="text-xs">
+                          JPEG, JPG, PNG, PDF, TXT (max 5MB each, up to{" "}
+                          {MAX_SUPPORT_FILES} files)
+                        </FieldDescription>
+                        {selectedFiles.length > 0 && (
+                          <div className="mt-2 space-y-2">
+                            {selectedFiles.map((file) => (
+                              <div
+                                key={`${file.name}-${file.size}-${file.lastModified}`}
+                                className="flex items-center gap-2 p-2 border rounded-md bg-muted/50"
                               >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      <FieldError
-                        errors={
-                          fieldState.error ? [fieldState.error] : undefined
-                        }
-                      />
-                    </FieldContent>
-                  </Field>
-                )}
-              />
+                                {getFileIcon(file)}
+                                <span className="flex-1 text-sm truncate">
+                                  {file.name}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                                </span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  onClick={() =>
+                                    handleRemoveFile(
+                                      selectedFiles.indexOf(file),
+                                    )
+                                  }
+                                  disabled={loading}
+                                  aria-label="Remove file"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <FieldError
+                          errors={
+                            fieldState.error ? [fieldState.error] : undefined
+                          }
+                        />
+                      </FieldContent>
+                    </Field>
+                  )}
+                />
+              )}
             </FieldGroup>
 
             <DialogFooter>

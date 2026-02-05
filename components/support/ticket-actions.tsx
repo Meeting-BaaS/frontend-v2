@@ -19,6 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useConfiguration } from "@/hooks/use-configuration";
 import { axiosPostInstance } from "@/lib/api-client";
 import { UPDATE_TICKET_STATUS } from "@/lib/api-routes";
 import { genericError } from "@/lib/errors";
@@ -37,6 +38,9 @@ export function TicketActions({
   buttonVariant = "ghost",
 }: TicketActionsProps) {
   const router = useRouter();
+  const { configuration } = useConfiguration();
+  const isSupportBucketConfigured =
+    configuration?.isSupportBucketConfigured ?? true;
   const [openAttachmentsSheet, setOpenAttachmentsSheet] = useState(false);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -83,15 +87,19 @@ export function TicketActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setOpenAttachmentsSheet(true)}>
-            <Paperclip /> View attachments
-          </DropdownMenuItem>
-          {ticketDetails.status !== "resolved" &&
-            ticketDetails.status !== "closed" && (
-              <DropdownMenuItem onClick={() => setOpenUploadDialog(true)}>
-                <Upload /> Upload more attachments
+          {isSupportBucketConfigured && (
+            <>
+              <DropdownMenuItem onClick={() => setOpenAttachmentsSheet(true)}>
+                <Paperclip /> View attachments
               </DropdownMenuItem>
-            )}
+              {ticketDetails.status !== "resolved" &&
+                ticketDetails.status !== "closed" && (
+                  <DropdownMenuItem onClick={() => setOpenUploadDialog(true)}>
+                    <Upload /> Upload more attachments
+                  </DropdownMenuItem>
+                )}
+            </>
+          )}
           {isResolved ? (
             <DropdownMenuItem
               onClick={() => handleStatusUpdate("open")}
@@ -111,16 +119,20 @@ export function TicketActions({
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      <TicketAttachmentsSheet
-        attachments={ticketDetails.attachments}
-        open={openAttachmentsSheet}
-        onOpenChange={setOpenAttachmentsSheet}
-      />
-      <UploadAttachmentsDialog
-        ticketId={ticketDetails.ticketId}
-        open={openUploadDialog}
-        onOpenChange={setOpenUploadDialog}
-      />
+      {isSupportBucketConfigured && (
+        <>
+          <TicketAttachmentsSheet
+            attachments={ticketDetails.attachments}
+            open={openAttachmentsSheet}
+            onOpenChange={setOpenAttachmentsSheet}
+          />
+          <UploadAttachmentsDialog
+            ticketId={ticketDetails.ticketId}
+            open={openUploadDialog}
+            onOpenChange={setOpenUploadDialog}
+          />
+        </>
+      )}
     </>
   );
 }
