@@ -12,6 +12,7 @@ import { Form, FormControl, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { TeamAvatar } from "@/components/ui/team-avatar";
+import { useConfiguration } from "@/hooks/use-configuration";
 import { useUser } from "@/hooks/use-user";
 import { axiosDeleteInstance, axiosPostInstance } from "@/lib/api-client";
 import { REMOVE_TEAM_LOGO, UPLOAD_TEAM_LOGO } from "@/lib/api-routes";
@@ -32,7 +33,9 @@ interface TeamLogoFormProps {
 }
 
 export function TeamLogoForm({ initialLogoUrl }: TeamLogoFormProps) {
+  const { configuration } = useConfiguration();
   const { updateActiveTeam, activeTeam } = useUser();
+  const isLogoBucketConfigured = configuration?.isLogoBucketConfigured ?? true;
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [isRemovingLogo, setIsRemovingLogo] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
@@ -149,90 +152,92 @@ export function TeamLogoForm({ initialLogoUrl }: TeamLogoFormProps) {
             />
           </div>
         )}
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-2"
-          >
-            <FormField
-              control={form.control}
-              name="file"
-              render={({
-                field: { value, onChange, ...field },
-                fieldState,
-              }) => (
-                <>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      ref={fileInputRef}
-                      type="file"
-                      accept={ALLOWED_LOGO_MIME_TYPES.join(",")}
-                      multiple={false}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        onChange(file);
-                        if (file) {
-                          form.handleSubmit(onSubmit)();
-                        }
-                      }}
-                      disabled={isUploadingLogo}
-                      aria-invalid={fieldState.invalid}
-                      className="hidden"
-                    />
-                  </FormControl>
-                  {fieldState.error && (
-                    <FieldDescription className="text-destructive">
-                      {fieldState.error.message}
-                    </FieldDescription>
-                  )}
-                </>
-              )}
-            />
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                id="avatar-upload"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  fileInputRef.current?.click();
-                }}
-                disabled={isUploadingLogo}
-              >
-                {isUploadingLogo ? (
+        {isLogoBucketConfigured && (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-2"
+            >
+              <FormField
+                control={form.control}
+                name="file"
+                render={({
+                  field: { value, onChange, ...field },
+                  fieldState,
+                }) => (
                   <>
-                    <Spinner className="size-4" /> Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="size-4" />{" "}
-                    {avatarPreview ? "Change avatar" : "Upload avatar"}
+                    <FormControl>
+                      <Input
+                        {...field}
+                        ref={fileInputRef}
+                        type="file"
+                        accept={ALLOWED_LOGO_MIME_TYPES.join(",")}
+                        multiple={false}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          onChange(file);
+                          if (file) {
+                            form.handleSubmit(onSubmit)();
+                          }
+                        }}
+                        disabled={isUploadingLogo}
+                        aria-invalid={fieldState.invalid}
+                        className="hidden"
+                      />
+                    </FormControl>
+                    {fieldState.error && (
+                      <FieldDescription className="text-destructive">
+                        {fieldState.error.message}
+                      </FieldDescription>
+                    )}
                   </>
                 )}
-              </Button>
-              {avatarPreview && (
+              />
+              <div className="flex items-center gap-2">
                 <Button
                   type="button"
-                  variant="destructive"
-                  size="icon"
-                  onClick={handleRemoveLogo}
-                  disabled={isRemovingLogo}
-                  aria-label="Remove avatar"
+                  id="avatar-upload"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                  }}
+                  disabled={isUploadingLogo}
                 >
-                  {isRemovingLogo ? (
-                    <Spinner className="size-4" />
+                  {isUploadingLogo ? (
+                    <>
+                      <Spinner className="size-4" /> Uploading...
+                    </>
                   ) : (
-                    <Trash2 className="size-4" />
+                    <>
+                      <Upload className="size-4" />{" "}
+                      {avatarPreview ? "Change avatar" : "Upload avatar"}
+                    </>
                   )}
                 </Button>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              PNG, JPEG, or WebP. Max {MAX_LOGO_FILE_SIZE / (1024 * 1024)}MB.
-            </p>
-          </form>
-        </Form>
+                {avatarPreview && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    onClick={handleRemoveLogo}
+                    disabled={isRemovingLogo}
+                    aria-label="Remove avatar"
+                  >
+                    {isRemovingLogo ? (
+                      <Spinner className="size-4" />
+                    ) : (
+                      <Trash2 className="size-4" />
+                    )}
+                  </Button>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                PNG, JPEG, or WebP. Max {MAX_LOGO_FILE_SIZE / (1024 * 1024)}MB.
+              </p>
+            </form>
+          </Form>
+        )}
       </div>
     </div>
   );

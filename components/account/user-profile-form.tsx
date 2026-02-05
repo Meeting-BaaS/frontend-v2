@@ -11,6 +11,7 @@ import { FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Form, FormControl, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { useConfiguration } from "@/hooks/use-configuration";
 import { useUser } from "@/hooks/use-user";
 import { axiosDeleteInstance, axiosPostInstance } from "@/lib/api-client";
 import { REMOVE_USER_IMAGE, UPLOAD_USER_IMAGE } from "@/lib/api-routes";
@@ -27,7 +28,9 @@ import {
 } from "@/lib/schemas/account";
 
 export function UserProfileForm() {
+  const { configuration } = useConfiguration();
   const { user, updateUser } = useUser();
+  const isLogoBucketConfigured = configuration?.isLogoBucketConfigured ?? true;
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isRemovingImage, setIsRemovingImage] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(user.image);
@@ -128,93 +131,95 @@ export function UserProfileForm() {
             </Avatar>
           </div>
         )}
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-2"
-          >
-            <FormField
-              control={form.control}
-              name="file"
-              render={({
-                field: { value, onChange, ...field },
-                fieldState,
-              }) => (
-                <>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      ref={fileInputRef}
-                      type="file"
-                      accept={ALLOWED_USER_IMAGE_MIME_TYPES.join(",")}
-                      multiple={false}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        onChange(file);
-                        if (file) {
-                          form.handleSubmit(onSubmit)();
-                        }
-                      }}
-                      disabled={isUploadingImage}
-                      aria-invalid={fieldState.invalid}
-                      className="hidden"
-                    />
-                  </FormControl>
-                  {fieldState.error && (
-                    <FieldDescription className="text-destructive">
-                      {fieldState.error.message}
-                    </FieldDescription>
-                  )}
-                </>
-              )}
-            />
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                id="avatar-upload"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  fileInputRef.current?.click();
-                }}
-                disabled={isUploadingImage}
-              >
-                {isUploadingImage ? (
+        {isLogoBucketConfigured && (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-2"
+            >
+              <FormField
+                control={form.control}
+                name="file"
+                render={({
+                  field: { value, onChange, ...field },
+                  fieldState,
+                }) => (
                   <>
-                    <Spinner className="size-4" /> Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="size-4" />{" "}
-                    {imagePreview
-                      ? "Change profile image"
-                      : "Upload profile image"}
+                    <FormControl>
+                      <Input
+                        {...field}
+                        ref={fileInputRef}
+                        type="file"
+                        accept={ALLOWED_USER_IMAGE_MIME_TYPES.join(",")}
+                        multiple={false}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          onChange(file);
+                          if (file) {
+                            form.handleSubmit(onSubmit)();
+                          }
+                        }}
+                        disabled={isUploadingImage}
+                        aria-invalid={fieldState.invalid}
+                        className="hidden"
+                      />
+                    </FormControl>
+                    {fieldState.error && (
+                      <FieldDescription className="text-destructive">
+                        {fieldState.error.message}
+                      </FieldDescription>
+                    )}
                   </>
                 )}
-              </Button>
-              {imagePreview && (
+              />
+              <div className="flex items-center gap-2">
                 <Button
                   type="button"
-                  variant="destructive"
-                  size="icon"
-                  onClick={handleRemoveImage}
-                  disabled={isRemovingImage}
-                  aria-label="Remove profile image"
+                  id="avatar-upload"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                  }}
+                  disabled={isUploadingImage}
                 >
-                  {isRemovingImage ? (
-                    <Spinner className="size-4" />
+                  {isUploadingImage ? (
+                    <>
+                      <Spinner className="size-4" /> Uploading...
+                    </>
                   ) : (
-                    <Trash2 className="size-4" />
+                    <>
+                      <Upload className="size-4" />{" "}
+                      {imagePreview
+                        ? "Change profile image"
+                        : "Upload profile image"}
+                    </>
                   )}
                 </Button>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              PNG, JPEG, or WebP. Max {MAX_USER_IMAGE_FILE_SIZE / (1024 * 1024)}
-              MB.
-            </p>
-          </form>
-        </Form>
+                {imagePreview && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    onClick={handleRemoveImage}
+                    disabled={isRemovingImage}
+                    aria-label="Remove profile image"
+                  >
+                    {isRemovingImage ? (
+                      <Spinner className="size-4" />
+                    ) : (
+                      <Trash2 className="size-4" />
+                    )}
+                  </Button>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                PNG, JPEG, or WebP. Max {MAX_USER_IMAGE_FILE_SIZE / (1024 * 1024)}
+                MB.
+              </p>
+            </form>
+          </Form>
+        )}
       </div>
     </div>
   );

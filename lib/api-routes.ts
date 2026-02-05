@@ -136,6 +136,8 @@ export const ADMIN_BOTS_BASE_PATH = `${ADMIN_BASE_PATH}/bots`;
 export const ADMIN_LIST_BOTS = `${ADMIN_BOTS_BASE_PATH}/list`;
 export const ADMIN_GET_BOT_DETAILS = (botId: string) =>
   `${ADMIN_BOTS_BASE_PATH}/${botId}/details`;
+export const ADMIN_GET_BOT_SCREENSHOTS = (botId: string) =>
+  `${ADMIN_BOTS_BASE_PATH}/${botId}/screenshots`;
 export const ADMIN_LEAVE_BOT = (botId: string) =>
   `${ADMIN_BOTS_BASE_PATH}/${botId}/leave`;
 export const ADMIN_TEAMS_BASE_PATH = `${ADMIN_BASE_PATH}/teams`;

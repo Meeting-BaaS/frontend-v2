@@ -15,6 +15,10 @@ export const configurationResponseSchema = object({
   data: object({
     selfHosted: boolean(),
     features: featuresSchema,
+    isLogoBucketConfigured: boolean(),
+    isSupportBucketConfigured: boolean(),
+    isGoogleAuthConfigured: boolean(),
+    isGithubAuthConfigured: boolean(),
   }),
 });
 

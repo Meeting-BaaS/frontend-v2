@@ -47,12 +47,16 @@ export default async function SettingsTabPage({ params, searchParams }: Settings
     return redirect(`/sign-in?${redirectSearchParams.toString()}`)
   }
 
+  const configuration = await getConfiguration()
+
   // Redirect billing tab to usage when Stripe is disabled
-  if (tab === "billing") {
-    const configuration = await getConfiguration()
-    if (!configuration?.data?.features?.stripe) {
-      return redirect("/settings/usage")
-    }
+  if (tab === "billing" && !configuration?.data?.features?.stripe) {
+    return redirect("/settings/usage")
+  }
+
+  // Redirect team tab to usage when multitenant is disabled (e.g. self-hosted)
+  if (tab === "team" && !configuration?.data?.features?.multitenant) {
+    return redirect("/settings/usage")
   }
 
   let TabContent: React.ReactNode

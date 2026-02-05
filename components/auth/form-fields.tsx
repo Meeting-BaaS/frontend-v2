@@ -1,40 +1,36 @@
-"use client";
+"use client"
 
-import { motion } from "motion/react";
-import Link from "next/link";
-import { useFormContext } from "react-hook-form";
-import { PasswordField } from "@/components/auth/password-field";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { FormControl, FormField } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { itemVariant } from "@/lib/animations/auth-forms";
-import {
-  PRIVACY_POLICY_URL,
-  TERMS_AND_CONDITIONS_URL,
-} from "@/lib/external-urls";
-import { cn } from "@/lib/utils";
+import { motion } from "motion/react"
+import Link from "next/link"
+import { useFormContext } from "react-hook-form"
+import { PasswordField } from "@/components/auth/password-field"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { FormControl, FormField } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { itemVariant } from "@/lib/animations/auth-forms"
+import { PRIVACY_POLICY_URL, TERMS_AND_CONDITIONS_URL } from "@/lib/external-urls"
+import { cn } from "@/lib/utils"
 
-export type FormType =
-  | "sign-in"
-  | "sign-up"
-  | "forgot-password"
-  | "reset-password";
+export type FormType = "sign-in" | "sign-up" | "forgot-password" | "reset-password"
 
 interface FormFieldsProps {
-  loading: boolean;
-  formType: FormType;
+  loading: boolean
+  formType: FormType
+  /** When false, hide email/password fields (e.g. when email auth is disabled). Default true. */
+  showEmailPassword?: boolean
 }
 
-export const FormFields = ({ loading, formType }: FormFieldsProps) => {
-  const form = useFormContext();
+export const FormFields = ({ loading, formType, showEmailPassword = true }: FormFieldsProps) => {
+  const form = useFormContext()
+  const showEmailPasswordFields =
+    showEmailPassword &&
+    (formType === "forgot-password" ||
+      formType === "reset-password" ||
+      formType === "sign-in" ||
+      formType === "sign-up")
+
   return (
     <>
       <motion.div
@@ -45,7 +41,7 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
         exit="hidden"
       >
         <FieldGroup>
-          {formType === "sign-up" && (
+          {showEmailPasswordFields && formType === "sign-up" && (
             <FormField
               control={form.control}
               name="name"
@@ -61,55 +57,54 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
                         aria-label="Name"
                       />
                     </FormControl>
-                    <FieldError
-                      errors={fieldState.error ? [fieldState.error] : undefined}
-                    />
+                    <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                   </FieldContent>
                 </Field>
               )}
             />
           )}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field, fieldState }) => (
-              <Field
-                data-invalid={fieldState.invalid}
-                className={cn(formType === "reset-password" && "hidden")}
-              >
-                <FieldContent>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      {...field}
-                      value={field.value || ""} // Undefined for reset password form
-                      disabled={loading}
-                      placeholder="Email"
-                      autoComplete="email"
-                      aria-label="Email"
-                    />
-                  </FormControl>
-                  <FieldError
-                    errors={fieldState.error ? [fieldState.error] : undefined}
-                  />
-                </FieldContent>
-              </Field>
-            )}
-          />
-          {["sign-in", "sign-up", "reset-password"].includes(formType) && (
-            <PasswordField
-              loading={loading}
-              name="password"
-              placeholder="Password"
-              autoComplete={
-                formType === "sign-up" || formType === "reset-password"
-                  ? "new-password"
-                  : "current-password"
-              }
-              showForgotPasswordLink={formType === "sign-in"}
+          {showEmailPasswordFields && (
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field, fieldState }) => (
+                <Field
+                  data-invalid={fieldState.invalid}
+                  className={cn(formType === "reset-password" && "hidden")}
+                >
+                  <FieldContent>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        {...field}
+                        value={field.value || ""} // Undefined for reset password form
+                        disabled={loading}
+                        placeholder="Email"
+                        autoComplete="email"
+                        aria-label="Email"
+                      />
+                    </FormControl>
+                    <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+                  </FieldContent>
+                </Field>
+              )}
             />
           )}
-          {formType === "reset-password" && (
+          {showEmailPasswordFields &&
+            ["sign-in", "sign-up", "reset-password"].includes(formType) && (
+              <PasswordField
+                loading={loading}
+                name="password"
+                placeholder="Password"
+                autoComplete={
+                  formType === "sign-up" || formType === "reset-password"
+                    ? "new-password"
+                    : "current-password"
+                }
+                showForgotPasswordLink={formType === "sign-in" && showEmailPassword}
+              />
+            )}
+          {showEmailPasswordFields && formType === "reset-password" && (
             <PasswordField
               loading={loading}
               name="confirmPassword"
@@ -133,10 +128,7 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
               name="termsOfUse"
               render={({ field, fieldState }) => (
                 <FieldGroup data-slot="checkbox-group">
-                  <Field
-                    orientation="horizontal"
-                    data-invalid={fieldState.invalid}
-                  >
+                  <Field orientation="horizontal" data-invalid={fieldState.invalid}>
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
@@ -162,10 +154,7 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
                     </FieldLabel>
                   </Field>
                   {fieldState.invalid && (
-                    <FieldError
-                      className="text-start"
-                      errors={[fieldState.error]}
-                    />
+                    <FieldError className="text-start" errors={[fieldState.error]} />
                   )}
                 </FieldGroup>
               )}
@@ -175,10 +164,7 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
               name="privacyPolicy"
               render={({ field, fieldState }) => (
                 <FieldGroup data-slot="checkbox-group">
-                  <Field
-                    orientation="horizontal"
-                    data-invalid={fieldState.invalid}
-                  >
+                  <Field orientation="horizontal" data-invalid={fieldState.invalid}>
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
@@ -193,21 +179,14 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
                         asChild
                         className="h-auto p-0 text-inherit underline transition-none hover:text-primary"
                       >
-                        <Link
-                          href={PRIVACY_POLICY_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <Link href={PRIVACY_POLICY_URL} target="_blank" rel="noopener noreferrer">
                           to the privacy policy of Meeting BaaS
                         </Link>
                       </Button>
                     </FieldLabel>
                   </Field>
                   {fieldState.invalid && (
-                    <FieldError
-                      className="text-start"
-                      errors={[fieldState.error]}
-                    />
+                    <FieldError className="text-start" errors={[fieldState.error]} />
                   )}
                 </FieldGroup>
               )}
@@ -216,5 +195,5 @@ export const FormFields = ({ loading, formType }: FormFieldsProps) => {
         </motion.div>
       )}
     </>
-  );
-};
+  )
+}

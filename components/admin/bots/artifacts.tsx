@@ -20,6 +20,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { GradientIcon } from "@/components/ui/gradient-icon";
+import { ADMIN_GET_BOT_SCREENSHOTS } from "@/lib/api-routes";
 import type { AdminBotDetails } from "@/lib/schemas/admin";
 
 interface AdminArtifactsProps {
@@ -130,7 +131,11 @@ export function AdminArtifacts({ botDetails, botUuid }: AdminArtifactsProps) {
     <div className="space-y-3">
       {artifacts}
       {botDetails.meetingPlatform !== "zoom" && (
-        <Screenshots botUuid={botUuid} endedAt={botDetails.endedAt} />
+        <Screenshots
+          botUuid={botUuid}
+          endedAt={botDetails.endedAt}
+          getScreenshotsUrl={ADMIN_GET_BOT_SCREENSHOTS}
+        />
       )}
     </div>
   );
