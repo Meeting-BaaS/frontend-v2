@@ -144,6 +144,8 @@ export const ADMIN_TEAMS_BASE_PATH = `${ADMIN_BASE_PATH}/teams`;
 export const ADMIN_LIST_TEAMS = `${ADMIN_TEAMS_BASE_PATH}/list`;
 export const ADMIN_GET_TEAM_DETAILS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/details`;
+export const ADMIN_REVERT_TEAM_DELETION = (teamId: number) =>
+  `${ADMIN_TEAMS_BASE_PATH}/${teamId}/revert-deletion`;
 export const ADMIN_UPDATE_RATE_LIMITS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/update-rate-limits`;
 export const ADMIN_TOKEN_OPERATIONS = (teamId: number) =>

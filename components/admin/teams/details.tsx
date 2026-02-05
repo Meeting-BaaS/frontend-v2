@@ -1,39 +1,64 @@
-"use client";
+"use client"
 
-import { Gift, Infinity as InfinityIcon, MoreHorizontal } from "lucide-react";
-import Image from "next/image";
-import { useMemo, useState } from "react";
-import { adminMembersColumns } from "@/components/admin/teams/members-columns";
-import { RateLimitsDialog } from "@/components/admin/teams/rate-limits-dialog";
-import { TokenOperationsDialog } from "@/components/admin/teams/token-operations-dialog";
-import { ItemHeading } from "@/components/layout/item-heading";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
+import {
+  AlertTriangle,
+  Gift,
+  Infinity as InfinityIcon,
+  MoreHorizontal,
+  RotateCcw
+} from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
+import { toast } from "sonner"
+import { adminMembersColumns } from "@/components/admin/teams/members-columns"
+import { RateLimitsDialog } from "@/components/admin/teams/rate-limits-dialog"
+import { TokenOperationsDialog } from "@/components/admin/teams/token-operations-dialog"
+import { ItemHeading } from "@/components/layout/item-heading"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { DataTable } from "@/components/ui/data-table"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { NameValuePair } from "@/components/ui/name-value-pair";
-import { TeamAvatar } from "@/components/ui/team-avatar";
-import { useDataTable } from "@/hooks/use-data-table";
-import { formatRelativeDate } from "@/lib/date-helpers";
-import type { AdminTeamDetails as AdminTeamDetailsType } from "@/lib/schemas/admin";
-import type { TeamMember } from "@/lib/schemas/teams";
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { NameValuePair } from "@/components/ui/name-value-pair"
+import { TeamAvatar } from "@/components/ui/team-avatar"
+import { useDataTable } from "@/hooks/use-data-table"
+import { axiosPostInstance } from "@/lib/api-client"
+import { ADMIN_REVERT_TEAM_DELETION } from "@/lib/api-routes"
+import { formatISODateString, formatRelativeDate } from "@/lib/date-helpers"
+import { genericError } from "@/lib/errors"
+import type { AdminTeamDetails as AdminTeamDetailsType } from "@/lib/schemas/admin"
+import type { TeamMember } from "@/lib/schemas/teams"
 
 interface AdminTeamDetailsProps {
-  teamDetails: AdminTeamDetailsType;
-  teamId: number;
+  teamDetails: AdminTeamDetailsType
+  teamId: number
 }
 
-export function AdminTeamDetails({
-  teamDetails,
-  teamId,
-}: AdminTeamDetailsProps) {
-  const [rateLimitsOpen, setRateLimitsOpen] = useState(false);
-  const [tokenOperationsOpen, setTokenOperationsOpen] = useState(false);
+export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps) {
+  const router = useRouter()
+  const [rateLimitsOpen, setRateLimitsOpen] = useState(false)
+  const [tokenOperationsOpen, setTokenOperationsOpen] = useState(false)
+  const [revertLoading, setRevertLoading] = useState(false)
+
+  const handleRevertDeletion = async () => {
+    if (revertLoading) return
+    try {
+      setRevertLoading(true)
+      await axiosPostInstance(ADMIN_REVERT_TEAM_DELETION(teamId), null, undefined)
+      toast.success("Team deletion reverted. The team is active again.")
+      router.refresh()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : genericError)
+    } finally {
+      setRevertLoading(false)
+    }
+  }
 
   // Transform admin members to TeamMember format for the table component
   const members: TeamMember[] = useMemo(
@@ -47,10 +72,10 @@ export function AdminTeamDetails({
         banned: null,
         createdAt: member.createdAt,
         invitationStatus: null,
-        expiresAt: null,
+        expiresAt: null
       })),
-    [teamDetails.members],
-  );
+    [teamDetails.members]
+  )
 
   return (
     <section>
@@ -101,22 +126,39 @@ export function AdminTeamDetails({
         </div>
       </div>
 
+      {teamDetails.deleted && teamDetails.deletedAt && (
+        <Alert variant="destructive" className="mt-6">
+          <AlertTriangle />
+          <AlertTitle>Team deleted</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>
+              This team was deleted on {formatISODateString(teamDetails.deletedAt)}. All of its
+              records will be permanently removed in 7 days.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRevertDeletion}
+              disabled={revertLoading}
+              className="mt-2"
+            >
+              <RotateCcw className="size-4" /> Revert deletion
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="grid mt-10 md:mt-12 md:space-y-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <NameValuePair
           title="Subscription Plan"
-          value={
-            <Badge className="capitalize">{teamDetails.subscriptionPlan}</Badge>
-          }
+          value={<Badge className="capitalize">{teamDetails.subscriptionPlan}</Badge>}
         />
         <NameValuePair
           title="Created At"
           valueClassName="capitalize"
           value={formatRelativeDate(teamDetails.createdAt)}
         />
-        <NameValuePair
-          title="Running Bots"
-          value={teamDetails.runningBotsCount.toString()}
-        />
+        <NameValuePair title="Running Bots" value={teamDetails.runningBotsCount.toString()} />
         <NameValuePair
           title="Available Tokens"
           value={Number.parseFloat(teamDetails.availableTokens).toFixed(2)}
@@ -133,10 +175,7 @@ export function AdminTeamDetails({
           title="Rate Limit (per second)"
           value={teamDetails.rateLimitPerSecond.toString()}
         />
-        <NameValuePair
-          title="Daily Bot Cap"
-          value={teamDetails.dailyBotCap.toString()}
-        />
+        <NameValuePair title="Daily Bot Cap" value={teamDetails.dailyBotCap.toString()} />
         <NameValuePair
           title="Calendar Integrations Limit"
           value={teamDetails.calendarIntegrationsLimit.toString()}
@@ -146,10 +185,7 @@ export function AdminTeamDetails({
           value={teamDetails.dataRetentionDays.toString()}
         />
         <NameValuePair title="SVIX App ID" value={teamDetails.svixAppId} />
-        <NameValuePair
-          title="Stripe Customer ID"
-          value={teamDetails.stripeCustomerId ?? "-"}
-        />
+        <NameValuePair title="Stripe Customer ID" value={teamDetails.stripeCustomerId ?? "-"} />
         <NameValuePair
           containerClassName="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4"
           title="Team Members"
@@ -163,7 +199,7 @@ export function AdminTeamDetails({
           rateLimitPerSecond: teamDetails.rateLimitPerSecond,
           dailyBotCap: teamDetails.dailyBotCap,
           calendarIntegrationsLimit: teamDetails.calendarIntegrationsLimit,
-          dataRetentionDays: teamDetails.dataRetentionDays,
+          dataRetentionDays: teamDetails.dataRetentionDays
         }}
         open={rateLimitsOpen}
         onOpenChange={setRateLimitsOpen}
@@ -175,7 +211,7 @@ export function AdminTeamDetails({
         onOpenChange={setTokenOperationsOpen}
       />
     </section>
-  );
+  )
 }
 
 // Read-only members table for admin view (no actions)
@@ -184,12 +220,12 @@ function AdminMembersTable({ members }: { members: TeamMember[] }) {
     data: members,
     columns: adminMembersColumns,
     getRowId: (row) => row.email,
-    initialSorting: [{ id: "email", desc: false }],
-  });
+    initialSorting: [{ id: "email", desc: false }]
+  })
 
   if (members.length === 0) {
-    return <div className="text-muted-foreground py-4">No members found</div>;
+    return <div className="text-muted-foreground py-4">No members found</div>
   }
 
-  return <DataTable table={table} />;
+  return <DataTable table={table} />
 }
