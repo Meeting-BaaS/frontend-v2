@@ -3,13 +3,13 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { UsersTableActions } from "@/components/admin/users/table-actions";
 import { Badge } from "@/components/ui/badge";
+import { formatISODateString } from "@/lib/date-helpers";
 import type { TeamMember } from "@/lib/schemas/teams";
 
 export const columnWidths = {
-  email: "min-w-[220px] max-w-[300px] w-[30%]",
-  role: "min-w-[100px] max-w-[120px] w-[12%]",
-  status: "min-w-[100px] max-w-[120px] w-[12%]",
-  actions: "min-w-[80px] max-w-[80px] w-[6%]",
+  email: "min-w-[220px] max-w-[380px] w-[45%]",
+  joinedOn: "min-w-[140px] max-w-[200px] w-[20%]",
+  actions: "min-w-[80px] max-w-[80px] w-[10%]",
 } as const;
 
 export function getColumns(onSuccess: () => void): ColumnDef<TeamMember>[] {
@@ -21,44 +21,46 @@ export function getColumns(onSuccess: () => void): ColumnDef<TeamMember>[] {
       meta: {
         className: columnWidths.email,
       },
-      cell: ({ row }) => (
-        <span className="truncate block max-w-full">
-          {row.original.email}
-          {row.original.invitationStatus === "pending" && (
-            <span className="ml-1 text-xs text-muted-foreground">
-              (pending)
-            </span>
-          )}
-        </span>
-      ),
-    },
-    {
-      id: "role",
-      accessorKey: "role",
-      header: "Role",
-      meta: {
-        className: columnWidths.role,
+      cell: ({ row }) => {
+        const { invitationStatus, email, expiresAt } = row.original;
+        return (
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="truncate block max-w-full">{email}</span>
+              {invitationStatus === "pending" && (
+                <Badge variant="warning" className="capitalize shrink-0">
+                  Pending
+                </Badge>
+              )}
+            </div>
+            {expiresAt && invitationStatus === "pending" && (
+              <span className="text-muted-foreground text-xs">
+                Invite expires on {formatISODateString(expiresAt)}
+              </span>
+            )}
+          </div>
+        );
       },
-      cell: ({ row }) => (
-        <span className="capitalize">{row.original.role ?? "-"}</span>
-      ),
     },
     {
-      id: "status",
-      accessorKey: "banned",
-      header: "Status",
+      id: "joinedOn",
+      accessorKey: "createdAt",
+      header: "Joined On",
       meta: {
-        className: columnWidths.status,
+        className: columnWidths.joinedOn,
       },
       cell: ({ row }) => {
-        const m = row.original;
-        if (m.invitationId != null) {
-          return <Badge variant="outline">Pending</Badge>;
+        const { createdAt, invitationStatus } = row.original;
+        if (invitationStatus === "pending") {
+          return <span className="text-muted-foreground">-</span>;
         }
-        return m.banned ? (
-          <Badge variant="destructive">Banned</Badge>
-        ) : (
-          <Badge variant="secondary">Active</Badge>
+        if (!createdAt) {
+          return <span className="text-muted-foreground">-</span>;
+        }
+        return (
+          <span className="capitalize">
+            {formatISODateString(createdAt)}
+          </span>
         );
       },
     },

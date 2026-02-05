@@ -62,6 +62,7 @@ interface ResendInviteVariables {
   email: string
   role: InputRole
   organizationId: string
+  throwOnError?: boolean
 }
 
 export function useResendInvite() {
@@ -90,6 +91,9 @@ export function useResendInvite() {
     } catch (error) {
       console.error("Error resending invitation", error)
       toast.error(error instanceof Error ? error.message : genericError)
+      if (variables.throwOnError) {
+        throw error
+      }
     } finally {
       setIsPending(false)
     }
@@ -100,6 +104,7 @@ export function useResendInvite() {
 
 interface CancelInviteVariables {
   invitationId: string
+  throwOnError?: boolean
 }
 
 export function useCancelInvite() {
@@ -120,11 +125,13 @@ export function useCancelInvite() {
       }
 
       toast.success("Invitation canceled successfully")
-      // Refresh server components to show updated member list
       router.refresh()
     } catch (error) {
       console.error("Error canceling invitation", error)
       toast.error(error instanceof Error ? error.message : genericError)
+      if (variables.throwOnError) {
+        throw error
+      }
     } finally {
       setIsPending(false)
     }
@@ -175,6 +182,7 @@ export function useUpdateMemberRole() {
 interface RemoveMemberVariables {
   memberId: string
   organizationId: string
+  throwOnError?: boolean
 }
 
 export function useRemoveMember() {
@@ -196,11 +204,13 @@ export function useRemoveMember() {
       }
 
       toast.success("Member removed successfully")
-      // Refresh server components to show updated member list
       router.refresh()
     } catch (error) {
       console.error("Error removing member", error)
       toast.error(error instanceof Error ? error.message : genericError)
+      if (variables.throwOnError) {
+        throw error
+      }
     } finally {
       setIsPending(false)
     }

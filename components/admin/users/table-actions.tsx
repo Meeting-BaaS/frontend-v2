@@ -1,38 +1,63 @@
-"use client";
+"use client"
 
-import { MoreHorizontal, UserX } from "lucide-react";
-import { useState } from "react";
-import { UsersBanDialog } from "@/components/admin/users/ban-dialog";
-import { UsersUnbanDialog } from "@/components/admin/users/unban-dialog";
-import { Button } from "@/components/ui/button";
+import { Mail, MoreHorizontal, Trash2, X } from "lucide-react"
+import { useState } from "react"
+import { AdminRemoveMemberDialog } from "@/components/admin/users/remove-member-dialog"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { TeamMember } from "@/lib/schemas/teams";
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { Spinner } from "@/components/ui/spinner"
+import { useCancelInvite, useResendInvite } from "@/hooks/use-member-mutations"
+import { useUser } from "@/hooks/use-user"
+import type { InputRole, TeamMember } from "@/lib/schemas/teams"
 
 interface UsersTableActionsProps {
-  member: TeamMember;
-  onSuccess: () => void;
-  buttonVariant?: "ghost" | "outline" | "default";
+  member: TeamMember
+  onSuccess: () => void
+  buttonVariant?: "ghost" | "outline" | "default"
 }
 
 export function UsersTableActions({
   member,
   onSuccess,
-  buttonVariant = "ghost",
+  buttonVariant = "ghost"
 }: UsersTableActionsProps) {
-  const [openBan, setOpenBan] = useState(false);
-  const [openUnban, setOpenUnban] = useState(false);
+  const { activeTeam } = useUser()
+  const resendInvite = useResendInvite()
+  const cancelInvite = useCancelInvite()
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false)
 
-  const isPending = member.invitationId != null;
-  const canBanUnban = member.userId != null && !isPending;
-  const isBanned = member.banned === true;
+  const isPendingInvite = member.invitationStatus === "pending"
 
-  if (!canBanUnban) {
-    return null;
+  const onResendInviteClick = async () => {
+    if (!member.invitationId || resendInvite.isPending) return
+    try {
+      await resendInvite.mutate({
+        email: member.email,
+        role: (member.role ?? "member") as InputRole,
+        organizationId: activeTeam.id.toString(),
+        throwOnError: true
+      })
+    } catch {
+      // Hook already toasts on error
+    }
+  }
+
+  const onCancelInviteClick = async () => {
+    if (!member.invitationId || cancelInvite.isPending) return
+    try {
+      await cancelInvite.mutate({
+        invitationId: String(member.invitationId),
+        throwOnError: true
+      })
+    } catch {
+      // Hook already toasts on error
+    }
   }
 
   return (
@@ -45,36 +70,52 @@ export function UsersTableActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {isBanned ? (
-            <DropdownMenuItem onClick={() => setOpenUnban(true)}>
-              <UserX /> Unban user
-            </DropdownMenuItem>
+          {isPendingInvite ? (
+            <>
+              <DropdownMenuItem onClick={onResendInviteClick} disabled={resendInvite.isPending}>
+                {resendInvite.isPending ? (
+                  <>
+                    <Spinner className="size-4" /> Resending...
+                  </>
+                ) : (
+                  <>
+                    <Mail /> Resend invite
+                  </>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive hover:!text-destructive hover:!bg-destructive/10"
+                onClick={onCancelInviteClick}
+                disabled={cancelInvite.isPending}
+              >
+                {cancelInvite.isPending ? (
+                  <>
+                    <Spinner className="size-4" /> Canceling...
+                  </>
+                ) : (
+                  <>
+                    <X className="text-destructive" /> Cancel invite
+                  </>
+                )}
+              </DropdownMenuItem>
+            </>
           ) : (
             <DropdownMenuItem
-              className="text-destructive hover:text-destructive! hover:bg-destructive/10!"
-              onClick={() => setOpenBan(true)}
+              className="text-destructive hover:!text-destructive hover:!bg-destructive/10"
+              onClick={() => setRemoveDialogOpen(true)}
             >
-              <UserX className="text-destructive" /> Ban user
+              <Trash2 className="text-destructive" /> Remove user
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      {openBan && (
-        <UsersBanDialog
-          open={openBan}
-          onOpenChange={setOpenBan}
-          member={member}
-          onSuccess={onSuccess}
-        />
-      )}
-      {openUnban && (
-        <UsersUnbanDialog
-          open={openUnban}
-          onOpenChange={setOpenUnban}
-          member={member}
-          onSuccess={onSuccess}
-        />
-      )}
+      <AdminRemoveMemberDialog
+        member={member}
+        open={removeDialogOpen}
+        onOpenChange={setRemoveDialogOpen}
+        onSuccess={onSuccess}
+      />
     </>
-  );
+  )
 }
