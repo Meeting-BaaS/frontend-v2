@@ -27,12 +27,17 @@ export function UsersTableActions({
   onSuccess,
   buttonVariant = "ghost"
 }: UsersTableActionsProps) {
-  const { activeTeam } = useUser()
+  const { user, activeTeam } = useUser()
   const resendInvite = useResendInvite()
   const cancelInvite = useCancelInvite()
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false)
 
+  const isCurrentUser = user?.email != null && member.email.toLowerCase() === user.email.toLowerCase()
   const isPendingInvite = member.invitationStatus === "pending"
+
+  if (isCurrentUser) {
+    return null
+  }
 
   const onResendInviteClick = async () => {
     if (!member.invitationId || resendInvite.isPending) return
