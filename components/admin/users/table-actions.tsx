@@ -1,8 +1,9 @@
 "use client"
 
-import { Mail, MoreHorizontal, Trash2, X } from "lucide-react"
+import { Mail, MoreHorizontal, UserX, X } from "lucide-react"
 import { useState } from "react"
-import { AdminRemoveMemberDialog } from "@/components/admin/users/remove-member-dialog"
+import { UsersBanDialog } from "@/components/admin/users/ban-dialog"
+import { UsersUnbanDialog } from "@/components/admin/users/unban-dialog"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -30,9 +31,11 @@ export function UsersTableActions({
   const { user, activeTeam } = useUser()
   const resendInvite = useResendInvite()
   const cancelInvite = useCancelInvite()
-  const [removeDialogOpen, setRemoveDialogOpen] = useState(false)
+  const [openBan, setOpenBan] = useState(false)
+  const [openUnban, setOpenUnban] = useState(false)
 
-  const isCurrentUser = user?.email != null && member.email.toLowerCase() === user.email.toLowerCase()
+  const isCurrentUser =
+    user?.email != null && member.email.toLowerCase() === user.email.toLowerCase()
   const isPendingInvite = member.invitationStatus === "pending"
 
   if (isCurrentUser) {
@@ -90,7 +93,7 @@ export function UsersTableActions({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="text-destructive hover:!text-destructive hover:!bg-destructive/10"
+                className="text-destructive hover:text-destructive! hover:bg-destructive/10!"
                 onClick={onCancelInviteClick}
                 disabled={cancelInvite.isPending}
               >
@@ -105,20 +108,30 @@ export function UsersTableActions({
                 )}
               </DropdownMenuItem>
             </>
+          ) : member.banned ? (
+            <DropdownMenuItem onClick={() => setOpenUnban(true)}>
+              <UserX /> Unban user
+            </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
-              className="text-destructive hover:!text-destructive hover:!bg-destructive/10"
-              onClick={() => setRemoveDialogOpen(true)}
+              className="text-destructive hover:text-destructive! hover:bg-destructive/10!"
+              onClick={() => setOpenBan(true)}
             >
-              <Trash2 className="text-destructive" /> Remove user
+              <UserX className="text-destructive" /> Ban user
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      <AdminRemoveMemberDialog
+      <UsersBanDialog
         member={member}
-        open={removeDialogOpen}
-        onOpenChange={setRemoveDialogOpen}
+        open={openBan}
+        onOpenChange={setOpenBan}
+        onSuccess={onSuccess}
+      />
+      <UsersUnbanDialog
+        member={member}
+        open={openUnban}
+        onOpenChange={setOpenUnban}
         onSuccess={onSuccess}
       />
     </>

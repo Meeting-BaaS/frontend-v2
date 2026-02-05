@@ -13,8 +13,9 @@ import {
 import { cn } from "@/lib/utils";
 
 const tableHeaders = [
-  { label: "Email", width: columnWidths.email, style: { width: "45%" } },
-  { label: "Joined On", width: columnWidths.joinedOn, style: { width: "20%" } },
+  { label: "Email", width: columnWidths.email, style: { width: "40%" } },
+  { label: "Status", width: columnWidths.status, style: { width: "12%" } },
+  { label: "Joined On", width: columnWidths.joinedOn, style: { width: "18%" } },
   { label: "", width: columnWidths.actions, style: { width: "10%" } },
 ] as const;
 

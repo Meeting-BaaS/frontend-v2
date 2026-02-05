@@ -7,8 +7,9 @@ import { formatISODateString } from "@/lib/date-helpers";
 import type { TeamMember } from "@/lib/schemas/teams";
 
 export const columnWidths = {
-  email: "min-w-[220px] max-w-[380px] w-[45%]",
-  joinedOn: "min-w-[140px] max-w-[200px] w-[20%]",
+  email: "min-w-[220px] max-w-[380px] w-[40%]",
+  status: "min-w-[100px] max-w-[120px] w-[12%]",
+  joinedOn: "min-w-[140px] max-w-[200px] w-[18%]",
   actions: "min-w-[80px] max-w-[80px] w-[10%]",
 } as const;
 
@@ -22,17 +23,10 @@ export function getColumns(onSuccess: () => void): ColumnDef<TeamMember>[] {
         className: columnWidths.email,
       },
       cell: ({ row }) => {
-        const { invitationStatus, email, expiresAt } = row.original;
+        const { email, expiresAt, invitationStatus } = row.original;
         return (
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="truncate block max-w-full">{email}</span>
-              {invitationStatus === "pending" && (
-                <Badge variant="warning" className="capitalize shrink-0">
-                  Pending
-                </Badge>
-              )}
-            </div>
+            <span className="truncate block max-w-full">{email}</span>
             {expiresAt && invitationStatus === "pending" && (
               <span className="text-muted-foreground text-xs">
                 Invite expires on {formatISODateString(expiresAt)}
@@ -40,6 +34,24 @@ export function getColumns(onSuccess: () => void): ColumnDef<TeamMember>[] {
             )}
           </div>
         );
+      },
+    },
+    {
+      id: "status",
+      accessorKey: "status",
+      header: "Status",
+      meta: {
+        className: columnWidths.status,
+      },
+      cell: ({ row }) => {
+        const { invitationStatus, banned } = row.original;
+        if (invitationStatus === "pending") {
+          return <Badge variant="secondary">Invited</Badge>;
+        }
+        if (banned) {
+          return <Badge variant="destructive">Banned</Badge>;
+        }
+        return <Badge variant="secondary">Active</Badge>;
       },
     },
     {
