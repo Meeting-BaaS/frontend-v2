@@ -19,6 +19,7 @@ interface InviteMemberVariables {
   email: string
   role: InputRole
   organizationId: string
+  throwOnError?: boolean
 }
 
 export function useInviteMember() {
@@ -46,6 +47,9 @@ export function useInviteMember() {
     } catch (error) {
       console.error("Error inviting member", error)
       toast.error(error instanceof Error ? error.message : genericError)
+      if (variables.throwOnError) {
+        throw error
+      }
     } finally {
       setIsPending(false)
     }

@@ -48,7 +48,8 @@ export function InviteUserDialog({ open, onOpenChange, onSuccess }: InviteUserDi
       await inviteMember.mutate({
         email: data.email,
         role: "admin",
-        organizationId: activeTeam.id.toString()
+        organizationId: activeTeam.id.toString(),
+        throwOnError: true
       })
       onSuccess()
       form.reset()
