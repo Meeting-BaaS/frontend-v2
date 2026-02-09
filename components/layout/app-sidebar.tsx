@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Settings,
   ShieldCheck,
+  ShieldPlus,
   Users,
   Webhook
 } from "lucide-react"
@@ -64,6 +65,12 @@ const allItems = [
     title: "API Keys",
     url: "/api-keys",
     icon: KeyRound,
+    featureKey: null
+  },
+  {
+    title: "Credentials",
+    url: "/credentials",
+    icon: ShieldPlus,
     featureKey: null
   },
   {

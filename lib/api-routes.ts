@@ -130,6 +130,17 @@ export const UPDATE_TICKET = `${SUPPORT_BASE_PATH}/update`;
 export const UPDATE_TICKET_STATUS = `${SUPPORT_BASE_PATH}/update-status`;
 export const UPLOAD_ATTACHMENTS = `${SUPPORT_BASE_PATH}/upload-attachments`;
 
+// Zoom Credentials routes (BFF - reuses public API handlers with snake_case)
+export const BFF_ZOOM_CREDENTIALS_BASE_PATH = `${BFF_BASE_PATH}/zoom-credentials`;
+export const LIST_ZOOM_CREDENTIALS = `${BFF_ZOOM_CREDENTIALS_BASE_PATH}`;
+export const CREATE_ZOOM_CREDENTIAL = `${BFF_ZOOM_CREDENTIALS_BASE_PATH}`;
+export const GET_ZOOM_CREDENTIAL = (credentialId: string) =>
+  `${BFF_ZOOM_CREDENTIALS_BASE_PATH}/${credentialId}`;
+export const UPDATE_ZOOM_CREDENTIAL = (credentialId: string) =>
+  `${BFF_ZOOM_CREDENTIALS_BASE_PATH}/${credentialId}`;
+export const DELETE_ZOOM_CREDENTIAL = (credentialId: string) =>
+  `${BFF_ZOOM_CREDENTIALS_BASE_PATH}/${credentialId}`;
+
 // Admin routes
 export const ADMIN_BASE_PATH = `${BASE_PATH}/admin`;
 export const ADMIN_BOTS_BASE_PATH = `${ADMIN_BASE_PATH}/bots`;
