@@ -46,8 +46,8 @@ export function CreateCredentialDialog({ open, onOpenChange }: CreateCredentialD
       client_id: "",
       client_secret: "",
       include_user_auth: false,
-      authorization_code: "",
-      redirect_uri: ""
+      authorization_code: undefined,
+      redirect_uri: undefined
     }
   })
   const [loading, setLoading] = useState(false)

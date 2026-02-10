@@ -3,6 +3,7 @@
 import { ExternalLink, Info } from "lucide-react"
 import Link from "next/link"
 import { useFormContext, useWatch } from "react-hook-form"
+import { PasswordField } from "@/components/auth/password-field"
 import {
   Field,
   FieldContent,
@@ -14,12 +15,7 @@ import {
 import { FormControl, FormField } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ZOOM_OBF_TOKEN_BLOG_URL } from "@/lib/external-urls"
 import type { CreateZoomCredentialForm, UpdateZoomCredentialForm } from "@/lib/schemas/credentials"
 
@@ -72,7 +68,8 @@ export function FormFields({ loading, mode = "create" }: FormFieldsProps) {
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor={field.name} className="flex items-center gap-2">
-              Client ID{isEdit && <span className="text-muted-foreground font-normal"> (optional)</span>}
+              Client ID
+              {isEdit && <span className="text-muted-foreground font-normal"> (optional)</span>}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -104,43 +101,30 @@ export function FormFields({ loading, mode = "create" }: FormFieldsProps) {
         )}
       />
 
-      <FormField
-        control={form.control}
+      <PasswordField
         name="client_secret"
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name} className="flex items-center gap-2">
-              Client Secret{isEdit && <span className="text-muted-foreground font-normal"> (optional)</span>}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-sm">
-                      The Client Secret from your Zoom OAuth App or Server-to-Server App.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </FieldLabel>
-            <FieldContent>
-              <FormControl>
-                <Input
-                  {...field}
-                  id={field.name}
-                  type="password"
-                  autoComplete="off"
-                  aria-invalid={fieldState.invalid}
-                  placeholder={isEdit ? "Leave blank to keep current" : "Enter your Zoom Client Secret"}
-                  aria-label="Zoom Client Secret"
-                  disabled={loading}
-                />
-              </FormControl>
-              <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
-            </FieldContent>
-          </Field>
-        )}
+        loading={loading}
+        placeholder={isEdit ? "Leave blank to keep current" : "Enter your Zoom Client Secret"}
+        ariaLabel="Zoom Client Secret"
+        autoComplete="off"
+        label={
+          <FieldLabel htmlFor="client_secret" className="flex items-center gap-2">
+            Client Secret
+            {isEdit && <span className="text-muted-foreground font-normal"> (optional)</span>}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-sm">
+                    The Client Secret from your Zoom OAuth App or Server-to-Server App.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </FieldLabel>
+        }
       />
 
       {/* Only show include_user_auth toggle in create mode */}
@@ -202,7 +186,8 @@ export function FormFields({ loading, mode = "create" }: FormFieldsProps) {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>
-                  Authorization Code{isEdit && <span className="text-muted-foreground font-normal"> (optional)</span>}
+                  Authorization Code
+                  {isEdit && <span className="text-muted-foreground font-normal"> (optional)</span>}
                 </FieldLabel>
                 <FieldContent>
                   <FormControl>
@@ -211,7 +196,11 @@ export function FormFields({ loading, mode = "create" }: FormFieldsProps) {
                       id={field.name}
                       autoComplete="off"
                       aria-invalid={fieldState.invalid}
-                      placeholder={isEdit ? "Leave blank to keep current tokens" : "Enter the OAuth authorization code"}
+                      placeholder={
+                        isEdit
+                          ? "Leave blank to keep current tokens"
+                          : "Enter the OAuth authorization code"
+                      }
                       aria-label="OAuth authorization code"
                       disabled={loading}
                     />
@@ -219,8 +208,7 @@ export function FormFields({ loading, mode = "create" }: FormFieldsProps) {
                   <FieldDescription>
                     {isEdit
                       ? "Provide a new authorization code to refresh OAuth tokens."
-                      : "The authorization code received after user grants permission."
-                    }
+                      : "The authorization code received after user grants permission."}
                   </FieldDescription>
                   <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                 </FieldContent>
@@ -234,7 +222,8 @@ export function FormFields({ loading, mode = "create" }: FormFieldsProps) {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>
-                  Redirect URI{isEdit && <span className="text-muted-foreground font-normal"> (optional)</span>}
+                  Redirect URI
+                  {isEdit && <span className="text-muted-foreground font-normal"> (optional)</span>}
                 </FieldLabel>
                 <FieldContent>
                   <FormControl>
@@ -252,8 +241,7 @@ export function FormFields({ loading, mode = "create" }: FormFieldsProps) {
                   <FieldDescription>
                     {isEdit
                       ? "Required when providing a new authorization code."
-                      : "The redirect URI configured in your Zoom OAuth App."
-                    }
+                      : "The redirect URI configured in your Zoom OAuth App."}
                   </FieldDescription>
                   <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                 </FieldContent>

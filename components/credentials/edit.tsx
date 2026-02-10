@@ -46,10 +46,10 @@ export function EditCredentialDialog({
     resolver: zodResolver(updateZoomCredentialFormSchema),
     defaultValues: {
       name: credential.name,
-      client_id: "",
-      client_secret: "",
-      authorization_code: "",
-      redirect_uri: ""
+      client_id: undefined,
+      client_secret: undefined,
+      authorization_code: undefined,
+      redirect_uri: undefined
     }
   })
   const [loading, setLoading] = useState(false)
