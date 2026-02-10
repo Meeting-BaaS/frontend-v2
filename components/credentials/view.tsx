@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { CreateCredentialDialog } from "@/components/credentials/create"
 import { CredentialsTable } from "@/components/credentials/table"
+import { DocsButton } from "@/components/layout/docs-button"
 import { PageHeading } from "@/components/layout/page-heading"
 import { Button } from "@/components/ui/button"
 import type { ZoomCredential } from "@/lib/schemas/credentials"
@@ -47,6 +48,7 @@ export function CredentialsView({ credentials, newCredential }: CredentialsViewP
           >
             <Plus /> Add Credential
           </Button>
+          <DocsButton uriSuffix="api-v2/getting-started/zoom" />
         </div>
       </div>
       <CredentialsTable credentials={credentials} onAddButtonClick={handleCreateButtonClick} />
