@@ -84,7 +84,7 @@ export function ViewWebhookMessageDetails({
           value={formatRelativeDate(webhookMessage.timestamp)}
         />
         <NameValuePair
-          title="Bot UUID"
+          title="Bot ID"
           value={(webhookMessage.payload?.data?.bot_id as string) ?? "N/A"}
         />
       </div>
