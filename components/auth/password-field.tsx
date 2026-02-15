@@ -23,7 +23,10 @@ interface PasswordFieldProps {
   loading: boolean;
   name: string;
   placeholder?: string;
-  label?: string;
+  /** Label as string (rendered in FieldLabel) or custom ReactNode (e.g. label with tooltip) */
+  label?: React.ReactNode;
+  /** Override aria-label when label is custom (ReactNode); otherwise derived from label/placeholder */
+  ariaLabel?: string;
   autoComplete: string;
   showForgotPasswordLink?: boolean;
 }
@@ -32,6 +35,7 @@ export const PasswordField = ({
   loading,
   name,
   label,
+  ariaLabel,
   placeholder,
   autoComplete,
   showForgotPasswordLink = false,
@@ -45,7 +49,12 @@ export const PasswordField = ({
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
+          {label !== undefined &&
+            (typeof label === "string" ? (
+              <FieldLabel htmlFor={name}>{label}</FieldLabel>
+            ) : (
+              label
+            ))}
           <FieldContent>
             <FormControl>
               <InputGroup>
@@ -56,7 +65,12 @@ export const PasswordField = ({
                   disabled={loading}
                   placeholder={placeholder}
                   autoComplete={autoComplete}
-                  aria-label={label ?? placeholder ?? "Password"}
+                  aria-label={
+                    ariaLabel ??
+                    (typeof label === "string" ? label : undefined) ??
+                    placeholder ??
+                    "Password"
+                  }
                   aria-invalid={fieldState.invalid}
                 />
                 <InputGroupAddon align="inline-end">

@@ -6,6 +6,7 @@ const environment = process.env.NEXT_PUBLIC_ENVIRONMENT || "";
 export const GLADIA_URL = "https://gladia.io";
 export const CONTRIBUTION_GITHUB_URL = "https://github.com/Meeting-Baas";
 export const MEETING_BAAS_HOMEPAGE_URL = "https://meetingbaas.com";
+export const ZOOM_OBF_TOKEN_BLOG_URL = `${MEETING_BAAS_HOMEPAGE_URL}/en/blog/zoom-obf-token-changes`;
 export const TERMS_AND_CONDITIONS_URL =
   "https://meetingbaas.com/terms-and-conditions";
 export const PRIVACY_POLICY_URL = "https://meetingbaas.com/privacy";
