@@ -6,6 +6,7 @@ import { useMemo } from "react"
 import { AppHeader } from "@/components/layout/app-header"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarProvider } from "@/components/ui/sidebar"
+import { ZoomTokenAlert } from "@/components/ui/zoom-token-alert"
 import { ConfigurationProvider } from "@/contexts/configuration-context"
 import { PlansProvider } from "@/contexts/plans-context"
 import { SupportDialogProvider } from "@/contexts/support-dialog-context"
@@ -67,6 +68,7 @@ export function LayoutContent({
                 <main className="flex flex-col w-full h-screen">
                   <AppHeader />
                   <div className="flex-1 overflow-y-auto px-4 md:px-10 lg:px-20 py-8">
+                    <ZoomTokenAlert />
                     {children}
                   </div>
                 </main>
