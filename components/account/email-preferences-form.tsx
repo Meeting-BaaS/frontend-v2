@@ -55,6 +55,8 @@ export function EmailPreferencesForm({
     return pref?.subscribed ?? false;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- trigger redeploy
+  const _redeploy = true;
   const form = useForm<EmailPreferencesFormData>({
     resolver: zodResolver(emailPreferencesFormSchema),
     defaultValues: {
