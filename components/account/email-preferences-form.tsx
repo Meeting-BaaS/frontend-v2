@@ -26,7 +26,9 @@ import { updateEmailPreferencesResponseSchema } from "@/lib/schemas/account";
 const emailPreferencesFormSchema = object({
   apiChanges: boolean(),
   productUpdates: boolean(),
-  operationalAlerts: boolean(),
+  alertBotFailures: boolean(),
+  alertCalendarSync: boolean(),
+  alertArtifactsReminder: boolean(),
 });
 
 type EmailPreferencesFormData = output<typeof emailPreferencesFormSchema>;
@@ -35,17 +37,22 @@ interface EmailPreferencesFormProps {
   initialPreferences: EmailPreference[];
 }
 
+// Alert preferences default to opted-in (true) when no preference exists
+const ALERT_PREF_KEYS = [
+  "alertBotFailures",
+  "alertCalendarSync",
+  "alertArtifactsReminder",
+] as const;
+
 export function EmailPreferencesForm({
   initialPreferences,
 }: EmailPreferencesFormProps) {
-  // Initialize form with default values for each email type
-  const getDefaultValue = (
-    emailType: "apiChanges" | "productUpdates" | "operationalAlerts",
-  ): boolean => {
+  const getDefaultValue = (emailType: string): boolean => {
     const pref = initialPreferences.find((p) => p.emailType === emailType);
-    // Operational alerts default to subscribed (opted-in) when no preference exists
-    if (emailType === "operationalAlerts") return pref?.subscribed ?? true;
-    return pref?.subscribed ?? false; // Default to unsubscribed if not found
+    // Alert preferences default to subscribed (opted-in)
+    if (ALERT_PREF_KEYS.includes(emailType as (typeof ALERT_PREF_KEYS)[number]))
+      return pref?.subscribed ?? true;
+    return pref?.subscribed ?? false;
   };
 
   const form = useForm<EmailPreferencesFormData>({
@@ -53,7 +60,9 @@ export function EmailPreferencesForm({
     defaultValues: {
       apiChanges: getDefaultValue("apiChanges"),
       productUpdates: getDefaultValue("productUpdates"),
-      operationalAlerts: getDefaultValue("operationalAlerts"),
+      alertBotFailures: getDefaultValue("alertBotFailures"),
+      alertCalendarSync: getDefaultValue("alertCalendarSync"),
+      alertArtifactsReminder: getDefaultValue("alertArtifactsReminder"),
     },
   });
 
@@ -69,7 +78,6 @@ export function EmailPreferencesForm({
     try {
       setIsUpdating(true);
 
-      // Transform form data to API format
       const apiData = {
         preferences: [
           {
@@ -81,8 +89,16 @@ export function EmailPreferencesForm({
             subscribed: data.productUpdates,
           },
           {
-            emailType: "operationalAlerts" as const,
-            subscribed: data.operationalAlerts,
+            emailType: "alertBotFailures" as const,
+            subscribed: data.alertBotFailures,
+          },
+          {
+            emailType: "alertCalendarSync" as const,
+            subscribed: data.alertCalendarSync,
+          },
+          {
+            emailType: "alertArtifactsReminder" as const,
+            subscribed: data.alertArtifactsReminder,
           },
         ],
       };
@@ -180,7 +196,7 @@ export function EmailPreferencesForm({
             />
 
             <Controller
-              name="operationalAlerts"
+              name="alertBotFailures"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field
@@ -188,19 +204,83 @@ export function EmailPreferencesForm({
                   data-invalid={fieldState.invalid}
                 >
                   <FieldContent>
-                    <FieldLabel htmlFor="email-pref-operational-alerts">
-                      Operational Alerts
+                    <FieldLabel htmlFor="email-pref-alert-bot-failures">
+                      Bot Failure Alerts
                     </FieldLabel>
                     <FieldDescription>
-                      Receive alerts for bot failures, daily cap limits,
-                      insufficient tokens, and calendar sync errors.
+                      Get notified when bots fail, hit the daily cap, or run out
+                      of tokens.
                     </FieldDescription>
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
                   </FieldContent>
                   <Switch
-                    id="email-pref-operational-alerts"
+                    id="email-pref-alert-bot-failures"
+                    name={field.name}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isUpdating}
+                    aria-invalid={fieldState.invalid}
+                  />
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="alertCalendarSync"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field
+                  orientation="horizontal"
+                  data-invalid={fieldState.invalid}
+                >
+                  <FieldContent>
+                    <FieldLabel htmlFor="email-pref-alert-calendar-sync">
+                      Calendar Sync Alerts
+                    </FieldLabel>
+                    <FieldDescription>
+                      Get notified when a calendar connection fails or needs
+                      reconnecting.
+                    </FieldDescription>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </FieldContent>
+                  <Switch
+                    id="email-pref-alert-calendar-sync"
+                    name={field.name}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isUpdating}
+                    aria-invalid={fieldState.invalid}
+                  />
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="alertArtifactsReminder"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field
+                  orientation="horizontal"
+                  data-invalid={fieldState.invalid}
+                >
+                  <FieldContent>
+                    <FieldLabel htmlFor="email-pref-alert-artifacts">
+                      Artifacts Reminders
+                    </FieldLabel>
+                    <FieldDescription>
+                      Get reminded when bot recordings or transcripts are ready
+                      but haven&apos;t been fetched.
+                    </FieldDescription>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </FieldContent>
+                  <Switch
+                    id="email-pref-alert-artifacts"
                     name={field.name}
                     checked={field.value}
                     onCheckedChange={field.onChange}
