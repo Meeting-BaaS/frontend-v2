@@ -28,7 +28,6 @@ const emailPreferencesFormSchema = object({
   productUpdates: boolean(),
   alertBotFailures: boolean(),
   alertCalendarSync: boolean(),
-  alertArtifactsReminder: boolean(),
 });
 
 type EmailPreferencesFormData = output<typeof emailPreferencesFormSchema>;
@@ -38,25 +37,18 @@ interface EmailPreferencesFormProps {
 }
 
 // Alert preferences default to opted-in (true) when no preference exists
-const ALERT_PREF_KEYS = [
-  "alertBotFailures",
-  "alertCalendarSync",
-  "alertArtifactsReminder",
-] as const;
+const ALERT_PREF_KEYS = ["alertBotFailures", "alertCalendarSync"] as const;
 
 export function EmailPreferencesForm({
   initialPreferences,
 }: EmailPreferencesFormProps) {
   const getDefaultValue = (emailType: string): boolean => {
     const pref = initialPreferences.find((p) => p.emailType === emailType);
-    // Alert preferences default to subscribed (opted-in)
     if (ALERT_PREF_KEYS.includes(emailType as (typeof ALERT_PREF_KEYS)[number]))
       return pref?.subscribed ?? true;
     return pref?.subscribed ?? false;
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- trigger redeploy
-  const _redeploy = true;
   const form = useForm<EmailPreferencesFormData>({
     resolver: zodResolver(emailPreferencesFormSchema),
     defaultValues: {
@@ -64,7 +56,6 @@ export function EmailPreferencesForm({
       productUpdates: getDefaultValue("productUpdates"),
       alertBotFailures: getDefaultValue("alertBotFailures"),
       alertCalendarSync: getDefaultValue("alertCalendarSync"),
-      alertArtifactsReminder: getDefaultValue("alertArtifactsReminder"),
     },
   });
 
@@ -97,10 +88,6 @@ export function EmailPreferencesForm({
           {
             emailType: "alertCalendarSync" as const,
             subscribed: data.alertCalendarSync,
-          },
-          {
-            emailType: "alertArtifactsReminder" as const,
-            subscribed: data.alertArtifactsReminder,
           },
         ],
       };
@@ -210,8 +197,8 @@ export function EmailPreferencesForm({
                       Bot Failure Alerts
                     </FieldLabel>
                     <FieldDescription>
-                      Get notified when bots fail, hit the daily cap, or run out
-                      of tokens.
+                      Get notified when a bot fails to join or complete a
+                      meeting.
                     </FieldDescription>
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -251,38 +238,6 @@ export function EmailPreferencesForm({
                   </FieldContent>
                   <Switch
                     id="email-pref-alert-calendar-sync"
-                    name={field.name}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={isUpdating}
-                    aria-invalid={fieldState.invalid}
-                  />
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="alertArtifactsReminder"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field
-                  orientation="horizontal"
-                  data-invalid={fieldState.invalid}
-                >
-                  <FieldContent>
-                    <FieldLabel htmlFor="email-pref-alert-artifacts">
-                      Artifacts Reminders
-                    </FieldLabel>
-                    <FieldDescription>
-                      Get reminded when bot recordings or transcripts are ready
-                      but haven&apos;t been fetched.
-                    </FieldDescription>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </FieldContent>
-                  <Switch
-                    id="email-pref-alert-artifacts"
                     name={field.name}
                     checked={field.value}
                     onCheckedChange={field.onChange}
