@@ -145,7 +145,7 @@ export type ListUserInvitationsResponse = output<
 /**
  * Email type enum
  */
-export const emailTypeEnum = zodEnum(["apiChanges", "productUpdates", "operationalAlerts"]);
+export const emailTypeEnum = zodEnum(["apiChanges", "productUpdates", "alertBotFailures", "alertCalendarSync", "alertArtifactsReminder"]);
 export type EmailType = output<typeof emailTypeEnum>;
 
 /**
