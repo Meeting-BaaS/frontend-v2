@@ -23,9 +23,8 @@ import { genericError } from "@/lib/errors";
 import type { EmailPreference } from "@/lib/schemas/account";
 import { updateEmailPreferencesResponseSchema } from "@/lib/schemas/account";
 
+// Note: "apiChanges" and "productUpdates" removed — those are handled by the growth playbook system
 const emailPreferencesFormSchema = object({
-  apiChanges: boolean(),
-  productUpdates: boolean(),
   alertUsageLimits: boolean(),
   alertBotFailures: boolean(),
   alertCalendarSync: boolean(),
@@ -57,8 +56,6 @@ export function EmailPreferencesForm({
   const form = useForm<EmailPreferencesFormData>({
     resolver: zodResolver(emailPreferencesFormSchema),
     defaultValues: {
-      apiChanges: getDefaultValue("apiChanges"),
-      productUpdates: getDefaultValue("productUpdates"),
       alertUsageLimits: getDefaultValue("alertUsageLimits"),
       alertBotFailures: getDefaultValue("alertBotFailures"),
       alertCalendarSync: getDefaultValue("alertCalendarSync"),
@@ -79,14 +76,6 @@ export function EmailPreferencesForm({
 
       const apiData = {
         preferences: [
-          {
-            emailType: "apiChanges" as const,
-            subscribed: data.apiChanges,
-          },
-          {
-            emailType: "productUpdates" as const,
-            subscribed: data.productUpdates,
-          },
           {
             emailType: "alertUsageLimits" as const,
             subscribed: data.alertUsageLimits,
@@ -130,70 +119,6 @@ export function EmailPreferencesForm({
           className="space-y-4 w-full md:!w-1/2 lg:!w-2/5"
         >
           <FieldGroup>
-            <Controller
-              name="apiChanges"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field
-                  orientation="horizontal"
-                  data-invalid={fieldState.invalid}
-                >
-                  <FieldContent>
-                    <FieldLabel htmlFor="email-pref-api-changes">
-                      API changes
-                    </FieldLabel>
-                    <FieldDescription>
-                      Receive email notifications about API changes,
-                      deprecations, and updates.
-                    </FieldDescription>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </FieldContent>
-                  <Switch
-                    id="email-pref-api-changes"
-                    name={field.name}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={isUpdating}
-                    aria-invalid={fieldState.invalid}
-                  />
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="productUpdates"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field
-                  orientation="horizontal"
-                  data-invalid={fieldState.invalid}
-                >
-                  <FieldContent>
-                    <FieldLabel htmlFor="email-pref-product-updates">
-                      Product Updates
-                    </FieldLabel>
-                    <FieldDescription>
-                      Stay informed about new features, improvements, and
-                      product announcements.
-                    </FieldDescription>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </FieldContent>
-                  <Switch
-                    id="email-pref-product-updates"
-                    name={field.name}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={isUpdating}
-                    aria-invalid={fieldState.invalid}
-                  />
-                </Field>
-              )}
-            />
-
             <Controller
               name="alertUsageLimits"
               control={form.control}
