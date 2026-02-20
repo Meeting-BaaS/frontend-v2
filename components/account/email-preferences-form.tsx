@@ -26,6 +26,7 @@ import { updateEmailPreferencesResponseSchema } from "@/lib/schemas/account";
 const emailPreferencesFormSchema = object({
   apiChanges: boolean(),
   productUpdates: boolean(),
+  operationalAlerts: boolean(),
 });
 
 type EmailPreferencesFormData = output<typeof emailPreferencesFormSchema>;
@@ -37,11 +38,13 @@ interface EmailPreferencesFormProps {
 export function EmailPreferencesForm({
   initialPreferences,
 }: EmailPreferencesFormProps) {
-  // Initialize form with default values for both email types
+  // Initialize form with default values for each email type
   const getDefaultValue = (
-    emailType: "apiChanges" | "productUpdates",
+    emailType: "apiChanges" | "productUpdates" | "operationalAlerts",
   ): boolean => {
     const pref = initialPreferences.find((p) => p.emailType === emailType);
+    // Operational alerts default to subscribed (opted-in) when no preference exists
+    if (emailType === "operationalAlerts") return pref?.subscribed ?? true;
     return pref?.subscribed ?? false; // Default to unsubscribed if not found
   };
 
@@ -50,6 +53,7 @@ export function EmailPreferencesForm({
     defaultValues: {
       apiChanges: getDefaultValue("apiChanges"),
       productUpdates: getDefaultValue("productUpdates"),
+      operationalAlerts: getDefaultValue("operationalAlerts"),
     },
   });
 
@@ -75,6 +79,10 @@ export function EmailPreferencesForm({
           {
             emailType: "productUpdates" as const,
             subscribed: data.productUpdates,
+          },
+          {
+            emailType: "operationalAlerts" as const,
+            subscribed: data.operationalAlerts,
           },
         ],
       };
@@ -161,6 +169,38 @@ export function EmailPreferencesForm({
                   </FieldContent>
                   <Switch
                     id="email-pref-product-updates"
+                    name={field.name}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isUpdating}
+                    aria-invalid={fieldState.invalid}
+                  />
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="operationalAlerts"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field
+                  orientation="horizontal"
+                  data-invalid={fieldState.invalid}
+                >
+                  <FieldContent>
+                    <FieldLabel htmlFor="email-pref-operational-alerts">
+                      Operational Alerts
+                    </FieldLabel>
+                    <FieldDescription>
+                      Receive alerts for bot failures, daily cap limits,
+                      insufficient tokens, and calendar sync errors.
+                    </FieldDescription>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </FieldContent>
+                  <Switch
+                    id="email-pref-operational-alerts"
                     name={field.name}
                     checked={field.value}
                     onCheckedChange={field.onChange}
