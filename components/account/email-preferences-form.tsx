@@ -26,6 +26,7 @@ import { updateEmailPreferencesResponseSchema } from "@/lib/schemas/account";
 const emailPreferencesFormSchema = object({
   apiChanges: boolean(),
   productUpdates: boolean(),
+  alertUsageLimits: boolean(),
   alertBotFailures: boolean(),
   alertCalendarSync: boolean(),
 });
@@ -37,7 +38,11 @@ interface EmailPreferencesFormProps {
 }
 
 // Alert preferences default to opted-in (true) when no preference exists
-const ALERT_PREF_KEYS = ["alertBotFailures", "alertCalendarSync"] as const;
+const ALERT_PREF_KEYS = [
+  "alertUsageLimits",
+  "alertBotFailures",
+  "alertCalendarSync",
+] as const;
 
 export function EmailPreferencesForm({
   initialPreferences,
@@ -54,6 +59,7 @@ export function EmailPreferencesForm({
     defaultValues: {
       apiChanges: getDefaultValue("apiChanges"),
       productUpdates: getDefaultValue("productUpdates"),
+      alertUsageLimits: getDefaultValue("alertUsageLimits"),
       alertBotFailures: getDefaultValue("alertBotFailures"),
       alertCalendarSync: getDefaultValue("alertCalendarSync"),
     },
@@ -80,6 +86,10 @@ export function EmailPreferencesForm({
           {
             emailType: "productUpdates" as const,
             subscribed: data.productUpdates,
+          },
+          {
+            emailType: "alertUsageLimits" as const,
+            subscribed: data.alertUsageLimits,
           },
           {
             emailType: "alertBotFailures" as const,
@@ -174,6 +184,38 @@ export function EmailPreferencesForm({
                   </FieldContent>
                   <Switch
                     id="email-pref-product-updates"
+                    name={field.name}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isUpdating}
+                    aria-invalid={fieldState.invalid}
+                  />
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="alertUsageLimits"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field
+                  orientation="horizontal"
+                  data-invalid={fieldState.invalid}
+                >
+                  <FieldContent>
+                    <FieldLabel htmlFor="email-pref-alert-usage-limits">
+                      Usage Limit Alerts
+                    </FieldLabel>
+                    <FieldDescription>
+                      Get notified when you hit the daily bot cap or run out of
+                      tokens.
+                    </FieldDescription>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </FieldContent>
+                  <Switch
+                    id="email-pref-alert-usage-limits"
                     name={field.name}
                     checked={field.value}
                     onCheckedChange={field.onChange}
