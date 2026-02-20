@@ -145,7 +145,8 @@ export type ListUserInvitationsResponse = output<
 /**
  * Email type enum
  */
-export const emailTypeEnum = zodEnum(["apiChanges", "productUpdates", "alertUsageLimits", "alertBotFailures", "alertCalendarSync"]);
+// Note: "apiChanges" and "productUpdates" removed — those are handled by the growth playbook system
+export const emailTypeEnum = zodEnum(["alertUsageLimits", "alertBotFailures", "alertCalendarSync"]);
 export type EmailType = output<typeof emailTypeEnum>;
 
 /**
