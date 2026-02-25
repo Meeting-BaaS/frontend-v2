@@ -87,7 +87,12 @@ export function AppHeader() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" asChild>
-              <Link href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
+              <Link
+                href={DISCORD_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Join our Discord (opens in a new tab)"
+              >
                 <DiscordLogo className="h-5 w-5 fill-foreground" />
               </Link>
             </Button>
