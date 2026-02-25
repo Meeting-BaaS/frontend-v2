@@ -93,7 +93,7 @@ export function AppHeader() {
                 rel="noopener noreferrer"
                 aria-label="Join our Discord (opens in a new tab)"
               >
-                <DiscordLogo className="h-5 w-5 fill-foreground" />
+                <DiscordLogo className="h-5 w-5 fill-foreground" aria-hidden="true" />
               </Link>
             </Button>
           </TooltipTrigger>
