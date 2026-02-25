@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useSupportDialog } from "@/hooks/use-support-dialog";
-import { AI_CHAT_URL, DOCS_URL } from "@/lib/external-urls";
+import { AI_CHAT_URL, DISCORD_URL, DOCS_URL } from "@/lib/external-urls";
 import type { Module } from "@/lib/schemas/support";
 
 export function AppHeader() {
@@ -91,6 +91,15 @@ export function AppHeader() {
             rel="noopener noreferrer"
           >
             Docs
+          </Link>
+        </Button>
+        <Button variant="link" asChild>
+          <Link
+            href={DISCORD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Join our Discord
           </Link>
         </Button>
       </div>
