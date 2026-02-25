@@ -10,38 +10,43 @@ import { GradientIcon } from "@/components/ui/gradient-icon"
 import { formatRelativeDate } from "@/lib/date-helpers"
 import type { ZoomCredential } from "@/lib/schemas/credentials"
 
-// Column width configuration
+// Column width configuration (uuid/createdAt aligned with bots table)
 export const columnWidths = {
-  name: "min-w-[220px] max-w-[300px] w-[30%]",
-  type: "min-w-[140px] max-w-[180px] w-[18%]",
+  credential_id: "w-[350px]",
+  type: "min-w-[80px] max-w-[110px] w-[10%]",
   status: "min-w-[100px] max-w-[120px] w-[12%]",
   zoomUser: "min-w-[150px] max-w-[200px] w-[20%]",
-  createdAt: "min-w-[120px] max-w-[150px] w-[15%]",
+  createdAt: "min-w-[140px] max-w-[150px] w-[15%]",
   actions: "min-w-[80px] max-w-[80px] w-[5%]"
 } as const
 
 export const columns: ColumnDef<ZoomCredential>[] = [
   {
-    id: "name",
-    accessorKey: "name",
-    header: "Name",
+    id: "credential_id",
+    accessorKey: "credential_id",
+    header: "Credential ID",
     meta: {
-      className: columnWidths.name
+      className: columnWidths.credential_id
     },
     cell: ({ row }) => {
       return (
         <div className="flex gap-1 items-center group">
-          <div className="flex gap-3 items-center">
-            <GradientIcon color="var(--color-blue-300)">
+          <div className="flex gap-3 items-center min-w-0">
+            <GradientIcon color="var(--color-blue-300)" className="shrink-0">
               <ShieldPlus />
             </GradientIcon>
-            <span className="truncate max-w-sm">{row.original.name}</span>
+            <div className="flex flex-col min-w-0">
+              <span className="truncate max-w-sm font-medium">{row.original.credential_id}</span>
+              <span className="truncate max-w-sm text-muted-foreground text-xs">
+                {row.original.name}
+              </span>
+            </div>
           </div>
           <Button
             variant="ghost"
             size="icon"
             asChild
-            className="opacity-0 -translate-x-2 delay-200 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
+            className="opacity-0 -translate-x-2 delay-200 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 shrink-0"
           >
             <CopyButton text={row.original.credential_id} />
           </Button>
@@ -62,14 +67,14 @@ export const columns: ColumnDef<ZoomCredential>[] = [
         return (
           <Badge variant="secondary" className="gap-1">
             <User className="h-3 w-3" />
-            User Authorized
+            User
           </Badge>
         )
       }
       return (
         <Badge variant="outline" className="gap-1">
           <ShieldCheck className="h-3 w-3" />
-          App Only
+          App
         </Badge>
       )
     }

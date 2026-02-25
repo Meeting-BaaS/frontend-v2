@@ -1,52 +1,51 @@
-"use client";
+"use client"
 
-import { BotMessageSquare, MessageCirclePlus } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { BotMessageSquare, MessageCirclePlus } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { DiscordLogo } from "@/components/icons/discord"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useSupportDialog } from "@/hooks/use-support-dialog";
-import { AI_CHAT_URL, DISCORD_URL, DOCS_URL } from "@/lib/external-urls";
-import type { Module } from "@/lib/schemas/support";
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { SidebarTrigger } from "@/components/ui/sidebar"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { useSupportDialog } from "@/hooks/use-support-dialog"
+import { AI_CHAT_URL, DISCORD_URL, DOCS_URL } from "@/lib/external-urls"
+import type { Module } from "@/lib/schemas/support"
 
 export function AppHeader() {
-  const pathname = usePathname();
-  const { openSupportDialog } = useSupportDialog();
+  const pathname = usePathname()
+  const { openSupportDialog } = useSupportDialog()
 
   const handleRaiseTicket = () => {
-    let module: Module | undefined;
-    let botUuid: string | undefined;
+    let module: Module | undefined
+    let botUuid: string | undefined
 
     // Parse pathname segments
-    const pathSegments = pathname.split("/").filter(Boolean);
+    const pathSegments = pathname.split("/").filter(Boolean)
 
     // Determine module and bot UUID based on pathname
     if (pathSegments[0] === "bots") {
-      module = "bots";
+      module = "bots"
       // If there's a second segment, it's the bot UUID
       if (pathSegments[1]) {
-        botUuid = pathSegments[1];
+        botUuid = pathSegments[1]
       }
     } else if (pathSegments[0] === "calendars") {
-      module = "calendars";
-    } else if (
-      pathSegments[0] === "settings" &&
-      pathSegments[1] === "billing"
-    ) {
-      module = "billing";
+      module = "calendars"
+    } else if (pathSegments[0] === "settings" && pathSegments[1] === "billing") {
+      module = "billing"
     }
 
     openSupportDialog({
       ...(module && { module }),
-      ...(botUuid && { botUuid }),
-    });
-  };
+      ...(botUuid && { botUuid })
+    })
+  }
 
   return (
     <header className="sticky top-0 z-20 flex items-center w-full justify-between px-4 py-2 border-b bg-background">
@@ -69,11 +68,7 @@ export function AppHeader() {
             sideOffset={4}
           >
             <DropdownMenuItem asChild>
-              <Link
-                href={AI_CHAT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link href={AI_CHAT_URL} target="_blank" rel="noopener noreferrer">
                 <BotMessageSquare />
                 Chat with AI
               </Link>
@@ -85,24 +80,21 @@ export function AppHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
         <Button variant="link" asChild>
-          <Link
-            href={`${DOCS_URL}/api-v2`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link href={`${DOCS_URL}/api-v2`} target="_blank" rel="noopener noreferrer">
             Docs
           </Link>
         </Button>
-        <Button variant="link" asChild>
-          <Link
-            href={DISCORD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Join our Discord
-          </Link>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
+                <DiscordLogo className="h-5 w-5 fill-foreground" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Join our Discord</TooltipContent>
+        </Tooltip>
       </div>
     </header>
-  );
+  )
 }
