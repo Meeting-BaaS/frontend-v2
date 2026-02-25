@@ -46,7 +46,7 @@ export const columns: ColumnDef<ZoomCredential>[] = [
             variant="ghost"
             size="icon"
             asChild
-            className="opacity-0 -translate-x-2 delay-200 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 shrink-0"
+            className="opacity-0 -translate-x-2 delay-200 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0 focus-visible:opacity-100 focus-visible:translate-x-0 shrink-0"
           >
             <CopyButton text={row.original.credential_id} />
           </Button>
