@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Bell,
   Bot,
   Calendar,
   CalendarClock,
@@ -60,6 +61,12 @@ const allItems = [
     url: "/webhooks",
     icon: Webhook,
     featureKey: "svix"
+  },
+  {
+    title: "Alerts",
+    url: "/alerts",
+    icon: Bell,
+    featureKey: null
   },
   {
     title: "API Keys",

@@ -112,6 +112,22 @@ export const UPDATE_REMINDER_SETTINGS = `${SETTINGS_BASE_PATH}/token-settings/re
 export const GET_V1_AVAILABLE_TOKENS = `${SETTINGS_BASE_PATH}/tokens/v1-available`;
 export const IMPORT_TOKENS_FROM_V1 = `${SETTINGS_BASE_PATH}/tokens/import-from-v1`;
 
+// Alert rules routes
+export const ALERTS_BASE_PATH = `${BASE_PATH}/alerts`;
+export const LIST_ALERT_RULES = `${ALERTS_BASE_PATH}/rules`;
+export const CREATE_ALERT_RULE = `${ALERTS_BASE_PATH}/rules`;
+export const GET_ALERT_RULE_DETAILS = `${ALERTS_BASE_PATH}/rules/details`;
+export const UPDATE_ALERT_RULE = `${ALERTS_BASE_PATH}/rules`;
+export const DELETE_ALERT_RULE = (ruleId: string) =>
+  `${ALERTS_BASE_PATH}/rules/${ruleId}`;
+export const LIST_ALERT_HISTORY = `${ALERTS_BASE_PATH}/history`;
+export const TEST_ALERT_RULE = (ruleId: string) =>
+  `${ALERTS_BASE_PATH}/rules/${ruleId}/test`;
+export const ENABLE_ALERT_RULE = (ruleId: string) =>
+  `${ALERTS_BASE_PATH}/rules/${ruleId}/enable`;
+export const DISABLE_ALERT_RULE = (ruleId: string) =>
+  `${ALERTS_BASE_PATH}/rules/${ruleId}/disable`;
+
 // Account routes
 export const ACCOUNT_BASE_PATH = `${BASE_PATH}/account`;
 export const UPLOAD_USER_IMAGE = `${ACCOUNT_BASE_PATH}/upload-image`;

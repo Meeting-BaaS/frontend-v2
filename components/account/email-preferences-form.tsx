@@ -23,11 +23,17 @@ import { genericError } from "@/lib/errors";
 import type { EmailPreference } from "@/lib/schemas/account";
 import { updateEmailPreferencesResponseSchema } from "@/lib/schemas/account";
 
-// Note: "apiChanges" and "productUpdates" removed — those are handled by the growth playbook system
 const emailPreferencesFormSchema = object({
+  // Critical alerts (default: on)
   alertUsageLimits: boolean(),
   alertBotFailures: boolean(),
   alertCalendarSync: boolean(),
+  // Threshold warnings — per resource, per threshold (default: off)
+  alertWarningDailyCap80: boolean(),
+  alertWarningDailyCap90: boolean(),
+  alertWarningTokens80: boolean(),
+  alertWarningTokens90: boolean(),
+  alertWarningCalendarLimit80: boolean(),
 });
 
 type EmailPreferencesFormData = output<typeof emailPreferencesFormSchema>;
@@ -36,8 +42,8 @@ interface EmailPreferencesFormProps {
   initialPreferences: EmailPreference[];
 }
 
-// Alert preferences default to opted-in (true) when no preference exists
-const ALERT_PREF_KEYS = [
+// Critical alert preferences default to opted-in (true) when no preference exists
+const CRITICAL_ALERT_KEYS = [
   "alertUsageLimits",
   "alertBotFailures",
   "alertCalendarSync",
@@ -48,9 +54,15 @@ export function EmailPreferencesForm({
 }: EmailPreferencesFormProps) {
   const getDefaultValue = (emailType: string): boolean => {
     const pref = initialPreferences.find((p) => p.emailType === emailType);
-    if (ALERT_PREF_KEYS.includes(emailType as (typeof ALERT_PREF_KEYS)[number]))
-      return pref?.subscribed ?? true;
-    return pref?.subscribed ?? false;
+    if (pref) return pref.subscribed;
+    // Critical alerts default to ON, warning thresholds default to OFF
+    if (
+      CRITICAL_ALERT_KEYS.includes(
+        emailType as (typeof CRITICAL_ALERT_KEYS)[number],
+      )
+    )
+      return true;
+    return false;
   };
 
   const form = useForm<EmailPreferencesFormData>({
@@ -59,6 +71,13 @@ export function EmailPreferencesForm({
       alertUsageLimits: getDefaultValue("alertUsageLimits"),
       alertBotFailures: getDefaultValue("alertBotFailures"),
       alertCalendarSync: getDefaultValue("alertCalendarSync"),
+      alertWarningDailyCap80: getDefaultValue("alertWarningDailyCap80"),
+      alertWarningDailyCap90: getDefaultValue("alertWarningDailyCap90"),
+      alertWarningTokens80: getDefaultValue("alertWarningTokens80"),
+      alertWarningTokens90: getDefaultValue("alertWarningTokens90"),
+      alertWarningCalendarLimit80: getDefaultValue(
+        "alertWarningCalendarLimit80",
+      ),
     },
   });
 
@@ -88,6 +107,26 @@ export function EmailPreferencesForm({
             emailType: "alertCalendarSync" as const,
             subscribed: data.alertCalendarSync,
           },
+          {
+            emailType: "alertWarningDailyCap80" as const,
+            subscribed: data.alertWarningDailyCap80,
+          },
+          {
+            emailType: "alertWarningDailyCap90" as const,
+            subscribed: data.alertWarningDailyCap90,
+          },
+          {
+            emailType: "alertWarningTokens80" as const,
+            subscribed: data.alertWarningTokens80,
+          },
+          {
+            emailType: "alertWarningTokens90" as const,
+            subscribed: data.alertWarningTokens90,
+          },
+          {
+            emailType: "alertWarningCalendarLimit80" as const,
+            subscribed: data.alertWarningCalendarLimit80,
+          },
         ],
       };
 
@@ -116,8 +155,9 @@ export function EmailPreferencesForm({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 w-full md:!w-1/2 lg:!w-2/5"
+          className="space-y-6 w-full md:!w-1/2 lg:!w-2/5"
         >
+          {/* Critical Alerts */}
           <FieldGroup>
             <Controller
               name="alertUsageLimits"
@@ -132,8 +172,8 @@ export function EmailPreferencesForm({
                       Usage Limit Alerts
                     </FieldLabel>
                     <FieldDescription>
-                      Get notified when you hit the daily bot cap or run out of
-                      tokens.
+                      Get notified when the daily bot cap is reached or you run
+                      out of tokens (critical alerts).
                     </FieldDescription>
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -215,6 +255,199 @@ export function EmailPreferencesForm({
               )}
             />
           </FieldGroup>
+
+          {/* Usage Warning Thresholds */}
+          <div className="space-y-4 border-t pt-4">
+            <div>
+              <h3 className="text-sm font-medium">
+                Usage Warning Thresholds
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Get early warnings before hitting your limits. Choose which
+                resources and thresholds matter to you.
+              </p>
+            </div>
+
+            {/* Daily Bot Cap */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">
+                Daily Bot Cap
+              </p>
+              <FieldGroup>
+                <Controller
+                  name="alertWarningDailyCap80"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field
+                      orientation="horizontal"
+                      data-invalid={fieldState.invalid}
+                    >
+                      <FieldContent>
+                        <FieldLabel htmlFor="email-pref-warning-daily-cap-80">
+                          Warn at 80%
+                        </FieldLabel>
+                        <FieldDescription>
+                          Notified when 80% of your daily bot cap is used.
+                        </FieldDescription>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </FieldContent>
+                      <Switch
+                        id="email-pref-warning-daily-cap-80"
+                        name={field.name}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isUpdating}
+                        aria-invalid={fieldState.invalid}
+                      />
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="alertWarningDailyCap90"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field
+                      orientation="horizontal"
+                      data-invalid={fieldState.invalid}
+                    >
+                      <FieldContent>
+                        <FieldLabel htmlFor="email-pref-warning-daily-cap-90">
+                          Warn at 90%
+                        </FieldLabel>
+                        <FieldDescription>
+                          Notified when 90% of your daily bot cap is used.
+                        </FieldDescription>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </FieldContent>
+                      <Switch
+                        id="email-pref-warning-daily-cap-90"
+                        name={field.name}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isUpdating}
+                        aria-invalid={fieldState.invalid}
+                      />
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+            </div>
+
+            {/* Token Balance */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">
+                Token Balance
+              </p>
+              <FieldGroup>
+                <Controller
+                  name="alertWarningTokens80"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field
+                      orientation="horizontal"
+                      data-invalid={fieldState.invalid}
+                    >
+                      <FieldContent>
+                        <FieldLabel htmlFor="email-pref-warning-tokens-80">
+                          Warn at 80%
+                        </FieldLabel>
+                        <FieldDescription>
+                          Notified when 80% of your token balance is used.
+                        </FieldDescription>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </FieldContent>
+                      <Switch
+                        id="email-pref-warning-tokens-80"
+                        name={field.name}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isUpdating}
+                        aria-invalid={fieldState.invalid}
+                      />
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="alertWarningTokens90"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field
+                      orientation="horizontal"
+                      data-invalid={fieldState.invalid}
+                    >
+                      <FieldContent>
+                        <FieldLabel htmlFor="email-pref-warning-tokens-90">
+                          Warn at 90%
+                        </FieldLabel>
+                        <FieldDescription>
+                          Notified when 90% of your token balance is used.
+                        </FieldDescription>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </FieldContent>
+                      <Switch
+                        id="email-pref-warning-tokens-90"
+                        name={field.name}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isUpdating}
+                        aria-invalid={fieldState.invalid}
+                      />
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+            </div>
+
+            {/* Calendar Connections */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">
+                Calendar Connections
+              </p>
+              <FieldGroup>
+                <Controller
+                  name="alertWarningCalendarLimit80"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field
+                      orientation="horizontal"
+                      data-invalid={fieldState.invalid}
+                    >
+                      <FieldContent>
+                        <FieldLabel htmlFor="email-pref-warning-calendar-limit-80">
+                          Warn at 80%
+                        </FieldLabel>
+                        <FieldDescription>
+                          Notified when 80% of your calendar connection limit is
+                          used.
+                        </FieldDescription>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </FieldContent>
+                      <Switch
+                        id="email-pref-warning-calendar-limit-80"
+                        name={field.name}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isUpdating}
+                        aria-invalid={fieldState.invalid}
+                      />
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+            </div>
+          </div>
 
           <Button
             variant="primary"
