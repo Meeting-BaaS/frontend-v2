@@ -106,7 +106,7 @@ export function CreateAlertDialog({ open, onOpenChange }: CreateAlertDialogProps
           <DialogDescription>
             {step === 1
               ? "Configure the metric and threshold for this alert."
-              : "Choose how you want to be notified when this alert fires."}
+              : "Choose how you want to be notified when this alert fires. At least one delivery channel (email or callback) is required."}
           </DialogDescription>
         </DialogHeader>
 

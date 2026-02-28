@@ -42,13 +42,13 @@ export function FormFieldsStep1({ loading, defaultValues, onNext }: FormFieldsSt
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onNext)} className="space-y-6">
-        <FieldGroup>
+      <form onSubmit={form.handleSubmit(onNext)} className="space-y-6" noValidate>
+        <FieldGroup className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="name"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-invalid={fieldState.invalid} className="col-span-2">
                 <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                 <FieldContent>
                   <FormControl>
@@ -72,12 +72,12 @@ export function FormFieldsStep1({ loading, defaultValues, onNext }: FormFieldsSt
             control={form.control}
             name="alertType"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-invalid={fieldState.invalid} className="col-span-2 md:col-span-1">
                 <FieldLabel htmlFor={field.name}>Metric</FieldLabel>
                 <FieldContent>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange} disabled={loading}>
-                      <SelectTrigger id={field.name}>
+                      <SelectTrigger className="w-full" id={field.name}>
                         <SelectValue placeholder="Select metric..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -99,12 +99,12 @@ export function FormFieldsStep1({ loading, defaultValues, onNext }: FormFieldsSt
             control={form.control}
             name="operator"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-invalid={fieldState.invalid} className="col-span-2 md:col-span-1">
                 <FieldLabel htmlFor={field.name}>Operator</FieldLabel>
                 <FieldContent>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange} disabled={loading}>
-                      <SelectTrigger id={field.name}>
+                      <SelectTrigger className="w-full" id={field.name}>
                         <SelectValue placeholder="Select operator..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -127,7 +127,7 @@ export function FormFieldsStep1({ loading, defaultValues, onNext }: FormFieldsSt
             control={form.control}
             name="value"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-invalid={fieldState.invalid} className="col-span-2">
                 <FieldLabel htmlFor={field.name}>Threshold Value</FieldLabel>
                 <FieldContent>
                   <FormControl>

@@ -1,38 +1,24 @@
-"use client";
+"use client"
 
-import { Eye, EyeOff, Webhook } from "lucide-react";
-import { useState } from "react";
-import { DocsButton } from "@/components/layout/docs-button";
-import { ItemHeading } from "@/components/layout/item-heading";
-import { Badge } from "@/components/ui/badge";
-import { CopyButton } from "@/components/ui/copy-button";
-import { GradientIcon } from "@/components/ui/gradient-icon";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { NameValuePair } from "@/components/ui/name-value-pair";
-import { MessagesTable } from "@/components/webhooks/messages/table";
-import { WebhookActions } from "@/components/webhooks/webhook-actions";
-import { formatRelativeDate } from "@/lib/date-helpers";
-import type {
-  WebhookEndpointWithSecret,
-  WebhookMessage,
-} from "@/lib/schemas/webhooks";
+import { Webhook } from "lucide-react"
+import { DocsButton } from "@/components/layout/docs-button"
+import { ItemHeading } from "@/components/layout/item-heading"
+import { Badge } from "@/components/ui/badge"
+import { GradientIcon } from "@/components/ui/gradient-icon"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { NameValuePair } from "@/components/ui/name-value-pair"
+import { SecretField } from "@/components/ui/secret-field"
+import { MessagesTable } from "@/components/webhooks/messages/table"
+import { WebhookActions } from "@/components/webhooks/webhook-actions"
+import { formatRelativeDate } from "@/lib/date-helpers"
+import type { WebhookEndpointWithSecret, WebhookMessage } from "@/lib/schemas/webhooks"
 
 interface WebhookDetailsProps {
-  webhookEndpoint: WebhookEndpointWithSecret;
-  allWebhookEvents: string[];
-  webhookMessages: WebhookMessage[];
-  prevIterator: string | null;
-  nextIterator: string | null;
+  webhookEndpoint: WebhookEndpointWithSecret
+  allWebhookEvents: string[]
+  webhookMessages: WebhookMessage[]
+  prevIterator: string | null
+  nextIterator: string | null
 }
 
 export function ViewWebhookDetails({
@@ -40,10 +26,9 @@ export function ViewWebhookDetails({
   allWebhookEvents,
   webhookMessages,
   prevIterator,
-  nextIterator,
+  nextIterator
 }: WebhookDetailsProps) {
-  const [show, setShow] = useState(false);
-  const eventCount = webhookEndpoint.events.length;
+  const eventCount = webhookEndpoint.events.length
   return (
     <section>
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
@@ -54,11 +39,7 @@ export function ViewWebhookDetails({
           containerClassName="md:flex-1"
           gradientIcon={
             <GradientIcon
-              color={
-                webhookEndpoint.enabled
-                  ? "var(--color-green-300)"
-                  : "var(--color-gray-300)"
-              }
+              color={webhookEndpoint.enabled ? "var(--color-green-300)" : "var(--color-gray-300)"}
               size="xl"
             >
               <Webhook size={32} />
@@ -116,31 +97,11 @@ export function ViewWebhookDetails({
         <NameValuePair
           title="Signing Secret"
           value={
-            <InputGroup className="h-7">
-              <InputGroupInput
-                name="webhook-secret"
-                placeholder="Webhook secret"
-                className="disabled:opacity-100"
-                value={webhookEndpoint.secret}
-                readOnly
-                type={show ? "text" : "password"}
-                disabled
-              />
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
-                  size="icon-xs"
-                  aria-label="Show/Hide API Key"
-                  onClick={() => setShow(!show)}
-                >
-                  {show ? <Eye /> : <EyeOff />}
-                </InputGroupButton>
-              </InputGroupAddon>
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton size="icon-xs" asChild>
-                  <CopyButton text={webhookEndpoint.secret} />
-                </InputGroupButton>
-              </InputGroupAddon>
-            </InputGroup>
+            <SecretField
+              value={webhookEndpoint.secret}
+              name="webhook-secret"
+              placeholder="Webhook secret"
+            />
           }
         />
       </div>
@@ -151,5 +112,5 @@ export function ViewWebhookDetails({
         nextIterator={nextIterator}
       />
     </section>
-  );
+  )
 }

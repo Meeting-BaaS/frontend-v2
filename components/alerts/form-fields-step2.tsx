@@ -1,15 +1,14 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ArrowLeft, Plus, SendHorizontal, X } from "lucide-react"
-import { useState } from "react"
+import { ArrowLeft, Info, SendHorizontal } from "lucide-react"
 import { useForm } from "react-hook-form"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DialogFooter } from "@/components/ui/dialog"
 import {
   Field,
   FieldContent,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel
@@ -18,13 +17,24 @@ import { Form, FormControl, FormField } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
+import {
   type CreateAlertRuleStep2Data,
   createAlertRuleStep2Schema
 } from "@/lib/schemas/alerts"
 
 interface FormFieldsStep2Props {
   loading: boolean
-  defaultValues?: Partial<CreateAlertRuleStep2Data>
+  defaultValues?: {
+    emailRecipients?: string[] | string
+    callbackUrl?: string
+    callbackSecret?: string
+    cooldownMinutes?: number
+  }
   submitLabel: string
   loadingLabel: string
   onBack: () => void
@@ -39,41 +49,20 @@ export function FormFieldsStep2({
   onBack,
   onSubmit
 }: FormFieldsStep2Props) {
-  const [emailInput, setEmailInput] = useState("")
+  // Convert array default to semicolon-separated string for the input
+  const emailDefault = Array.isArray(defaultValues?.emailRecipients)
+    ? defaultValues.emailRecipients.join("; ")
+    : defaultValues?.emailRecipients ?? ""
 
-  const form = useForm<CreateAlertRuleStep2Data>({
+  const form = useForm({
     resolver: zodResolver(createAlertRuleStep2Schema),
     defaultValues: {
-      emailRecipients: [],
-      callbackUrl: "",
-      callbackSecret: "",
-      cooldownMinutes: 15,
-      ...defaultValues
+      emailRecipients: emailDefault,
+      callbackUrl: defaultValues?.callbackUrl ?? "",
+      callbackSecret: defaultValues?.callbackSecret ?? "",
+      cooldownMinutes: defaultValues?.cooldownMinutes ?? 15
     }
   })
-
-  const addEmail = () => {
-    const email = emailInput.trim()
-    if (!email) return
-
-    const currentRecipients: string[] = form.getValues("emailRecipients") || []
-    if (currentRecipients.includes(email)) {
-      setEmailInput("")
-      return
-    }
-    if (currentRecipients.length >= 10) return
-
-    form.setValue("emailRecipients", [...currentRecipients, email])
-    setEmailInput("")
-  }
-
-  const removeEmail = (email: string) => {
-    const currentRecipients: string[] = form.getValues("emailRecipients") || []
-    form.setValue(
-      "emailRecipients",
-      currentRecipients.filter((r) => r !== email)
-    )
-  }
 
   return (
     <Form {...form}>
@@ -84,49 +73,21 @@ export function FormFieldsStep2({
             name="emailRecipients"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>Email Recipients (optional)</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Email Recipients (optional)</FieldLabel>
                 <FieldContent>
-                  <div className="flex gap-2">
+                  <FormControl>
                     <Input
-                      value={emailInput}
-                      onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="user@example.com"
-                      type="email"
+                      {...field}
+                      value={field.value as string}
+                      id={field.name}
+                      autoComplete="off"
+                      placeholder="user@example.com; another@example.com"
                       disabled={loading}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault()
-                          addEmail()
-                        }
-                      }}
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addEmail}
-                      disabled={loading}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  {field.value && field.value.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {field.value.map((email: string) => (
-                        <Badge key={email} variant="secondary" className="flex items-center gap-1">
-                          {email}
-                          <button
-                            type="button"
-                            onClick={() => removeEmail(email)}
-                            className="hover:text-destructive"
-                            disabled={loading}
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
+                  </FormControl>
+                  <FieldDescription>
+                    Separate multiple emails with a semicolon. Maximum 10 recipients.
+                  </FieldDescription>
                   <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                 </FieldContent>
               </Field>
@@ -161,7 +122,23 @@ export function FormFieldsStep2({
             name="callbackSecret"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Callback Secret (optional)</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  Callback Secret (optional){" "}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm max-w-xs">
+                          When set, alert callback requests will include an{" "}
+                          <code className="text-xs bg-muted px-1 rounded">x-mb-alert-secret</code>{" "}
+                          header with this value so your backend can verify the request is authentic.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </FieldLabel>
                 <FieldContent>
                   <FormControl>
                     <Input
@@ -184,7 +161,22 @@ export function FormFieldsStep2({
             name="cooldownMinutes"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Cooldown (minutes)</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  Cooldown{" "}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm max-w-xs">
+                          After an alert fires, it will be suppressed for this duration.
+                          Suppressed alerts are counted and included in the next notification.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </FieldLabel>
                 <FieldContent>
                   <FormControl>
                     <Input
@@ -198,6 +190,9 @@ export function FormFieldsStep2({
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
+                  <FieldDescription>
+                    Minimum 1 minute, maximum 1440 minutes (24 hours). Defaults to 15 minutes.
+                  </FieldDescription>
                   <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                 </FieldContent>
               </Field>

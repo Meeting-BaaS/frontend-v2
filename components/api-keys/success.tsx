@@ -1,10 +1,8 @@
 "use client";
 
-import { CheckCircle, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { CheckCircle } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { CopyButton } from "@/components/ui/copy-button";
 import {
   Dialog,
   DialogClose,
@@ -15,12 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Field, FieldLabel } from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+import { SecretField } from "@/components/ui/secret-field";
 
 interface SuccessDialogProps {
   apiKey: string | null;
@@ -35,8 +28,6 @@ export function SuccessDialog({
   onOpenChange,
   setApiKey,
 }: SuccessDialogProps) {
-  const [show, setShow] = useState(false);
-
   const onCancel = (updatedOpen: boolean) => {
     if (updatedOpen) {
       return;
@@ -66,31 +57,11 @@ export function SuccessDialog({
 
           <Field>
             <FieldLabel htmlFor="api-key">API Key</FieldLabel>
-            <InputGroup>
-              <InputGroupInput
-                name="api-key"
-                placeholder="API Key"
-                className="disabled:opacity-100"
-                value={apiKey || ""}
-                readOnly
-                type={show ? "text" : "password"}
-                disabled
-              />
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
-                  size="icon-xs"
-                  aria-label="Show/Hide API Key"
-                  onClick={() => setShow(!show)}
-                >
-                  {show ? <Eye /> : <EyeOff />}
-                </InputGroupButton>
-              </InputGroupAddon>
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton size="icon-xs" asChild>
-                  <CopyButton text={apiKey || ""} />
-                </InputGroupButton>
-              </InputGroupAddon>
-            </InputGroup>
+            <SecretField
+              value={apiKey || ""}
+              name="api-key"
+              placeholder="API Key"
+            />
           </Field>
         </div>
         <DialogFooter>

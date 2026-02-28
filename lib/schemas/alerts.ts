@@ -7,6 +7,7 @@ import {
   number,
   object,
   type output,
+  preprocess,
   string,
   url,
   enum as zodEnum,
@@ -14,8 +15,12 @@ import {
 } from "zod"
 
 // Enums
-export const alertTypeSchema = zodEnum(["daily_bot_cap", "token_balance", "calendar_connections"])
-export const alertOperatorSchema = zodEnum(["gte", "lte"])
+export const alertTypeSchema = zodEnum(["daily_bot_cap", "token_balance", "calendar_connections"], {
+  message: "Alert type is required"
+})
+export const alertOperatorSchema = zodEnum(["gte", "lte"], {
+  message: "Alert operator is required"
+})
 
 // Labels
 export const ALERT_TYPE_LABELS: Record<string, string> = {
@@ -37,9 +42,19 @@ export const createAlertRuleStep1Schema = object({
   value: number().int().min(0, "Value must be a non-negative integer")
 })
 
+// Preprocess semicolon-separated string into trimmed email array
+const emailRecipientsSchema = preprocess((value) => {
+  if (Array.isArray(value)) return value
+  if (typeof value !== "string" || value.trim() === "") return []
+  return value
+    .split(";")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+}, array(email("Invalid email address")).max(10, "Maximum 10 recipients"))
+
 // Form schemas — Step 2
 export const createAlertRuleStep2Schema = object({
-  emailRecipients: array(email("Invalid email")).max(10),
+  emailRecipients: emailRecipientsSchema,
   callbackUrl: url("Invalid URL").or(string().length(0)),
   callbackSecret: string().max(256),
   cooldownMinutes: number().int().min(1).max(1440)

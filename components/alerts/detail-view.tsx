@@ -7,7 +7,13 @@ import { AlertActions } from "@/components/alerts/table-actions"
 import { PageHeading } from "@/components/layout/page-heading"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from "@/components/ui/hover-card"
 import { NameValuePair } from "@/components/ui/name-value-pair"
+import { SecretField } from "@/components/ui/secret-field"
 import {
   ALERT_TYPE_LABELS,
   type AlertHistoryEntry,
@@ -70,18 +76,29 @@ export function AlertDetailView({ rule, history, nextCursor }: AlertDetailViewPr
         />
       </div>
 
-      <div className="grid mt-6 grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid mt-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <NameValuePair
           title="Email Recipients"
           value={
             channels?.email?.recipients && channels.email.recipients.length > 0 ? (
-              <div className="flex flex-wrap gap-1">
-                {channels.email.recipients.map((email) => (
-                  <Badge key={email} variant="secondary" className="text-xs">
-                    {email}
+              <HoverCard openDelay={0}>
+                <HoverCardTrigger asChild>
+                  <Badge variant="secondary" className="cursor-default">
+                    {channels.email.recipients.length}{" "}
+                    {channels.email.recipients.length === 1 ? "recipient" : "recipients"}
                   </Badge>
-                ))}
-              </div>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-64 p-1">
+                  {channels.email.recipients.map((recipient) => (
+                    <div
+                      key={recipient}
+                      className="text-xs text-foreground/80 bg-muted rounded-md p-2 my-1"
+                    >
+                      {recipient}
+                    </div>
+                  ))}
+                </HoverCardContent>
+              </HoverCard>
             ) : undefined
           }
         />
@@ -89,6 +106,18 @@ export function AlertDetailView({ rule, history, nextCursor }: AlertDetailViewPr
           title="Callback URL"
           value={channels?.callback?.url}
           copyText={channels?.callback?.url}
+        />
+        <NameValuePair
+          title="Callback Secret"
+          value={
+            channels?.callback?.secret ? (
+              <SecretField
+                value={channels.callback.secret}
+                name="callback-secret"
+                placeholder="Callback secret"
+              />
+            ) : undefined
+          }
         />
       </div>
 

@@ -119,7 +119,7 @@ export function EditAlertDialog({ rule, open, onOpenChange }: EditAlertDialogPro
           <DialogDescription>
             {step === 1
               ? "Update the metric and threshold for this alert."
-              : "Update how you want to be notified when this alert fires."}
+              : "Update how you want to be notified when this alert fires. At least one delivery channel (email or callback) is required."}
           </DialogDescription>
         </DialogHeader>
 
