@@ -53,7 +53,7 @@ export function EditAlertDialog({ rule, open, onOpenChange }: EditAlertDialogPro
     value: rule.value
   }
 
-  const step2Defaults: Partial<CreateAlertRuleStep2Data> = {
+  const step2Defaults = {
     emailRecipients: channels?.email?.recipients || [],
     callbackUrl: channels?.callback?.url || "",
     callbackSecret: channels?.callback?.secret || "",
@@ -70,8 +70,9 @@ export function EditAlertDialog({ rule, open, onOpenChange }: EditAlertDialogPro
     if (loading) return
 
     const deliveryChannels: Record<string, unknown> = {}
-    if (data.emailRecipients.length > 0) {
-      deliveryChannels.email = { recipients: data.emailRecipients }
+    const recipients = data.emailRecipients.map((r) => r.value).filter(Boolean)
+    if (recipients.length > 0) {
+      deliveryChannels.email = { recipients }
     }
     if (data.callbackUrl) {
       deliveryChannels.callback = {

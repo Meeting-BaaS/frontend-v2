@@ -7,7 +7,6 @@ import {
   number,
   object,
   type output,
-  preprocess,
   string,
   url,
   enum as zodEnum,
@@ -34,6 +33,8 @@ export const OPERATOR_LABELS: Record<string, string> = {
   lte: "<="
 }
 
+export const MAX_ALERT_EMAIL_RECIPIENTS = 10
+
 // Form schemas — Step 1
 export const createAlertRuleStep1Schema = object({
   name: string().trim().min(1, "Name is required").max(255, "Name is too long"),
@@ -42,19 +43,12 @@ export const createAlertRuleStep1Schema = object({
   value: number().int().min(0, "Value must be a non-negative integer")
 })
 
-// Preprocess semicolon-separated string into trimmed email array
-const emailRecipientsSchema = preprocess((value) => {
-  if (Array.isArray(value)) return value
-  if (typeof value !== "string" || value.trim() === "") return []
-  return value
-    .split(";")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0)
-}, array(email("Invalid email address")).max(10, "Maximum 10 recipients"))
-
 // Form schemas — Step 2
 export const createAlertRuleStep2Schema = object({
-  emailRecipients: emailRecipientsSchema,
+  emailRecipients: array(object({ value: email("Invalid email address") })).max(
+    MAX_ALERT_EMAIL_RECIPIENTS,
+    `Maximum ${MAX_ALERT_EMAIL_RECIPIENTS} recipients`
+  ),
   callbackUrl: url("Invalid URL").or(string().length(0)),
   callbackSecret: string().max(256),
   cooldownMinutes: number().int().min(1).max(1440)

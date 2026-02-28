@@ -50,8 +50,9 @@ export function CreateAlertDialog({ open, onOpenChange }: CreateAlertDialogProps
     if (loading || !step1Data) return
 
     const deliveryChannels: Record<string, unknown> = {}
-    if (data.emailRecipients.length > 0) {
-      deliveryChannels.email = { recipients: data.emailRecipients }
+    const recipients = data.emailRecipients.map((r) => r.value).filter(Boolean)
+    if (recipients.length > 0) {
+      deliveryChannels.email = { recipients }
     }
     if (data.callbackUrl) {
       deliveryChannels.callback = {
