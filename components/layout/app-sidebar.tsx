@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Bell,
   Bot,
   Calendar,
   CalendarClock,
@@ -78,6 +79,12 @@ const allItems = [
     url: "/settings",
     icon: Settings,
     featureKey: null
+  },
+  {
+    title: "Alerts",
+    url: "/alerts",
+    icon: Bell,
+    featureKey: "stripe"
   }
 ]
 
@@ -117,6 +124,7 @@ export function AppSidebar({ sessionResponse }: AppSidebarProps) {
       if (!item.featureKey) return true
       if (item.featureKey === "svix") return features.svix
       if (item.featureKey === "calendar") return features.calendar
+      if (item.featureKey === "stripe") return features.stripe
       return true
     })
   }, [configuration?.features])

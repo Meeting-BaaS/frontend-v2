@@ -47,6 +47,19 @@ export const ENABLE_WEBHOOK_ENDPOINT = `${WEBHOOKS_BASE_PATH}/enable`;
 export const ROTATE_WEBHOOK_ENDPOINT_SECRET = `${WEBHOOKS_BASE_PATH}/rotate-secret`;
 export const RESEND_WEBHOOK_MESSAGE = `${WEBHOOKS_BASE_PATH}/resend`;
 
+// Alerts routes
+export const ALERTS_BASE_PATH = `${BASE_PATH}/alerts`;
+export const LIST_ALERT_RULES = `${ALERTS_BASE_PATH}/list`;
+export const CREATE_ALERT_RULE = `${ALERTS_BASE_PATH}/create`;
+export const GET_ALERT_RULE_DETAILS = `${ALERTS_BASE_PATH}/get-details`;
+export const UPDATE_ALERT_RULE = `${ALERTS_BASE_PATH}/update`;
+export const DELETE_ALERT_RULE = (ruleId: string) =>
+  `${ALERTS_BASE_PATH}/delete/${ruleId}`;
+export const ENABLE_ALERT_RULE = `${ALERTS_BASE_PATH}/enable`;
+export const DISABLE_ALERT_RULE = `${ALERTS_BASE_PATH}/disable`;
+export const TEST_ALERT_RULE = `${ALERTS_BASE_PATH}/test`;
+export const LIST_ALERT_HISTORY = `${ALERTS_BASE_PATH}/history`;
+
 // Bots routes (BFF - reuses public API handlers with snake_case)
 export const BFF_BOTS_BASE_PATH = `${BFF_BASE_PATH}/bots`;
 export const LIST_BOTS = `${BFF_BOTS_BASE_PATH}`;
