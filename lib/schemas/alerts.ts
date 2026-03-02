@@ -160,7 +160,7 @@ export const listAlertRulesResponseSchema = object({
 export const createAlertRuleResponseSchema = object({
   success: boolean(),
   data: object({
-    ruleId: string()
+    ruleId: uuid() // UUID of the created alert rule
   })
 })
 

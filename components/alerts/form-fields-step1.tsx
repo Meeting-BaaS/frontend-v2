@@ -43,7 +43,12 @@ interface FormFieldsStep1Props {
   onNext: (data: CreateAlertRuleStep1Data) => void
 }
 
-export function FormFieldsStep1({ loading, defaultValues, allowedAlertTypes, onNext }: FormFieldsStep1Props) {
+export function FormFieldsStep1({
+  loading,
+  defaultValues,
+  allowedAlertTypes,
+  onNext
+}: FormFieldsStep1Props) {
   const form = useForm<CreateAlertRuleStep1Data>({
     resolver: zodResolver(createAlertRuleStep1Schema),
     defaultValues: {
@@ -56,15 +61,19 @@ export function FormFieldsStep1({ loading, defaultValues, allowedAlertTypes, onN
   })
 
   const watchedAlertType = form.watch("alertType")
-  const isOperational = watchedAlertType ? getAlertCategory(watchedAlertType) === "operational" : false
+  const isOperational = watchedAlertType
+    ? getAlertCategory(watchedAlertType) === "operational"
+    : false
 
   // When switching to an operational type, lock operator to gte and enforce min value
   useEffect(() => {
     if (isOperational) {
-      form.setValue("operator", "gte")
+      // Trigger validation on operator to clear any existing errors
+      // This is necessary because the operator is locked to gte for operational alerts
+      form.setValue("operator", "gte", { shouldValidate: true })
       const currentValue = form.getValues("value")
       if (currentValue < 1) {
-        form.setValue("value", 1)
+        form.setValue("value", 1, { shouldValidate: true })
       }
     }
   }, [isOperational, form])
