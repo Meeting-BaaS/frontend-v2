@@ -25,10 +25,11 @@ import {
 interface FormFieldsStep1Props {
   loading: boolean
   defaultValues?: Partial<CreateAlertRuleStep1Data>
+  allowedAlertTypes: string[]
   onNext: (data: CreateAlertRuleStep1Data) => void
 }
 
-export function FormFieldsStep1({ loading, defaultValues, onNext }: FormFieldsStep1Props) {
+export function FormFieldsStep1({ loading, defaultValues, allowedAlertTypes, onNext }: FormFieldsStep1Props) {
   const form = useForm<CreateAlertRuleStep1Data>({
     resolver: zodResolver(createAlertRuleStep1Schema),
     defaultValues: {
@@ -81,11 +82,13 @@ export function FormFieldsStep1({ loading, defaultValues, onNext }: FormFieldsSt
                         <SelectValue placeholder="Select metric..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(ALERT_TYPE_LABELS).map(([key, label]) => (
-                          <SelectItem key={key} value={key}>
-                            {label}
-                          </SelectItem>
-                        ))}
+                        {Object.entries(ALERT_TYPE_LABELS)
+                          .filter(([key]) => allowedAlertTypes.includes(key))
+                          .map(([key, label]) => (
+                            <SelectItem key={key} value={key}>
+                              {label}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </FormControl>

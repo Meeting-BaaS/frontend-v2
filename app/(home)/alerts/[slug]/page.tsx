@@ -4,7 +4,6 @@ import { notFound, redirect } from "next/navigation"
 import { AlertDetailView } from "@/components/alerts/detail-view"
 import { axiosGetInstance } from "@/lib/api-client"
 import { GET_ALERT_RULE_DETAILS, GET_SESSION, LIST_ALERT_HISTORY } from "@/lib/api-routes"
-import { getConfiguration } from "@/lib/get-configuration"
 import { createPageMetadata } from "@/lib/metadata"
 import {
   type GetAlertRuleDetailsResponse,
@@ -44,11 +43,6 @@ export default async function AlertDetailsPage({
     return redirect(`/sign-in?${redirectSearchParams.toString()}`)
   }
 
-  const configuration = await getConfiguration()
-  if (!configuration?.data?.features?.stripe) {
-    return redirect("/")
-  }
-
   const { success, data: validatedParams } = slugRequestParamsSchema.safeParse(requestParams)
   if (!success) {
     return notFound()
@@ -80,7 +74,8 @@ export default async function AlertDetailsPage({
     <AlertDetailView
       rule={ruleDetails.data}
       history={alertHistory.data || []}
-      nextCursor={alertHistory.nextCursor}
+      cursor={alertHistory.cursor}
+      prevCursor={alertHistory.prev_cursor}
     />
   )
 }

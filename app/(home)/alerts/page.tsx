@@ -4,7 +4,6 @@ import { redirect } from "next/navigation"
 import { AlertsView } from "@/components/alerts/view"
 import { axiosGetInstance } from "@/lib/api-client"
 import { GET_SESSION, LIST_ALERT_RULES } from "@/lib/api-routes"
-import { getConfiguration } from "@/lib/get-configuration"
 import { createPageMetadata } from "@/lib/metadata"
 import {
   type ListAlertRulesResponse,
@@ -28,11 +27,6 @@ export default async function AlertsPage() {
   redirectSearchParams.set("redirectTo", "/alerts")
   if (!session) {
     return redirect(`/sign-in?${redirectSearchParams.toString()}`)
-  }
-
-  const configuration = await getConfiguration()
-  if (!configuration?.data?.features?.stripe) {
-    return redirect("/")
   }
 
   const alertRules = await axiosGetInstance<ListAlertRulesResponse>(

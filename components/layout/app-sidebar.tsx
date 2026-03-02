@@ -29,6 +29,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar
@@ -84,7 +85,8 @@ const allItems = [
     title: "Alerts",
     url: "/alerts",
     icon: Bell,
-    featureKey: "stripe"
+    featureKey: null,
+    badge: "New"
   }
 ]
 
@@ -124,7 +126,6 @@ export function AppSidebar({ sessionResponse }: AppSidebarProps) {
       if (!item.featureKey) return true
       if (item.featureKey === "svix") return features.svix
       if (item.featureKey === "calendar") return features.calendar
-      if (item.featureKey === "stripe") return features.stripe
       return true
     })
   }, [configuration?.features])
@@ -153,6 +154,7 @@ export function AppSidebar({ sessionResponse }: AppSidebarProps) {
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
+                  {item.badge && <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

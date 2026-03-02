@@ -19,12 +19,13 @@ import type { AlertHistoryEntry } from "@/lib/schemas/alerts"
 interface AlertHistoryTableProps {
   ruleUuid: string
   history: AlertHistoryEntry[]
-  nextCursor: string | null
+  cursor: string | null
+  prevCursor: string | null
 }
 
-export function AlertHistoryTable({ ruleUuid, history, nextCursor }: AlertHistoryTableProps) {
+export function AlertHistoryTable({ ruleUuid, history, cursor, prevCursor }: AlertHistoryTableProps) {
   const searchParams = useSearchParams()
-  const cursor = searchParams.get("cursor") ?? null
+  const currentCursor = searchParams.get("cursor") ?? null
 
   const { table } = useDataTable({
     data: history || [],
@@ -34,21 +35,14 @@ export function AlertHistoryTable({ ruleUuid, history, nextCursor }: AlertHistor
   })
 
   const prevCursorLink = useMemo(() => {
-    if (cursor) {
-      // If we have a cursor, going "back" means going to the base URL (first page)
-      return `/alerts/${ruleUuid}`
-    }
-    return null
-  }, [cursor, ruleUuid])
+    if (!currentCursor || !prevCursor) return null
+    return `/alerts/${ruleUuid}?cursor=${encodeURIComponent(prevCursor)}`
+  }, [currentCursor, prevCursor, ruleUuid])
 
   const nextCursorLink = useMemo(() => {
-    if (nextCursor) {
-      const newSearchParams = new URLSearchParams(searchParams.toString())
-      newSearchParams.set("cursor", nextCursor)
-      return `/alerts/${ruleUuid}?${newSearchParams.toString()}`
-    }
-    return null
-  }, [nextCursor, ruleUuid, searchParams])
+    if (!cursor) return null
+    return `/alerts/${ruleUuid}?cursor=${encodeURIComponent(cursor)}`
+  }, [cursor, ruleUuid])
 
   if (!history || history.length === 0) {
     return (

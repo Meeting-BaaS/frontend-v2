@@ -28,6 +28,9 @@ export const ALERT_TYPE_LABELS: Record<string, string> = {
   calendar_connections: "Calendar Connections"
 }
 
+// Alert types gated by feature flags
+export const STRIPE_ALERT_TYPES: string[] = ["daily_bot_cap", "token_balance", "calendar_connections"]
+
 export const OPERATOR_LABELS: Record<string, string> = {
   gte: ">=",
   lte: "<="
@@ -86,6 +89,12 @@ export const createAlertRuleResponseSchema = object({
   })
 })
 
+export const deliveryStatusEntrySchema = object({
+  channel: string(),
+  success: boolean(),
+  error: string().optional()
+})
+
 export const alertHistoryEntrySchema = object({
   id: number(),
   teamId: number(),
@@ -97,7 +106,7 @@ export const alertHistoryEntrySchema = object({
   thresholdValue: number(),
   message: nullable(string()),
   suppressedCount: number(),
-  deliveryStatus: zodUnknown(),
+  deliveryStatus: array(deliveryStatusEntrySchema).nullable(),
   triggeredAt: iso.datetime(),
   createdAt: iso.datetime()
 })
@@ -105,7 +114,8 @@ export const alertHistoryEntrySchema = object({
 export const listAlertHistoryResponseSchema = object({
   success: boolean(),
   data: array(alertHistoryEntrySchema).nullable(),
-  nextCursor: nullable(string())
+  cursor: nullable(string()),
+  prev_cursor: nullable(string())
 })
 
 export const getAlertRuleDetailsResponseSchema = object({
@@ -116,13 +126,7 @@ export const getAlertRuleDetailsResponseSchema = object({
 export const testAlertRuleResponseSchema = object({
   success: boolean(),
   data: object({
-    deliveryResults: array(
-      object({
-        channel: string(),
-        success: boolean(),
-        error: string().optional()
-      })
-    )
+    deliveryResults: array(deliveryStatusEntrySchema)
   })
 })
 
@@ -131,6 +135,7 @@ export type AlertType = output<typeof alertTypeSchema>
 export type AlertOperator = output<typeof alertOperatorSchema>
 export type CreateAlertRuleStep1Data = output<typeof createAlertRuleStep1Schema>
 export type CreateAlertRuleStep2Data = output<typeof createAlertRuleStep2Schema>
+export type DeliveryStatusEntry = output<typeof deliveryStatusEntrySchema>
 export type AlertRule = output<typeof alertRuleSchema>
 export type ListAlertRulesResponse = output<typeof listAlertRulesResponseSchema>
 export type CreateAlertRuleResponse = output<typeof createAlertRuleResponseSchema>

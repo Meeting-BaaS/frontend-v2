@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
+import { useConfiguration } from "@/hooks/use-configuration"
 import { axiosPostInstance } from "@/lib/api-client"
 import { CREATE_ALERT_RULE } from "@/lib/api-routes"
 import { genericError } from "@/lib/errors"
@@ -20,7 +21,8 @@ import {
   type CreateAlertRuleResponse,
   type CreateAlertRuleStep1Data,
   type CreateAlertRuleStep2Data,
-  createAlertRuleResponseSchema
+  createAlertRuleResponseSchema,
+  STRIPE_ALERT_TYPES
 } from "@/lib/schemas/alerts"
 
 interface CreateAlertDialogProps {
@@ -37,6 +39,8 @@ const stepAnimation = {
 
 export function CreateAlertDialog({ open, onOpenChange }: CreateAlertDialogProps) {
   const router = useRouter()
+  const { configuration } = useConfiguration()
+  const allowedAlertTypes = [...(configuration?.features?.stripe ? STRIPE_ALERT_TYPES : [])]
   const [step, setStep] = useState<1 | 2>(1)
   const [step1Data, setStep1Data] = useState<CreateAlertRuleStep1Data | null>(null)
   const [loading, setLoading] = useState(false)
@@ -117,6 +121,7 @@ export function CreateAlertDialog({ open, onOpenChange }: CreateAlertDialogProps
               <FormFieldsStep1
                 loading={loading}
                 defaultValues={step1Data ?? undefined}
+                allowedAlertTypes={allowedAlertTypes}
                 onNext={handleStep1Next}
               />
             </motion.div>

@@ -53,7 +53,7 @@ export const alertHistoryColumns: ColumnDef<AlertHistoryEntry>[] = [
       return count > 0 ? (
         <Badge variant="secondary">{count}</Badge>
       ) : (
-        <span className="text-muted-foreground">0</span>
+        <span className="text-muted-foreground text-sm">-</span>
       )
     }
   },
@@ -65,10 +65,7 @@ export const alertHistoryColumns: ColumnDef<AlertHistoryEntry>[] = [
       className: columnWidths.status
     },
     cell: ({ row }) => {
-      const deliveryStatus = row.original.deliveryStatus as
-        | Array<{ channel: string; success: boolean }>
-        | null
-
+      const { deliveryStatus } = row.original
       const allSuccess = deliveryStatus?.every((d) => d.success) ?? false
 
       return allSuccess ? (

@@ -19,10 +19,11 @@ import {
 interface AlertDetailViewProps {
   rule: AlertRule
   history: AlertHistoryEntry[]
-  nextCursor: string | null
+  cursor: string | null
+  prevCursor: string | null
 }
 
-export function AlertDetailView({ rule, history, nextCursor }: AlertDetailViewProps) {
+export function AlertDetailView({ rule, history, cursor, prevCursor }: AlertDetailViewProps) {
   const channels = rule.deliveryChannels as {
     email?: { recipients: string[] }
     callback?: { url: string; secret?: string }
@@ -116,7 +117,7 @@ export function AlertDetailView({ rule, history, nextCursor }: AlertDetailViewPr
 
       <div className="mt-8">
         <h3 className="text-lg font-semibold mb-4">Alert History</h3>
-        <AlertHistoryTable ruleUuid={rule.uuid} history={history} nextCursor={nextCursor} />
+        <AlertHistoryTable ruleUuid={rule.uuid} history={history} cursor={cursor} prevCursor={prevCursor} />
       </div>
     </>
   )
