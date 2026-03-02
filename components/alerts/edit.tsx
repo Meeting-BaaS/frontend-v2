@@ -17,7 +17,14 @@ import { useConfiguration } from "@/hooks/use-configuration"
 import { axiosPutInstance } from "@/lib/api-client"
 import { UPDATE_ALERT_RULE } from "@/lib/api-routes"
 import { genericError } from "@/lib/errors"
-import { type AlertRule, type CreateAlertRuleStep1Data, type CreateAlertRuleStep2Data, STRIPE_ALERT_TYPES } from "@/lib/schemas/alerts"
+import {
+  type AlertRule,
+  type CreateAlertRuleStep1Data,
+  type CreateAlertRuleStep2Data,
+  getAlertCategory,
+  OPERATIONAL_ALERT_TYPES,
+  STRIPE_ALERT_TYPES
+} from "@/lib/schemas/alerts"
 
 interface EditAlertDialogProps {
   rule: AlertRule
@@ -36,7 +43,8 @@ export function EditAlertDialog({ rule, open, onOpenChange }: EditAlertDialogPro
   const router = useRouter()
   const { configuration } = useConfiguration()
   const allowedAlertTypes = [
-    ...(configuration?.features?.stripe ? STRIPE_ALERT_TYPES : [])
+    ...(configuration?.features?.stripe ? STRIPE_ALERT_TYPES : []),
+    ...OPERATIONAL_ALERT_TYPES
   ]
   const [step, setStep] = useState<1 | 2>(1)
   const [step1Data, setStep1Data] = useState<CreateAlertRuleStep1Data | null>(null)
@@ -142,6 +150,7 @@ export function EditAlertDialog({ rule, open, onOpenChange }: EditAlertDialogPro
               <FormFieldsStep2
                 loading={loading}
                 defaultValues={step2Defaults}
+                isOperational={getAlertCategory((step1Data ?? step1Defaults).alertType ?? "") === "operational"}
                 submitLabel="Save"
                 loadingLabel="Saving"
                 onBack={() => setStep(1)}

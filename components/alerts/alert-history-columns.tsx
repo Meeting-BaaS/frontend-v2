@@ -28,7 +28,7 @@ export const alertHistoryColumns: ColumnDef<AlertHistoryEntry>[] = [
   {
     id: "currentValue",
     accessorKey: "currentValue",
-    header: "Current Value",
+    header: "Value",
     meta: {
       className: columnWidths.currentValue
     }

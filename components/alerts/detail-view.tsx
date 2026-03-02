@@ -13,6 +13,7 @@ import {
   ALERT_TYPE_LABELS,
   type AlertHistoryEntry,
   type AlertRule,
+  getAlertCategory,
   OPERATOR_LABELS
 } from "@/lib/schemas/alerts"
 
@@ -60,6 +61,14 @@ export function AlertDetailView({ rule, history, cursor, prevCursor }: AlertDeta
           }
         />
         <NameValuePair
+          title="Category"
+          value={
+            <Badge variant="outline">
+              {getAlertCategory(rule.alertType) === "operational" ? "Operational" : "Threshold"}
+            </Badge>
+          }
+        />
+        <NameValuePair
           title="Metric"
           value={
             <Badge variant="secondary">{ALERT_TYPE_LABELS[rule.alertType] || rule.alertType}</Badge>
@@ -67,7 +76,11 @@ export function AlertDetailView({ rule, history, cursor, prevCursor }: AlertDeta
         />
         <NameValuePair
           title="Condition"
-          value={`${OPERATOR_LABELS[rule.operator] || rule.operator} ${rule.value}`}
+          value={
+            getAlertCategory(rule.alertType) === "operational"
+              ? `>= ${rule.value} occurrence(s)`
+              : `${OPERATOR_LABELS[rule.operator] || rule.operator} ${rule.value}`
+          }
         />
         <NameValuePair title="Cooldown" value={`${rule.cooldownMinutes} minutes`} />
         <NameValuePair
@@ -97,7 +110,6 @@ export function AlertDetailView({ rule, history, cursor, prevCursor }: AlertDeta
         />
         <NameValuePair
           title="Callback URL"
-          containerClassName="col-span-1 md:col-span-2"
           value={channels?.callback?.url}
           copyText={channels?.callback?.url}
         />
@@ -117,7 +129,12 @@ export function AlertDetailView({ rule, history, cursor, prevCursor }: AlertDeta
 
       <div className="mt-8">
         <h3 className="text-lg font-semibold mb-4">Alert History</h3>
-        <AlertHistoryTable ruleUuid={rule.uuid} history={history} cursor={cursor} prevCursor={prevCursor} />
+        <AlertHistoryTable
+          ruleUuid={rule.uuid}
+          history={history}
+          cursor={cursor}
+          prevCursor={prevCursor}
+        />
       </div>
     </>
   )

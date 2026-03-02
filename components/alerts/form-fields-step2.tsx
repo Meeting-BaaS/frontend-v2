@@ -32,6 +32,7 @@ interface FormFieldsStep2Props {
     callbackSecret?: string
     cooldownMinutes?: number
   }
+  isOperational?: boolean
   submitLabel: string
   loadingLabel: string
   onBack: () => void
@@ -41,6 +42,7 @@ interface FormFieldsStep2Props {
 export function FormFieldsStep2({
   loading,
   defaultValues,
+  isOperational,
   submitLabel,
   loadingLabel,
   onBack,
@@ -178,7 +180,7 @@ export function FormFieldsStep2({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid} className="col-span-2">
                   <FieldLabel htmlFor={field.name}>
-                    Cooldown{" "}
+                    {isOperational ? "Cooldown / Accumulation Window" : "Cooldown"}{" "}
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -186,8 +188,9 @@ export function FormFieldsStep2({
                         </TooltipTrigger>
                         <TooltipContent>
                           <p className="text-sm max-w-xs">
-                            After an alert fires, it will be suppressed for this duration.
-                            Suppressed alerts are counted and included in the next notification.
+                            {isOperational
+                              ? "Events are counted within this window. After the alert fires, it enters cooldown - further events are suppressed and counted for the next notification."
+                              : "After an alert fires, it will be suppressed for this duration. Suppressed alerts are counted and included in the next notification."}
                           </p>
                         </TooltipContent>
                       </Tooltip>

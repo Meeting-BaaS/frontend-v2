@@ -14,9 +14,22 @@ import {
 } from "zod"
 
 // Enums
-export const alertTypeSchema = zodEnum(["daily_bot_cap", "token_balance", "calendar_connections"], {
-  message: "Alert type is required"
-})
+export const alertTypeSchema = zodEnum(
+  [
+    "daily_bot_cap",
+    "token_balance",
+    "calendar_connections",
+    "bot_join_failed",
+    "recording_failed",
+    "zoom_credential_error",
+    "bot_crash",
+    "transcription_failed",
+    "calendar_sync_error"
+  ],
+  {
+    message: "Alert type is required"
+  }
+)
 export const alertOperatorSchema = zodEnum(["gte", "lte"], {
   message: "Alert operator is required"
 })
@@ -25,11 +38,34 @@ export const alertOperatorSchema = zodEnum(["gte", "lte"], {
 export const ALERT_TYPE_LABELS: Record<string, string> = {
   daily_bot_cap: "Daily Bot Cap",
   token_balance: "Token Balance",
-  calendar_connections: "Calendar Connections"
+  calendar_connections: "Calendar Connections",
+  bot_join_failed: "Bot Join Failed",
+  recording_failed: "Recording Failed",
+  zoom_credential_error: "Zoom Credential Error",
+  bot_crash: "Bot Crash",
+  transcription_failed: "Transcription Failed",
+  calendar_sync_error: "Calendar Sync Error"
 }
 
 // Alert types gated by feature flags
 export const STRIPE_ALERT_TYPES: string[] = ["daily_bot_cap", "token_balance", "calendar_connections"]
+
+// Operational alert types — always available
+export const OPERATIONAL_ALERT_TYPES: string[] = [
+  "bot_join_failed",
+  "recording_failed",
+  "zoom_credential_error",
+  "bot_crash",
+  "transcription_failed",
+  "calendar_sync_error"
+]
+
+/**
+ * Get the alert category for a given alert type
+ */
+export function getAlertCategory(alertType: string): "threshold" | "operational" {
+  return OPERATIONAL_ALERT_TYPES.includes(alertType) ? "operational" : "threshold"
+}
 
 export const OPERATOR_LABELS: Record<string, string> = {
   gte: ">=",
@@ -44,6 +80,23 @@ export const createAlertRuleStep1Schema = object({
   alertType: alertTypeSchema,
   operator: alertOperatorSchema,
   value: number().int().min(0, "Value must be a non-negative integer")
+}).superRefine((data, ctx) => {
+  if (OPERATIONAL_ALERT_TYPES.includes(data.alertType)) {
+    if (data.operator !== "gte") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["operator"],
+        message: "Operational alerts only support the >= operator"
+      })
+    }
+    if (data.value < 1) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["value"],
+        message: "Operational alert value must be at least 1"
+      })
+    }
+  }
 })
 
 // Form schemas — Step 2

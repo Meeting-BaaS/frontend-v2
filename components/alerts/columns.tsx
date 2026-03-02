@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { GradientIcon } from "@/components/ui/gradient-icon"
 import { formatRelativeDate } from "@/lib/date-helpers"
-import { ALERT_TYPE_LABELS, OPERATOR_LABELS, type AlertRule } from "@/lib/schemas/alerts"
+import { ALERT_TYPE_LABELS, type AlertRule, getAlertCategory, OPERATOR_LABELS } from "@/lib/schemas/alerts"
 
 export const columnWidths = {
   name: "min-w-[200px] max-w-[350px] w-[30%]",
@@ -50,9 +50,14 @@ export const columns: ColumnDef<AlertRule>[] = [
     header: "Metric",
     meta: { className: columnWidths.type },
     cell: ({ row }) => (
-      <Badge variant="secondary">
-        {ALERT_TYPE_LABELS[row.original.alertType] || row.original.alertType}
-      </Badge>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-sm">
+          {ALERT_TYPE_LABELS[row.original.alertType] || row.original.alertType}
+        </span>
+        <span className="text-[0.65rem] text-muted-foreground capitalize">
+          {getAlertCategory(row.original.alertType)}
+        </span>
+      </div>
     )
   },
   {

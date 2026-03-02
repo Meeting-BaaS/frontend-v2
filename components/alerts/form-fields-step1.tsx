@@ -2,16 +2,27 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowRight } from "lucide-react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { DialogClose, DialogFooter } from "@/components/ui/dialog"
-import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel
+} from "@/components/ui/field"
 import { Form, FormControl, FormField } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
@@ -19,7 +30,10 @@ import {
   ALERT_TYPE_LABELS,
   type CreateAlertRuleStep1Data,
   createAlertRuleStep1Schema,
-  OPERATOR_LABELS
+  getAlertCategory,
+  OPERATIONAL_ALERT_TYPES,
+  OPERATOR_LABELS,
+  STRIPE_ALERT_TYPES
 } from "@/lib/schemas/alerts"
 
 interface FormFieldsStep1Props {
@@ -40,6 +54,23 @@ export function FormFieldsStep1({ loading, defaultValues, allowedAlertTypes, onN
       ...defaultValues
     }
   })
+
+  const watchedAlertType = form.watch("alertType")
+  const isOperational = watchedAlertType ? getAlertCategory(watchedAlertType) === "operational" : false
+
+  // When switching to an operational type, lock operator to gte and enforce min value
+  useEffect(() => {
+    if (isOperational) {
+      form.setValue("operator", "gte")
+      const currentValue = form.getValues("value")
+      if (currentValue < 1) {
+        form.setValue("value", 1)
+      }
+    }
+  }, [isOperational, form])
+
+  const thresholdTypes = STRIPE_ALERT_TYPES.filter((t) => allowedAlertTypes.includes(t))
+  const operationalTypes = OPERATIONAL_ALERT_TYPES.filter((t) => allowedAlertTypes.includes(t))
 
   return (
     <Form {...form}>
@@ -82,13 +113,29 @@ export function FormFieldsStep1({ loading, defaultValues, allowedAlertTypes, onN
                         <SelectValue placeholder="Select metric..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(ALERT_TYPE_LABELS)
-                          .filter(([key]) => allowedAlertTypes.includes(key))
-                          .map(([key, label]) => (
-                            <SelectItem key={key} value={key}>
-                              {label}
-                            </SelectItem>
-                          ))}
+                        {thresholdTypes.length > 0 && (
+                          <SelectGroup>
+                            <SelectLabel>Threshold</SelectLabel>
+                            {thresholdTypes.map((key) => (
+                              <SelectItem key={key} value={key}>
+                                {ALERT_TYPE_LABELS[key]}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                        {thresholdTypes.length > 0 && operationalTypes.length > 0 && (
+                          <SelectSeparator />
+                        )}
+                        {operationalTypes.length > 0 && (
+                          <SelectGroup>
+                            <SelectLabel>Operational</SelectLabel>
+                            {operationalTypes.map((key) => (
+                              <SelectItem key={key} value={key}>
+                                {ALERT_TYPE_LABELS[key]}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -106,7 +153,11 @@ export function FormFieldsStep1({ loading, defaultValues, allowedAlertTypes, onN
                 <FieldLabel htmlFor={field.name}>Operator</FieldLabel>
                 <FieldContent>
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange} disabled={loading}>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={loading || isOperational}
+                    >
                       <SelectTrigger className="w-full" id={field.name}>
                         <SelectValue placeholder="Select operator..." />
                       </SelectTrigger>
@@ -131,20 +182,27 @@ export function FormFieldsStep1({ loading, defaultValues, allowedAlertTypes, onN
             name="value"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="col-span-2">
-                <FieldLabel htmlFor={field.name}>Threshold Value</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {isOperational ? "Occurrence Threshold" : "Threshold Value"}
+                </FieldLabel>
                 <FieldContent>
                   <FormControl>
                     <Input
                       {...field}
                       id={field.name}
                       type="number"
-                      min={0}
+                      min={isOperational ? 1 : 0}
                       aria-invalid={fieldState.invalid}
-                      placeholder="0"
+                      placeholder={isOperational ? "1" : "0"}
                       disabled={loading}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
+                  {isOperational && (
+                    <FieldDescription>
+                      Alert when this event occurs &gt;= N times within the cooldown window.
+                    </FieldDescription>
+                  )}
                   <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                 </FieldContent>
               </Field>

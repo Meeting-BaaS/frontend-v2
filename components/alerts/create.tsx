@@ -22,6 +22,8 @@ import {
   type CreateAlertRuleStep1Data,
   type CreateAlertRuleStep2Data,
   createAlertRuleResponseSchema,
+  getAlertCategory,
+  OPERATIONAL_ALERT_TYPES,
   STRIPE_ALERT_TYPES
 } from "@/lib/schemas/alerts"
 
@@ -40,7 +42,10 @@ const stepAnimation = {
 export function CreateAlertDialog({ open, onOpenChange }: CreateAlertDialogProps) {
   const router = useRouter()
   const { configuration } = useConfiguration()
-  const allowedAlertTypes = [...(configuration?.features?.stripe ? STRIPE_ALERT_TYPES : [])]
+  const allowedAlertTypes = [
+    ...(configuration?.features?.stripe ? STRIPE_ALERT_TYPES : []),
+    ...OPERATIONAL_ALERT_TYPES
+  ]
   const [step, setStep] = useState<1 | 2>(1)
   const [step1Data, setStep1Data] = useState<CreateAlertRuleStep1Data | null>(null)
   const [loading, setLoading] = useState(false)
@@ -131,6 +136,7 @@ export function CreateAlertDialog({ open, onOpenChange }: CreateAlertDialogProps
             <motion.div key="step2" {...stepAnimation}>
               <FormFieldsStep2
                 loading={loading}
+                isOperational={step1Data ? getAlertCategory(step1Data.alertType) === "operational" : false}
                 submitLabel="Create"
                 loadingLabel="Creating"
                 onBack={() => setStep(1)}
