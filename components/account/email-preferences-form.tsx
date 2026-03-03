@@ -26,6 +26,7 @@ import { updateEmailPreferencesResponseSchema } from "@/lib/schemas/account";
 const emailPreferencesFormSchema = object({
   apiChanges: boolean(),
   productUpdates: boolean(),
+  growth: boolean(),
 });
 
 type EmailPreferencesFormData = output<typeof emailPreferencesFormSchema>;
@@ -39,7 +40,7 @@ export function EmailPreferencesForm({
 }: EmailPreferencesFormProps) {
   // Initialize form with default values for both email types
   const getDefaultValue = (
-    emailType: "apiChanges" | "productUpdates",
+    emailType: "apiChanges" | "productUpdates" | "growth",
   ): boolean => {
     const pref = initialPreferences.find((p) => p.emailType === emailType);
     return pref?.subscribed ?? false; // Default to unsubscribed if not found
@@ -50,6 +51,7 @@ export function EmailPreferencesForm({
     defaultValues: {
       apiChanges: getDefaultValue("apiChanges"),
       productUpdates: getDefaultValue("productUpdates"),
+      growth: getDefaultValue("growth"),
     },
   });
 
@@ -75,6 +77,10 @@ export function EmailPreferencesForm({
           {
             emailType: "productUpdates" as const,
             subscribed: data.productUpdates,
+          },
+          {
+            emailType: "growth" as const,
+            subscribed: data.growth,
           },
         ],
       };
@@ -161,6 +167,38 @@ export function EmailPreferencesForm({
                   </FieldContent>
                   <Switch
                     id="email-pref-product-updates"
+                    name={field.name}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isUpdating}
+                    aria-invalid={fieldState.invalid}
+                  />
+                </Field>
+              )}
+            />
+
+            <Controller
+              name="growth"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field
+                  orientation="horizontal"
+                  data-invalid={fieldState.invalid}
+                >
+                  <FieldContent>
+                    <FieldLabel htmlFor="email-pref-growth">
+                      Product Tips & Guides
+                    </FieldLabel>
+                    <FieldDescription>
+                      Onboarding help, feature suggestions, and tips to get the
+                      most out of Meeting BaaS.
+                    </FieldDescription>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </FieldContent>
+                  <Switch
+                    id="email-pref-growth"
                     name={field.name}
                     checked={field.value}
                     onCheckedChange={field.onChange}

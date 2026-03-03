@@ -133,6 +133,9 @@ export const LIST_USER_INVITATIONS = `${ACCOUNT_BASE_PATH}/list-invitations`;
 export const GET_EMAIL_PREFERENCES = `${ACCOUNT_BASE_PATH}/email-preferences`;
 export const UPDATE_EMAIL_PREFERENCES = `${ACCOUNT_BASE_PATH}/email-preferences`;
 
+// Growth routes (public, no auth)
+export const GROWTH_UNSUBSCRIBE = "/growth/unsubscribe";
+
 // Support Center
 export const SUPPORT_BASE_PATH = `${BASE_PATH}/support`;
 export const LIST_SUPPORT_TICKETS = `${SUPPORT_BASE_PATH}/list`;

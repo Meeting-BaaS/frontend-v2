@@ -7,10 +7,10 @@ import {
   type output,
   string,
   enum as zodEnum,
-  instanceof as zodInstanceOf,
-} from "zod";
-import { invitationStatusEnum, roleEnum } from "@/lib/schemas/teams";
-import { passwordSchema } from "@/lib/validators/sign-up-schema";
+  instanceof as zodInstanceOf
+} from "zod"
+import { invitationStatusEnum, roleEnum } from "@/lib/schemas/teams"
+import { passwordSchema } from "@/lib/validators/sign-up-schema"
 
 /**
  * Allowed MIME types for user images
@@ -19,42 +19,42 @@ export const ALLOWED_USER_IMAGE_MIME_TYPES = [
   "image/png",
   "image/jpeg",
   "image/jpg",
-  "image/webp",
-] as const;
+  "image/webp"
+] as const
 
 /**
  * Maximum file size in bytes (2MB)
  */
-export const MAX_USER_IMAGE_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+export const MAX_USER_IMAGE_FILE_SIZE = 2 * 1024 * 1024 // 2MB
 
 /**
  * Schema for validating user image file uploads (standalone validation)
  * Validates mimetype and file size
  */
 export const userImageFileSchema = zodInstanceOf(File, {
-  error: "File is required",
+  error: "File is required"
 })
   .refine(
     (file) =>
       ALLOWED_USER_IMAGE_MIME_TYPES.includes(
-        file.type as (typeof ALLOWED_USER_IMAGE_MIME_TYPES)[number],
+        file.type as (typeof ALLOWED_USER_IMAGE_MIME_TYPES)[number]
       ),
     {
-      message: `File type must be one of: PNG, JPEG, JPG, or WebP`,
-    },
+      message: "File type must be one of: PNG, JPEG, JPG, or WebP"
+    }
   )
   .refine((file) => file.size > 0 && file.size <= MAX_USER_IMAGE_FILE_SIZE, {
-    message: `File size must be between 1 byte and ${MAX_USER_IMAGE_FILE_SIZE / (1024 * 1024)}MB`,
-  });
+    message: `File size must be between 1 byte and ${MAX_USER_IMAGE_FILE_SIZE / (1024 * 1024)}MB`
+  })
 
 /**
  * Schema for user image form
  */
 export const userImageFormSchema = object({
-  file: userImageFileSchema,
-});
+  file: userImageFileSchema
+})
 
-export type UserImageFormData = output<typeof userImageFormSchema>;
+export type UserImageFormData = output<typeof userImageFormSchema>
 
 /**
  * User image upload response schema
@@ -62,25 +62,20 @@ export type UserImageFormData = output<typeof userImageFormSchema>;
 export const userImageUploadResponseSchema = object({
   success: boolean(),
   data: object({
-    imageUrl: string(),
-  }),
-});
+    imageUrl: string()
+  })
+})
 
-export type UserImageUploadResponse = output<
-  typeof userImageUploadResponseSchema
->;
+export type UserImageUploadResponse = output<typeof userImageUploadResponseSchema>
 
 /**
  * Schema for updating user name
  */
 export const updateUserNameSchema = object({
-  name: string()
-    .trim()
-    .min(1, "Please enter name")
-    .max(255, "Name is too long"),
-});
+  name: string().trim().min(1, "Please enter name").max(255, "Name is too long")
+})
 
-export type UpdateUserName = output<typeof updateUserNameSchema>;
+export type UpdateUserName = output<typeof updateUserNameSchema>
 
 /**
  * Schema for change password form
@@ -89,13 +84,13 @@ export const changePasswordFormSchema = object({
   currentPassword: string().min(1, "Please enter current password"), // A simple string is enough here because it's already validated in the password schema
   newPassword: passwordSchema,
   confirmPassword: passwordSchema,
-  revokeOtherSessions: boolean(),
+  revokeOtherSessions: boolean()
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Passwords must match",
-  path: ["confirmPassword"],
-});
+  path: ["confirmPassword"]
+})
 
-export type ChangePasswordFormData = output<typeof changePasswordFormSchema>;
+export type ChangePasswordFormData = output<typeof changePasswordFormSchema>
 
 /**
  * Check credential account response schema
@@ -103,13 +98,11 @@ export type ChangePasswordFormData = output<typeof changePasswordFormSchema>;
 export const checkCredentialAccountResponseSchema = object({
   success: boolean(),
   data: object({
-    hasCredentialAccount: boolean(),
-  }),
-});
+    hasCredentialAccount: boolean()
+  })
+})
 
-export type CheckCredentialAccountResponse = output<
-  typeof checkCredentialAccountResponseSchema
->;
+export type CheckCredentialAccountResponse = output<typeof checkCredentialAccountResponseSchema>
 
 /**
  * Invitation schema
@@ -125,70 +118,62 @@ export const invitationSchema = object({
   expiresAt: iso.datetime(),
   teamName: string(),
   teamSlug: string(),
-  inviterEmail: email(),
-});
+  inviterEmail: email()
+})
 
-export type Invitation = output<typeof invitationSchema>;
+export type Invitation = output<typeof invitationSchema>
 
 /**
  * List user invitations response schema
  */
 export const listUserInvitationsResponseSchema = object({
   success: boolean(),
-  data: array(invitationSchema),
-});
+  data: array(invitationSchema)
+})
 
-export type ListUserInvitationsResponse = output<
-  typeof listUserInvitationsResponseSchema
->;
+export type ListUserInvitationsResponse = output<typeof listUserInvitationsResponseSchema>
 
 /**
  * Email type enum
  */
-export const emailTypeEnum = zodEnum(["apiChanges", "productUpdates"]);
-export type EmailType = output<typeof emailTypeEnum>;
+export const emailTypeEnum = zodEnum(["apiChanges", "productUpdates", "growth"])
+export type EmailType = output<typeof emailTypeEnum>
 
 /**
  * Email preference schema
  */
 export const emailPreferenceSchema = object({
   emailType: emailTypeEnum,
-  subscribed: boolean(),
-});
+  subscribed: boolean()
+})
 
-export type EmailPreference = output<typeof emailPreferenceSchema>;
+export type EmailPreference = output<typeof emailPreferenceSchema>
 
 /**
  * Get email preferences response schema
  */
 export const getEmailPreferencesResponseSchema = object({
   success: boolean(),
-  data: array(emailPreferenceSchema),
-});
+  data: array(emailPreferenceSchema)
+})
 
-export type GetEmailPreferencesResponse = output<
-  typeof getEmailPreferencesResponseSchema
->;
+export type GetEmailPreferencesResponse = output<typeof getEmailPreferencesResponseSchema>
 
 /**
  * Update email preferences request schema
  */
 export const updateEmailPreferencesSchema = object({
-  preferences: array(emailPreferenceSchema),
-});
+  preferences: array(emailPreferenceSchema)
+})
 
-export type UpdateEmailPreferences = output<
-  typeof updateEmailPreferencesSchema
->;
+export type UpdateEmailPreferences = output<typeof updateEmailPreferencesSchema>
 
 /**
  * Update email preferences response schema
  */
 export const updateEmailPreferencesResponseSchema = object({
   success: boolean(),
-  data: array(emailPreferenceSchema),
-});
+  data: array(emailPreferenceSchema)
+})
 
-export type UpdateEmailPreferencesResponse = output<
-  typeof updateEmailPreferencesResponseSchema
->;
+export type UpdateEmailPreferencesResponse = output<typeof updateEmailPreferencesResponseSchema>
