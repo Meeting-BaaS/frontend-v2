@@ -96,6 +96,7 @@ export function EmailPreferencesForm({
         return;
       }
 
+      form.reset(data);
       toast.success("Email preferences updated successfully");
     } catch (error) {
       console.error("Error updating email preferences", error);
