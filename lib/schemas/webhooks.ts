@@ -100,6 +100,8 @@ export const listWebhookMessagesResponseSchema = object({
   nextIterator: string().nullable(),
 });
 
+// Fix: extra field was previously missing, causing it to be stripped by Zod validation
+// when displaying webhook message payloads in the UI
 export const webhookMessageDetails = object({
   id: string(),
   eventType: string(),
@@ -107,6 +109,7 @@ export const webhookMessageDetails = object({
     object({
       data: record(string(), zodUnknown()),
       event: string(),
+      extra: record(string(), zodUnknown()).nullable(),
     }),
     object({
       redacted: literal(true),
