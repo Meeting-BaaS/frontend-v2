@@ -5,6 +5,7 @@ import {
   FileText,
   Headphones,
   Loader,
+  MessageSquare,
   Users,
   Video,
   XCircle,
@@ -29,7 +30,7 @@ interface AdminArtifactsProps {
 }
 
 const artifactTypeConfig: Record<
-  "video" | "audio" | "diarization" | "raw_transcription" | "transcription",
+  "video" | "audio" | "diarization" | "raw_transcription" | "transcription" | "chat_messages",
   {
     icon: ComponentType<{ className?: string }>;
     iconColor: string;
@@ -54,6 +55,10 @@ const artifactTypeConfig: Record<
   raw_transcription: {
     icon: FileCode,
     iconColor: "var(--color-yellow-500)",
+  },
+  chat_messages: {
+    icon: MessageSquare,
+    iconColor: "var(--color-teal-500)",
   },
 };
 

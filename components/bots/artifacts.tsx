@@ -6,6 +6,7 @@ import {
   FileText,
   Headphones,
   Loader,
+  MessageSquare,
   Users,
   Video,
   XCircle,
@@ -54,6 +55,10 @@ const artifactTypeConfig: Record<
   raw_transcription: {
     icon: FileCode,
     iconColor: "var(--color-yellow-500)",
+  },
+  chat_messages: {
+    icon: MessageSquare,
+    iconColor: "var(--color-teal-500)",
   },
 };
 

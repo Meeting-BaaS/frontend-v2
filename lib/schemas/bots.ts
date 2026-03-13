@@ -69,6 +69,7 @@ const artifactTypeSchema = zodEnum([
   "raw_transcription",
   "transcription",
   "screenshots",
+  "chat_messages",
 ]);
 
 const artifactErrorCodeSchema = zodEnum([
