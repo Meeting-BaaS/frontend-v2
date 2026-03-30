@@ -90,6 +90,20 @@ export default async function ViewerPage({ params }: ViewerPageProps) {
       }
     })
 
+    // Check if API-only artifact access is enabled
+    if (botDetails.data.api_only_artifact_access) {
+      const error = new Error(
+        "Artifact access is restricted to API only for this account."
+      ) as APIError
+      error.errorResponse = {
+        success: false,
+        error:
+          "API-only artifact access is enabled. Recordings cannot be viewed from the dashboard.",
+        code: "API_ONLY_ARTIFACT_ACCESS"
+      }
+      throw error
+    }
+
     // Find video and transcription artifacts from regular response
     videoArtifact = botDetails.data.artifacts?.find(
       (artifact) => artifact.type === "video" && artifact.uploaded && artifact.signed_url

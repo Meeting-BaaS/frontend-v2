@@ -1,86 +1,109 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Info } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { Form } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useUser } from "@/hooks/use-user";
-import { authClient } from "@/lib/auth-client";
-import { genericError, permissionDeniedError } from "@/lib/errors";
-import type { UpdateTeamName } from "@/lib/schemas/teams";
-import { updateTeamNameSchema } from "@/lib/schemas/teams";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Info } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
+import { Form } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Spinner } from "@/components/ui/spinner"
+import { Switch } from "@/components/ui/switch"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useUser } from "@/hooks/use-user"
+import { axiosPatchInstance } from "@/lib/api-client"
+import { UPDATE_TEAM_FEATURES } from "@/lib/api-routes"
+import { authClient } from "@/lib/auth-client"
+import { genericError, permissionDeniedError } from "@/lib/errors"
+import type { UpdateTeamDetails } from "@/lib/schemas/teams"
+import { updateTeamDetailsSchema } from "@/lib/schemas/teams"
 
 interface TeamDetailsFormProps {
-  teamId: number;
-  initialName: string;
+  teamId: number
+  initialName: string
+  initialApiOnlyArtifactAccess: boolean
 }
 
-export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
-  const { updateActiveTeam, activeTeam } = useUser();
-  const [isUpdatingName, setIsUpdatingName] = useState(false);
+export function TeamDetailsForm({
+  teamId,
+  initialName,
+  initialApiOnlyArtifactAccess
+}: TeamDetailsFormProps) {
+  const { updateActiveTeam, activeTeam } = useUser()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const form = useForm<UpdateTeamName>({
-    resolver: zodResolver(updateTeamNameSchema),
+  const form = useForm<UpdateTeamDetails>({
+    resolver: zodResolver(updateTeamDetailsSchema),
     defaultValues: {
       name: initialName,
-    },
-  });
+      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess
+    }
+  })
 
   const {
     formState: { isDirty },
     reset,
-  } = form;
+    watch,
+    setValue
+  } = form
+
+  const apiOnlyArtifactAccess = watch("apiOnlyArtifactAccess")
 
   useEffect(() => {
     reset({
       name: initialName,
-    });
-  }, [initialName, reset]);
+      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess
+    })
+  }, [initialName, initialApiOnlyArtifactAccess, reset])
 
-  const onSubmit = async (data: UpdateTeamName) => {
+  const onSubmit = async (data: UpdateTeamDetails) => {
     if (activeTeam.isMember) {
-      toast.error(permissionDeniedError);
-      return;
+      toast.error(permissionDeniedError)
+      return
     }
 
-    if (isUpdatingName) return;
+    if (isSubmitting) return
     try {
-      setIsUpdatingName(true);
+      setIsSubmitting(true)
 
-      await authClient.organization.update({
-        organizationId: teamId.toString(),
-        data: {
-          name: data.name,
-        },
-      });
+      const nameChanged = data.name !== initialName
+      const artifactAccessChanged = data.apiOnlyArtifactAccess !== initialApiOnlyArtifactAccess
 
-      // Update context
-      updateActiveTeam({ name: data.name });
+      // Update team name via Better Auth (only if changed)
+      if (nameChanged) {
+        await authClient.organization.update({
+          organizationId: teamId.toString(),
+          data: { name: data.name }
+        })
+        updateActiveTeam({ name: data.name })
+      }
+
+      // Update team features (only if changed)
+      if (artifactAccessChanged) {
+        await axiosPatchInstance(UPDATE_TEAM_FEATURES, {
+          apiOnlyArtifactAccess: data.apiOnlyArtifactAccess
+        })
+        updateActiveTeam({
+          apiOnlyArtifactAccess: data.apiOnlyArtifactAccess
+        })
+      }
 
       reset({
         name: data.name,
-      });
+        apiOnlyArtifactAccess: data.apiOnlyArtifactAccess
+      })
 
-      toast.success("Team name updated successfully");
+      toast.success("Team settings updated successfully")
     } catch (error) {
-      console.error("Error updating team name", error);
-      toast.error(error instanceof Error ? error.message : genericError);
+      console.error("Error updating team settings", error)
+      toast.error(error instanceof Error ? error.message : genericError)
     } finally {
-      setIsUpdatingName(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="w-full">
@@ -111,9 +134,8 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
                       <Info className="h-4 w-4 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      Data is stored in the region specified. Default region is
-                      'eu-west-3' (Paris, France). Additional regions are coming
-                      soon.
+                      Data is stored in the region specified. Default region is 'eu-west-3' (Paris,
+                      France). Additional regions are coming soon.
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -129,14 +151,40 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
               />
             </Field>
           </div>
+          <div className="flex items-center gap-3">
+            <Switch
+              id="apiOnlyArtifactAccess"
+              checked={apiOnlyArtifactAccess}
+              onCheckedChange={(checked) => {
+                setValue("apiOnlyArtifactAccess", checked, { shouldDirty: true })
+              }}
+              disabled={activeTeam.isMember}
+            />
+            <Label htmlFor="apiOnlyArtifactAccess" className="flex items-center gap-2 text-sm">
+              API-Only Artifact Access
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-sm">
+                    When enabled, recordings and related artifacts (transcripts, chat messages)
+                    cannot be viewed or downloaded from the dashboard. They can only be accessed via
+                    the API. Webhook log payloads will also be hidden. Only team admins can change
+                    this setting.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </Label>
+          </div>
           <Button
             variant="primary"
             type="submit"
             size="sm"
-            disabled={isUpdatingName || !isDirty}
+            disabled={isSubmitting || !isDirty}
             className="w-full sm:w-fit"
           >
-            {isUpdatingName ? (
+            {isSubmitting ? (
               <>
                 <Spinner /> Updating...
               </>
@@ -147,5 +195,5 @@ export function TeamDetailsForm({ teamId, initialName }: TeamDetailsFormProps) {
         </form>
       </Form>
     </div>
-  );
+  )
 }

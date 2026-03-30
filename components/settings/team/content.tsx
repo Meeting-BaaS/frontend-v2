@@ -25,6 +25,7 @@ export function TeamContent({ allTeams, activeTeam }: TeamContentProps) {
           <TeamDetailsForm
             teamId={activeTeam.id}
             initialName={activeTeam.name}
+            initialApiOnlyArtifactAccess={activeTeam.apiOnlyArtifactAccess}
           />
         </div>
       </div>

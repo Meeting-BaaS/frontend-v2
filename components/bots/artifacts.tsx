@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   CircleX,
@@ -6,78 +6,83 @@ import {
   FileText,
   Headphones,
   Loader,
+  Lock,
   MessageSquare,
+  Settings,
   Users,
   Video,
-  XCircle,
-} from "lucide-react";
-import type { ComponentType } from "react";
-import { FileCard } from "@/components/bots/file-card";
-import { Screenshots } from "@/components/bots/screenshots";
+  XCircle
+} from "lucide-react"
+import Link from "next/link"
+import type { ComponentType } from "react"
+import { FileCard } from "@/components/bots/file-card"
+import { Screenshots } from "@/components/bots/screenshots"
+import { Button } from "@/components/ui/button"
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { GradientIcon } from "@/components/ui/gradient-icon";
-import type { ArtifactWithSignedUrl, BotDetails } from "@/lib/schemas/bots";
+  EmptyTitle
+} from "@/components/ui/empty"
+import { GradientIcon } from "@/components/ui/gradient-icon"
+import { useUser } from "@/hooks/use-user"
+import type { ArtifactWithSignedUrl, BotDetails } from "@/lib/schemas/bots"
 
 interface ArtifactsProps {
-  botDetails: BotDetails;
-  botUuid: string;
+  botDetails: BotDetails
+  botUuid: string
 }
 
 const artifactTypeConfig: Record<
   Exclude<ArtifactWithSignedUrl["type"], "screenshots">,
   {
-    icon: ComponentType<{ className?: string }>;
-    iconColor: string;
+    icon: ComponentType<{ className?: string }>
+    iconColor: string
   }
 > = {
   video: {
     icon: Video,
-    iconColor: "var(--color-red-500)",
+    iconColor: "var(--color-red-500)"
   },
   audio: {
     icon: Headphones,
-    iconColor: "var(--color-blue-500)",
+    iconColor: "var(--color-blue-500)"
   },
   transcription: {
     icon: FileText,
-    iconColor: "var(--color-green-500)",
+    iconColor: "var(--color-green-500)"
   },
   diarization: {
     icon: Users,
-    iconColor: "var(--color-violet-500)",
+    iconColor: "var(--color-violet-500)"
   },
   raw_transcription: {
     icon: FileCode,
-    iconColor: "var(--color-yellow-500)",
+    iconColor: "var(--color-yellow-500)"
   },
   chat_messages: {
     icon: MessageSquare,
-    iconColor: "var(--color-teal-500)",
-  },
-};
+    iconColor: "var(--color-teal-500)"
+  }
+}
 
 export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
+  const { activeTeam } = useUser()
   const artifacts =
     botDetails.artifacts
       ?.filter((artifact) => artifact.uploaded)
       .map((artifact) => {
         // Type guard: backend filters out screenshots, but TypeScript doesn't know that
-        if (artifact.type === "screenshots") return null;
-        const config = artifactTypeConfig[artifact.type];
-        if (!config) return null;
+        if (artifact.type === "screenshots") return null
+        const config = artifactTypeConfig[artifact.type]
+        if (!config) return null
 
-        const title = `${botUuid} - ${artifact.type}`;
+        const title = `${botUuid} - ${artifact.type}`
 
-        const normalizedExtension = artifact.extension
-          .replace(/^\./, "")
-          .toLowerCase();
-        const fileName = `${botUuid} - ${artifact.type}.${normalizedExtension}`;
+        const normalizedExtension = artifact.extension.replace(/^\./, "").toLowerCase()
+        const fileName = `${botUuid} - ${artifact.type}.${normalizedExtension}`
         return (
           <FileCard
             key={artifact.s3_key}
@@ -90,9 +95,39 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
             botUuid={botUuid}
             isVideo={artifact.type === "video"}
           />
-        );
+        )
       })
-      .filter(Boolean) ?? [];
+      .filter(Boolean) ?? []
+
+  if (botDetails.api_only_artifact_access) {
+    return (
+      <Empty className="border rounded-lg">
+        <EmptyHeader>
+          <EmptyMedia>
+            <GradientIcon color="var(--color-blue-500)" size="lg">
+              <Lock />
+            </GradientIcon>
+          </EmptyMedia>
+          <EmptyTitle>API-only access enabled</EmptyTitle>
+          <EmptyDescription>
+            {activeTeam.isMember
+              ? "Artifact access is restricted to API only for this account. Contact a team admin to change this setting."
+              : "Artifact access is restricted to API only. Recordings, transcripts, and other artifacts can only be accessed through the API."}
+          </EmptyDescription>
+        </EmptyHeader>
+        {activeTeam.isAdminOrOwner && (
+          <EmptyContent>
+            <Button variant="secondary" size="sm" asChild>
+              <Link href="/settings/team">
+                <Settings className="size-4" />
+                Manage in Settings
+              </Link>
+            </Button>
+          </EmptyContent>
+        )}
+      </Empty>
+    )
+  }
 
   if (botDetails.artifacts_deleted) {
     return (
@@ -105,12 +140,12 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
           </EmptyMedia>
           <EmptyTitle>Artifacts deleted</EmptyTitle>
           <EmptyDescription>
-            The artifacts for this bot have been deleted as per our data
-            retention policy or upon request.
+            The artifacts for this bot have been deleted as per our data retention policy or upon
+            request.
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
-    );
+    )
   }
 
   if (botDetails.status === "failed") {
@@ -125,15 +160,10 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
           <EmptyTitle>No artifacts generated</EmptyTitle>
           <EmptyDescription>
             The bot has did not generate any artifacts.{" "}
-            {botDetails.status_history &&
-            botDetails.status_history.length > 0 ? (
+            {botDetails.status_history && botDetails.status_history.length > 0 ? (
               <div>
                 <span className="font-bold">Error:</span>{" "}
-                {
-                  botDetails.status_history[
-                    botDetails.status_history.length - 1
-                  ].error_message
-                }
+                {botDetails.status_history[botDetails.status_history.length - 1].error_message}
               </div>
             ) : (
               ""
@@ -141,7 +171,7 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
-    );
+    )
   }
 
   if (artifacts.length === 0) {
@@ -155,12 +185,11 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
           </EmptyMedia>
           <EmptyTitle>No artifacts yet</EmptyTitle>
           <EmptyDescription>
-            The bot has not generated any artifacts yet. Please check once the
-            bot has completed.
+            The bot has not generated any artifacts yet. Please check once the bot has completed.
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
-    );
+    )
   }
 
   return (
@@ -170,5 +199,5 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
         <Screenshots botUuid={botUuid} endedAt={botDetails.ended_at} />
       )}
     </div>
-  );
+  )
 }
