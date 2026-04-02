@@ -2,11 +2,13 @@ import {
   array,
   boolean,
   iso,
+  literal,
   number,
   object,
   type output,
   record,
   string,
+  union,
   url,
   uuid,
   unknown as zodUnknown,
@@ -101,10 +103,17 @@ export const listWebhookMessagesResponseSchema = object({
 export const webhookMessageDetails = object({
   id: string(),
   eventType: string(),
-  payload: object({
-    data: record(string(), zodUnknown()),
-    event: string(),
-  }).nullable(),
+  payload: union([
+    object({
+      data: record(string(), zodUnknown()),
+      event: string(),
+    }),
+    object({
+      redacted: literal(true),
+      reason: string(),
+      bot_id: string().nullable(),
+    }),
+  ]).nullable(),
   timestamp: iso.datetime(),
 });
 
