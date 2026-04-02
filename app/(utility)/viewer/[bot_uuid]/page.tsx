@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { Viewer } from "@/components/viewer"
+import { RestrictedViewer } from "@/components/viewer/restricted"
 import type { APIError } from "@/lib/api-client"
 import { axiosGetInstance } from "@/lib/api-client"
 import { ADMIN_GET_BOT_DETAILS, GET_BOT_DETAILS, GET_SESSION } from "@/lib/api-routes"
@@ -89,6 +90,11 @@ export default async function ViewerPage({ params }: ViewerPageProps) {
         Cookie: cookieStore.toString()
       }
     })
+
+    // Check if API-only artifact access is enabled
+    if (botDetails.data.api_only_artifact_access) {
+      return <RestrictedViewer />
+    }
 
     // Find video and transcription artifacts from regular response
     videoArtifact = botDetails.data.artifacts?.find(

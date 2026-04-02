@@ -123,6 +123,7 @@ export const PURCHASE_TOKEN_PACK = `${SETTINGS_BASE_PATH}/token-packs/purchase`;
 export const UPDATE_AUTO_REFILL_SETTINGS = `${SETTINGS_BASE_PATH}/token-settings/auto-refill`;
 export const GET_V1_AVAILABLE_TOKENS = `${SETTINGS_BASE_PATH}/tokens/v1-available`;
 export const IMPORT_TOKENS_FROM_V1 = `${SETTINGS_BASE_PATH}/tokens/import-from-v1`;
+export const UPDATE_TEAM_FEATURES = `${SETTINGS_BASE_PATH}/team-features`;
 
 // Account routes
 export const ACCOUNT_BASE_PATH = `${BASE_PATH}/account`;

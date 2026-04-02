@@ -1,6 +1,6 @@
 "use client"
 
-import { Mail, RotateCw } from "lucide-react"
+import { Lock, Mail, RotateCw } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { ItemHeading } from "@/components/layout/item-heading"
@@ -14,6 +14,12 @@ import { RESEND_WEBHOOK_MESSAGE } from "@/lib/api-routes"
 import { formatRelativeDate } from "@/lib/date-helpers"
 import { genericError } from "@/lib/errors"
 import type { WebhookMessageDetails } from "@/lib/schemas/webhooks"
+
+function isRedactedPayload(
+  payload: WebhookMessageDetails["payload"]
+): payload is { redacted: true; reason: string; bot_id: string | null } {
+  return payload !== null && "redacted" in payload && payload.redacted === true
+}
 
 interface WebhookMessageDetailsProps {
   endpointId: string
@@ -85,17 +91,28 @@ export function ViewWebhookMessageDetails({
         />
         <NameValuePair
           title="Bot ID"
-          value={(webhookMessage.payload?.data?.bot_id as string) ?? "N/A"}
+          value={
+            isRedactedPayload(webhookMessage.payload)
+              ? (webhookMessage.payload.bot_id ?? "N/A")
+              : ((webhookMessage.payload?.data?.bot_id as string) ?? "N/A")
+          }
         />
       </div>
       <div className="mt-10 flex flex-col gap-2">
         <div className="text-muted-foreground text-xs uppercase">Payload</div>
-        <pre className="text-xs border border-dashed rounded-md p-4 relative whitespace-pre-wrap break-words overflow-wrap-anywhere">
-          <Button variant="ghost" size="icon" asChild className="absolute top-0 right-0 m-1">
-            <CopyButton text={JSON.stringify(webhookMessage.payload, null, 2)} />
-          </Button>
-          {JSON.stringify(webhookMessage.payload, null, 2)}
-        </pre>
+        {isRedactedPayload(webhookMessage.payload) ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground border border-dashed rounded-md p-4">
+            <Lock className="size-4 shrink-0" />
+            <span>{webhookMessage.payload.reason}</span>
+          </div>
+        ) : (
+          <pre className="text-xs border border-dashed rounded-md p-4 relative whitespace-pre-wrap break-words overflow-wrap-anywhere">
+            <Button variant="ghost" size="icon" asChild className="absolute top-0 right-0 m-1">
+              <CopyButton text={JSON.stringify(webhookMessage.payload, null, 2)} />
+            </Button>
+            {JSON.stringify(webhookMessage.payload, null, 2)}
+          </pre>
+        )}
       </div>
     </section>
   )

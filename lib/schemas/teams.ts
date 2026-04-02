@@ -36,7 +36,8 @@ export const teamDetails = array(
     rateLimit: number(),
     role: roleEnum,
     joinedAt: iso.datetime(),
-    slug: string()
+    slug: string(),
+    apiOnlyArtifactAccess: boolean()
   })
 )
 
@@ -96,11 +97,23 @@ export type InvitationResponse = output<typeof invitationResponseSchema>
 /**
  * Schema for updating team name
  */
+const teamNameSchema = string().trim().min(1, "Team name is required").max(255, "Team name is too long")
+
 export const updateTeamNameSchema = object({
-  name: string().trim().min(1, "Team name is required").max(255, "Team name is too long")
+  name: teamNameSchema
 })
 
 export type UpdateTeamName = output<typeof updateTeamNameSchema>
+
+/**
+ * Schema for updating team details (name + settings)
+ */
+export const updateTeamDetailsSchema = object({
+  name: teamNameSchema,
+  apiOnlyArtifactAccess: boolean()
+})
+
+export type UpdateTeamDetails = output<typeof updateTeamDetailsSchema>
 
 /**
  * Team member schema

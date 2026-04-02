@@ -216,6 +216,9 @@ export const botDetailsSchema = object({
   open_support_tickets: number().describe(
     "Number of open support tickets for the bot",
   ),
+  api_only_artifact_access: boolean().describe(
+    "Whether artifact access is restricted to API only",
+  ),
 });
 
 export const botDetailsResponseSchema = object({
