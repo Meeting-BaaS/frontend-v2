@@ -73,18 +73,22 @@ export function TeamDetailsForm({
       const artifactAccessChanged = data.apiOnlyArtifactAccess !== initialApiOnlyArtifactAccess
 
       // Perform both updates before updating local state
+      const promises: Promise<unknown>[] = []
+
       if (nameChanged) {
-        await authClient.organization.update({
+        promises.push(authClient.organization.update({
           organizationId: teamId.toString(),
           data: { name: data.name }
-        })
+        }))
       }
 
       if (artifactAccessChanged) {
-        await axiosPatchInstance(UPDATE_TEAM_FEATURES, {
+        promises.push(axiosPatchInstance(UPDATE_TEAM_FEATURES, {
           apiOnlyArtifactAccess: data.apiOnlyArtifactAccess
-        })
+        }))
       }
+
+      await Promise.all(promises)
 
       // Only update local state after all API calls succeed
       updateActiveTeam({
