@@ -37,7 +37,7 @@ interface StatusConfig {
   badgeVariant: "secondary" | "success" | "destructive" | "outline";
 }
 
-const statusConfigMap: Record<BotStatus, StatusConfig> = {
+const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
   // Waiting/Initial states - Gray
   queued: {
     icon: Clock,

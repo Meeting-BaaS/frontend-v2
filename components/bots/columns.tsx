@@ -1,65 +1,129 @@
-"use client";
+"use client"
 
-import type { ColumnDef } from "@tanstack/react-table";
-import { cva } from "class-variance-authority";
-import Link from "next/link";
-import { GoogleMeetLogo } from "@/components/icons/google-meet";
-import { MicrosoftTeamsLogo } from "@/components/icons/microsoft-teams";
-import { ZoomLogo } from "@/components/icons/zoom";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { CopyButton } from "@/components/ui/copy-button";
-import { GradientIcon } from "@/components/ui/gradient-icon";
-import { formatDuration, formatRelativeDate } from "@/lib/date-helpers";
-import type { BotListEntry } from "@/lib/schemas/bots";
-import { cn } from "@/lib/utils";
+import type { ColumnDef } from "@tanstack/react-table"
+import { cva } from "class-variance-authority"
+import Link from "next/link"
+import { GoogleMeetLogo } from "@/components/icons/google-meet"
+import { MicrosoftTeamsLogo } from "@/components/icons/microsoft-teams"
+import { ZoomLogo } from "@/components/icons/zoom"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { CopyButton } from "@/components/ui/copy-button"
+import { GradientIcon } from "@/components/ui/gradient-icon"
+import { formatDuration, formatRelativeDate } from "@/lib/date-helpers"
+import type { BotListEntry } from "@/lib/schemas/bots"
+import { cn } from "@/lib/utils"
+
+/** Format a status string for display: "INSUFFICIENT_TOKENS" -> "Insufficient Tokens" */
+export const formatStatusLabel = (status: string) =>
+  status
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ")
+
+// Color classes by category
+const SLATE = "bg-slate-500/10 text-slate-500 fill-slate-500"
+const VIOLET = "bg-violet-500/10 text-violet-500 fill-violet-500"
+const GREEN = "bg-green-500/10 text-green-500 fill-green-500"
+const AMBER = "bg-amber-500/10 text-amber-500 fill-amber-500"
+const BLUE = "bg-blue-500/10 text-blue-500 fill-blue-500"
+const RED = "bg-red-500/10 text-red-500 fill-red-500"
 
 export const botColorVariants = cva("", {
   variants: {
     status: {
       // Waiting/Initial states - Gray
-      queued: "bg-slate-500/10 text-slate-500 fill-slate-500",
-      joining_call: "bg-slate-500/10 text-slate-500 fill-slate-500",
-      in_waiting_room: "bg-slate-500/10 text-slate-500 fill-slate-500",
-      in_waiting_for_host: "bg-slate-500/10 text-slate-500 fill-slate-500",
+      queued: SLATE,
+      joining_call: SLATE,
+      in_waiting_room: SLATE,
+      in_waiting_for_host: SLATE,
 
       // Active call states - Violet
-      in_call_not_recording: "bg-violet-500/10 text-violet-500 fill-violet-500",
+      in_call_not_recording: VIOLET,
 
       // Recording states - Green
-      in_call_recording: "bg-green-500/10 text-green-500 fill-green-500",
-      recording_resumed: "bg-green-500/10 text-green-500 fill-green-500",
-      recording_succeeded: "bg-green-500/10 text-green-500 fill-green-500",
+      in_call_recording: GREEN,
+      recording_resumed: GREEN,
+      recording_succeeded: GREEN,
 
-      // Paused/Warning states - Amber
-      recording_paused: "bg-amber-500/10 text-amber-500 fill-amber-500",
-      waiting_room_timeout: "bg-amber-500/10 text-amber-500 fill-amber-500",
+      // Paused states - Amber
+      recording_paused: AMBER,
+      waiting_room_timeout: AMBER,
 
       // Processing state - Violet
-      transcribing: "bg-violet-500/10 text-violet-500 fill-violet-500",
+      transcribing: VIOLET,
 
       // Success/Completion - Blue
-      completed: "bg-blue-500/10 text-blue-500 fill-blue-500",
+      completed: BLUE,
 
       // Ended states - Slate
-      call_ended: "bg-slate-500/10 text-slate-500 fill-slate-500",
+      call_ended: SLATE,
 
-      // Error/Rejected states - Red/Destructive
-      failed: "bg-red-500/10 text-red-500 fill-red-500",
-      recording_failed: "bg-red-500/10 text-red-500 fill-red-500",
-      // Intermediate error statuses (all lead to recording_failed)
-      api_request_stop: "bg-red-500/10 text-red-500 fill-red-500",
-      bot_rejected: "bg-red-500/10 text-red-500 fill-red-500",
-      bot_removed: "bg-red-500/10 text-red-500 fill-red-500",
-      bot_removed_too_early: "bg-red-500/10 text-red-500 fill-red-500",
-      invalid_meeting_url: "bg-red-500/10 text-red-500 fill-red-500",
-      meeting_error: "bg-red-500/10 text-red-500 fill-red-500",
-    },
+      // Legacy error statuses - Red
+      failed: RED,
+      recording_failed: RED,
+      api_request_stop: RED,
+      bot_rejected: RED,
+      bot_removed: RED,
+      bot_removed_too_early: RED,
+      invalid_meeting_url: RED,
+      meeting_error: RED,
+
+      // Normal end error codes - Slate
+      BOT_REMOVED: SLATE,
+      NO_ATTENDEES: SLATE,
+      NO_SPEAKER: SLATE,
+      RECORDING_TIMEOUT: SLATE,
+      API_REQUEST: SLATE,
+
+      // Join/recording error codes - Red
+      BOT_REMOVED_TOO_EARLY: RED,
+      BOT_NOT_ACCEPTED: RED,
+      CANNOT_JOIN_MEETING: RED,
+      TIMEOUT_WAITING_TO_START: RED,
+      INVALID_MEETING_URL: RED,
+      STREAMING_SETUP_FAILED: RED,
+      LOGIN_REQUIRED: RED,
+      INTERNAL_ERROR: RED,
+
+      // Crash error codes - Red
+      OOM_KILLED: RED,
+      SIGTERM: RED,
+      FORCE_KILLED: RED,
+      GENERAL_ERROR: RED,
+
+      // Transcription errors - Red
+      TRANSCRIPTION_FAILED: RED,
+
+      // Zoom-specific errors - Red
+      WAITING_FOR_HOST_TIMEOUT: RED,
+      RECORDING_RIGHTS_NOT_GRANTED: RED,
+      CANNOT_REQUEST_RECORDING_RIGHT: RED,
+      EXITING_MEETING_BEFORE_RECORD: RED,
+      MEETING_ENDED_PREMATURELY: RED,
+      SET_ZOOM_ID_AND_PWD_TOGETHER: RED,
+      CANNOT_GET_JWT_TOKEN: RED,
+      SDK_AUTH_FAILED: RED,
+      ZOOM_ACCESS_TOKEN_ERROR: RED,
+      ZOOM_OBF_TOKEN_ERROR: RED,
+      RECORDING_START_TIMEOUT: RED,
+      HOST_CLIENT_CANNOT_GRANT_PERMISSION: RED,
+      WAITING_FOR_AUTHORIZED_USER_TIMEOUT: RED,
+      UNABLE_JOIN_EXTERNAL_MEETING: RED,
+
+      // Business errors - Amber
+      INSUFFICIENT_TOKENS: AMBER,
+      DAILY_BOT_CAP_REACHED: AMBER,
+      BOT_ALREADY_EXISTS: AMBER,
+
+      // Unknown fallback - Red
+      UNKNOWN_ERROR: RED
+    }
   },
   defaultVariants: {
-    status: "queued",
-  },
-});
+    status: "queued"
+  }
+})
 
 // Column width configuration shared between columns and skeleton
 export const columnWidths = {
@@ -67,8 +131,8 @@ export const columnWidths = {
   status: "min-w-[150px] max-w-[200px] w-[20%]",
   bot_name: "min-w-[160px] max-w-[180px] w-[18%]",
   duration: "min-w-[100px] max-w-[120px] w-[12%]",
-  created_at: "min-w-[140px] max-w-[150px] w-[15%]",
-} as const;
+  created_at: "min-w-[140px] max-w-[150px] w-[15%]"
+} as const
 
 export const columns: ColumnDef<BotListEntry>[] = [
   {
@@ -76,7 +140,7 @@ export const columns: ColumnDef<BotListEntry>[] = [
     accessorKey: "bot_id",
     header: "Bot ID",
     meta: {
-      className: columnWidths.bot_id,
+      className: columnWidths.bot_id
     },
     cell: ({ row }) => {
       return (
@@ -108,43 +172,38 @@ export const columns: ColumnDef<BotListEntry>[] = [
             <CopyButton text={row.original.bot_id} />
           </Button>
         </div>
-      );
-    },
+      )
+    }
   },
   {
     id: "status",
     accessorKey: "status",
     header: "Status",
     meta: {
-      className: columnWidths.status,
+      className: columnWidths.status
     },
     cell: ({ row }) => {
       return (
-        <Badge
-          className={cn(
-            "capitalize",
-            botColorVariants({ status: row.original.status }),
-          )}
-        >
-          {row.original.status.split("_").join(" ")}
+        <Badge className={cn(botColorVariants({ status: row.original.status as any }))}>
+          {formatStatusLabel(row.original.status)}
         </Badge>
-      );
-    },
+      )
+    }
   },
   {
     id: "bot_name",
     accessorKey: "bot_name",
     header: "Bot Name",
     meta: {
-      className: columnWidths.bot_name,
-    },
+      className: columnWidths.bot_name
+    }
   },
   {
     id: "duration",
     accessorKey: "duration",
     header: () => <div className="text-center">Duration</div>,
     meta: {
-      className: columnWidths.duration,
+      className: columnWidths.duration
     },
     cell: ({ row }) => (
       <div className="text-center">
@@ -154,19 +213,17 @@ export const columns: ColumnDef<BotListEntry>[] = [
           <span className="text-muted-foreground">-</span>
         )}
       </div>
-    ),
+    )
   },
   {
     id: "created_at",
     accessorKey: "created_at",
     header: "Created At",
     meta: {
-      className: columnWidths.created_at,
+      className: columnWidths.created_at
     },
     cell: ({ row }) => (
-      <div className="capitalize">
-        {formatRelativeDate(row.original.created_at)}
-      </div>
-    ),
-  },
-];
+      <div className="capitalize">{formatRelativeDate(row.original.created_at)}</div>
+    )
+  }
+]

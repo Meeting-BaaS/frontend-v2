@@ -30,36 +30,80 @@ export const speechToTextProviderSchema = zodEnum([
   "none",
 ]);
 
-// All possible bot statuses (event codes)
-// These are the event_code values sent by bots to /bot-process/update-status
+// All possible resolved statuses (lifecycle statuses + error codes)
+// Used by BFF/admin list endpoints where resolved_status is returned
 export const botStatusSchema = zodEnum([
   // Backend-set statuses
-  "queued", // Set by backend when bot is created
-  "transcribing", // Set by backend during transcription processing
-  "completed", // Set by backend after successful processing
-  "failed", // Set by backend after failure processing
+  "queued",
+  "transcribing",
+  "completed",
+  "failed",
 
   // Normal flow statuses (sent by both bots)
-  "joining_call", // Sent by bots when starting to join
-  "in_waiting_room", // Sent by bots when in waiting room
-  "in_waiting_for_host", // Sent by zoom-bot when waiting for host
-  "in_call_not_recording", // Sent by bots when in call but not recording yet
-  "in_call_recording", // Sent by bots when recording starts
-  "recording_paused", // Sent by meet-teams-bot when recording is paused
-  "recording_resumed", // Sent by meet-teams-bot when recording resumes
-  "call_ended", // Sent by bots when call ends
-  "recording_succeeded", // Sent by bots when recording completes successfully
-  "recording_failed", // Sent by bots when recording fails
+  "joining_call",
+  "in_waiting_room",
+  "in_waiting_for_host",
+  "in_call_not_recording",
+  "in_call_recording",
+  "recording_paused",
+  "recording_resumed",
+  "call_ended",
+  "recording_succeeded",
+  "recording_failed",
 
-  // Intermediate error statuses (sent by meet-teams-bot before recording_failed)
-  // These are informational and all eventually lead to recording_failed
-  "api_request_stop", // Sent by meet-teams-bot when stopped via API
-  "bot_rejected", // Sent by meet-teams-bot when bot is rejected
-  "bot_removed", // Sent by meet-teams-bot when bot is removed
-  "bot_removed_too_early", // Sent by meet-teams-bot when bot removed too early
-  "waiting_room_timeout", // Sent by meet-teams-bot when waiting room times out
-  "invalid_meeting_url", // Sent by meet-teams-bot when meeting URL is invalid
-  "meeting_error", // Sent by meet-teams-bot for general meeting errors
+  // Intermediate error statuses
+  "api_request_stop",
+  "bot_rejected",
+  "bot_removed",
+  "bot_removed_too_early",
+  "waiting_room_timeout",
+  "invalid_meeting_url",
+  "meeting_error",
+
+  // Error codes (from resolved_status for failed bots)
+  // Normal end reasons
+  "BOT_REMOVED",
+  "NO_ATTENDEES",
+  "NO_SPEAKER",
+  "RECORDING_TIMEOUT",
+  "API_REQUEST",
+  // Error end reasons
+  "BOT_REMOVED_TOO_EARLY",
+  "BOT_NOT_ACCEPTED",
+  "CANNOT_JOIN_MEETING",
+  "TIMEOUT_WAITING_TO_START",
+  "INVALID_MEETING_URL",
+  "STREAMING_SETUP_FAILED",
+  "LOGIN_REQUIRED",
+  "INTERNAL_ERROR",
+  // Crash reasons
+  "OOM_KILLED",
+  "SIGTERM",
+  "FORCE_KILLED",
+  "GENERAL_ERROR",
+  // Transcription errors
+  "TRANSCRIPTION_FAILED",
+  // Zoom-specific errors
+  "WAITING_FOR_HOST_TIMEOUT",
+  "RECORDING_RIGHTS_NOT_GRANTED",
+  "CANNOT_REQUEST_RECORDING_RIGHT",
+  "EXITING_MEETING_BEFORE_RECORD",
+  "MEETING_ENDED_PREMATURELY",
+  "SET_ZOOM_ID_AND_PWD_TOGETHER",
+  "CANNOT_GET_JWT_TOKEN",
+  "SDK_AUTH_FAILED",
+  "ZOOM_ACCESS_TOKEN_ERROR",
+  "ZOOM_OBF_TOKEN_ERROR",
+  "RECORDING_START_TIMEOUT",
+  "HOST_CLIENT_CANNOT_GRANT_PERMISSION",
+  "WAITING_FOR_AUTHORIZED_USER_TIMEOUT",
+  "UNABLE_JOIN_EXTERNAL_MEETING",
+  // Business errors
+  "INSUFFICIENT_TOKENS",
+  "DAILY_BOT_CAP_REACHED",
+  "BOT_ALREADY_EXISTS",
+  // Unknown fallback
+  "UNKNOWN_ERROR",
 ]);
 
 const artifactTypeSchema = zodEnum([
