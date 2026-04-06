@@ -51,6 +51,7 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["dashboard.gmeetrecorder.com"],
   ...(process.env.STANDALONE === "true" && { output: "standalone" as const }),
   images: {
     remotePatterns: [
