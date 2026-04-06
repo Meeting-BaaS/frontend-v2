@@ -130,6 +130,14 @@ const statusConfigMap: Record<BotStatus, StatusConfig> = {
     badgeVariant: "secondary",
   },
 
+  // Transcription failure - Amber (recording succeeded, transcription failed)
+  transcription_failed: {
+    icon: AlertCircle,
+    description: "Transcription failed but recording artifacts are available",
+    color: "var(--color-amber-500)",
+    badgeVariant: "outline",
+  },
+
   // Error/Rejected states - Red/Destructive
   failed: {
     icon: XCircle,

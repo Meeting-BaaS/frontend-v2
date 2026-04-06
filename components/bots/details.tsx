@@ -13,6 +13,7 @@ import { useState } from "react";
 import { Artifacts } from "@/components/bots/artifacts";
 import { BotActions } from "@/components/bots/bot-actions";
 import { JsonPreview } from "@/components/bots/json-preview";
+import { RetranscribeDialog } from "@/components/bots/retranscribe-dialog";
 import { RetryCallbackDialog } from "@/components/bots/retry-callback-dialog";
 import { StatusHistory } from "@/components/bots/status-history";
 import { GoogleMeetLogo } from "@/components/icons/google-meet";
@@ -41,6 +42,7 @@ interface BotDetailsProps {
 
 export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
   const [openRetryDialog, setOpenRetryDialog] = useState(false);
+  const [openRetranscribeDialog, setOpenRetranscribeDialog] = useState(false);
   const botDuration = botDetails.duration
     ? parseInt(botDetails.duration, 10)
     : 0;
@@ -121,6 +123,28 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
               className="mt-2"
             >
               <RefreshCw className="size-4" /> Retry callback
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Transcription Failed Alert */}
+      {botDetails.status === "transcription_failed" && (
+        <Alert variant="destructive" className="mt-6">
+          <AlertTriangle />
+          <AlertTitle>Transcription Failed</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>
+              Transcription failed for this bot. You can retry with the same or
+              a different provider.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setOpenRetranscribeDialog(true)}
+              className="mt-2"
+            >
+              <RefreshCw className="size-4" /> Retranscribe
             </Button>
           </AlertDescription>
         </Alert>
@@ -247,6 +271,11 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
         botUuid={botUuid}
         open={openRetryDialog}
         onOpenChange={setOpenRetryDialog}
+      />
+      <RetranscribeDialog
+        botUuid={botUuid}
+        open={openRetranscribeDialog}
+        onOpenChange={setOpenRetranscribeDialog}
       />
     </section>
   );

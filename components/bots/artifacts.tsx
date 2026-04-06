@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  AlertTriangle,
   CircleX,
   FileCode,
   FileText,
@@ -110,6 +111,41 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
+    );
+  }
+
+  if (botDetails.status === "transcription_failed") {
+    // Extract error details from errors array or status history
+    const errorDetail = botDetails.errors?.find(
+      (e) => (e as Record<string, unknown>)["code"] === "TRANSCRIPTION_FAILED",
+    ) as Record<string, unknown> | undefined;
+    const errorMessage =
+      (errorDetail?.["message"] as string) ??
+      botDetails.status_history?.find((e) => e.status === "transcription_failed")
+        ?.error_message;
+    const provider = (errorDetail?.["provider"] as string) ?? botDetails.speech_to_text_provider;
+
+    return (
+      <div className="space-y-3">
+        <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-500" />
+          <div className="space-y-1 text-sm">
+            <p className="font-medium text-amber-700 dark:text-amber-400">
+              Transcription failed{provider && provider !== "none" ? ` (${provider})` : ""}
+            </p>
+            {errorMessage && (
+              <p className="text-muted-foreground">{errorMessage}</p>
+            )}
+            <p className="text-muted-foreground">
+              Recording artifacts are still available below.
+            </p>
+          </div>
+        </div>
+        {artifacts.length > 0 ? artifacts : null}
+        {botDetails.meeting_platform !== "zoom" && (
+          <Screenshots botUuid={botUuid} endedAt={botDetails.ended_at} />
+        )}
+      </div>
     );
   }
 

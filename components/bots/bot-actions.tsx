@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { DeleteBotDataDialog } from "@/components/bots/delete-bot-data-dialog";
+import { RetranscribeDialog } from "@/components/bots/retranscribe-dialog";
 import { RetryCallbackDialog } from "@/components/bots/retry-callback-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,12 +41,17 @@ export function BotActions({
   const router = useRouter();
   const { openSupportDialog } = useSupportDialog();
   const [openRetryDialog, setOpenRetryDialog] = useState(false);
+  const [openRetranscribeDialog, setOpenRetranscribeDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Check if bot is in a final state (completed or failed)
   const isFinalState =
     botDetails.status === "completed" || botDetails.status === "failed";
+
+  const isRetranscribable =
+    botDetails.status === "transcription_failed" ||
+    botDetails.status === "completed";
 
   const handleResendWebhook = async () => {
     if (loading) return;
@@ -123,6 +129,12 @@ export function BotActions({
           <DropdownMenuItem onClick={handleRetryCallback} disabled={loading}>
             <RefreshCw /> Retry callback
           </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => setOpenRetranscribeDialog(true)}
+            disabled={loading || !isRetranscribable}
+          >
+            <RefreshCw /> Retranscribe
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           {!botDetails.artifacts_deleted && (
             <>
@@ -145,6 +157,11 @@ export function BotActions({
         botUuid={botUuid}
         open={openRetryDialog}
         onOpenChange={setOpenRetryDialog}
+      />
+      <RetranscribeDialog
+        botUuid={botUuid}
+        open={openRetranscribeDialog}
+        onOpenChange={setOpenRetranscribeDialog}
       />
       <DeleteBotDataDialog
         botUuid={botUuid}

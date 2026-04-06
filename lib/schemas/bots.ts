@@ -26,7 +26,10 @@ export const recordingModeSchema = zodEnum([
 ]);
 export const speechToTextProviderSchema = zodEnum([
   "gladia",
-  "assembly",
+  "deepgram",
+  "assemblyai",
+  "speechmatics",
+  "soniox",
   "none",
 ]);
 
@@ -38,6 +41,7 @@ export const botStatusSchema = zodEnum([
   "transcribing", // Set by backend during transcription processing
   "completed", // Set by backend after successful processing
   "failed", // Set by backend after failure processing
+  "transcription_failed", // Set by backend when transcription fails but recording succeeded
 
   // Normal flow statuses (sent by both bots)
   "joining_call", // Sent by bots when starting to join
@@ -144,6 +148,8 @@ export const botListEntry = object({
   bot_id: uuid(),
   bot_name: string(),
   meeting_platform: meetingPlatformSchema,
+  speech_to_text_provider: speechToTextProviderSchema,
+  transcription_ids: array(string()).nullable(),
   duration: number().nullable(),
   created_at: iso.datetime(),
   status: botStatusSchema,
@@ -253,6 +259,22 @@ export const retryCallbackFormSchema = discriminatedUnion("useOverride", [
 ]);
 
 export type RetryCallbackFormData = output<typeof retryCallbackFormSchema>;
+
+// Retranscribe form schema (for dialog) - discriminated union
+export const retranscribeFormSchema = discriminatedUnion("useOverride", [
+  object({
+    useOverride: literal(true),
+    provider: speechToTextProviderSchema.exclude(["none"]),
+    api_key: string().optional(),
+    region: string().optional(),
+    custom_params: record(string(), zodUnknown()).optional(),
+  }),
+  object({
+    useOverride: literal(false),
+  }),
+]);
+
+export type RetranscribeFormData = output<typeof retranscribeFormSchema>;
 
 // Screenshot schemas
 export const botScreenshotSchema = object({
