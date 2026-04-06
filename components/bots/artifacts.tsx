@@ -23,7 +23,11 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { GradientIcon } from "@/components/ui/gradient-icon";
-import type { ArtifactWithSignedUrl, BotDetails } from "@/lib/schemas/bots";
+import {
+  hasTranscriptionFailure,
+  type ArtifactWithSignedUrl,
+  type BotDetails,
+} from "@/lib/schemas/bots";
 
 interface ArtifactsProps {
   botDetails: BotDetails;
@@ -114,7 +118,7 @@ export function Artifacts({ botDetails, botUuid }: ArtifactsProps) {
     );
   }
 
-  if (botDetails.status === "transcription_failed") {
+  if (hasTranscriptionFailure(botDetails.errors)) {
     // Extract error details from errors array or status history
     const errorDetail = botDetails.errors?.find(
       (e) => (e as Record<string, unknown>)["code"] === "TRANSCRIPTION_FAILED",

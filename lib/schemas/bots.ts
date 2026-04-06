@@ -246,6 +246,14 @@ export type Artifact = output<typeof artifactSchema>;
 export type ArtifactWithSignedUrl = output<typeof artifactWithSignedUrlSchema>;
 export type CallbackError = output<typeof callbackErrorSchema>;
 
+/** Check if a bot has a transcription failure (from errors array, not status) */
+export function hasTranscriptionFailure(
+  errors: Array<Record<string, unknown>> | null | undefined,
+): boolean {
+  if (!errors) return false;
+  return errors.some((e) => e["code"] === "TRANSCRIPTION_FAILED");
+}
+
 // Retry callback form schema (for dialog) - discriminated union
 export const retryCallbackFormSchema = discriminatedUnion("useOverride", [
   object({

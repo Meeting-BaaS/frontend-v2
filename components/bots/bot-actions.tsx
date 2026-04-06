@@ -25,7 +25,7 @@ import { useSupportDialog } from "@/hooks/use-support-dialog";
 import { axiosPostInstance } from "@/lib/api-client";
 import { RESEND_FINAL_WEBHOOK } from "@/lib/api-routes";
 import { genericError } from "@/lib/errors";
-import type { BotDetails } from "@/lib/schemas/bots";
+import { hasTranscriptionFailure, type BotDetails } from "@/lib/schemas/bots";
 
 interface BotActionsProps {
   botDetails: BotDetails;
@@ -50,7 +50,7 @@ export function BotActions({
     botDetails.status === "completed" || botDetails.status === "failed";
 
   const isRetranscribable =
-    botDetails.status === "transcription_failed" ||
+    hasTranscriptionFailure(botDetails.errors) ||
     botDetails.status === "completed";
 
   const handleResendWebhook = async () => {

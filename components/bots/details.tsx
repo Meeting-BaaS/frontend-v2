@@ -32,7 +32,7 @@ import {
 import { NameValuePair } from "@/components/ui/name-value-pair";
 import { Separator } from "@/components/ui/separator";
 import { formatDuration, formatRelativeDate } from "@/lib/date-helpers";
-import type { BotDetails } from "@/lib/schemas/bots";
+import { hasTranscriptionFailure, type BotDetails } from "@/lib/schemas/bots";
 import { readableRecordingMode } from "@/lib/utils";
 
 interface BotDetailsProps {
@@ -129,7 +129,7 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
       )}
 
       {/* Transcription Failed Alert */}
-      {botDetails.status === "transcription_failed" && (
+      {hasTranscriptionFailure(botDetails.errors) && (
         <Alert variant="destructive" className="mt-6">
           <AlertTriangle />
           <AlertTitle>Transcription Failed</AlertTitle>
