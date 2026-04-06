@@ -136,7 +136,10 @@ export function RetranscribeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onCancel}>
-      <DialogContent className="sm:max-w-md" showCloseButton={!loading}>
+      <DialogContent
+        className="sm:max-w-[80vw] max-h-[80vh] flex flex-col"
+        showCloseButton={!loading}
+      >
         <DialogHeader>
           <DialogTitle>Retranscribe</DialogTitle>
           <DialogDescription>
@@ -145,7 +148,10 @@ export function RetranscribeDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 overflow-y-auto flex-1 min-h-0"
+          >
             <FieldGroup>
               <Controller
                 name="useOverride"

@@ -36,7 +36,8 @@ export const teamDetails = array(
     rateLimit: number(),
     role: roleEnum,
     joinedAt: iso.datetime(),
-    slug: string()
+    slug: string(),
+    apiOnlyArtifactAccess: boolean()
   })
 )
 
