@@ -144,6 +144,7 @@ export const ListBotsRequestQuerySchema = object({
 
 // Bot list entry (snake_case to match BFF API)
 // Simplified schema - only includes fields returned by BFF list bots endpoint
+// status is string() because resolvedStatus can be a lifecycle status OR an error code
 export const botListEntry = object({
   bot_id: uuid(),
   bot_name: string(),
@@ -152,7 +153,7 @@ export const botListEntry = object({
   transcription_ids: array(string()).nullable(),
   duration: number().nullable(),
   created_at: iso.datetime(),
-  status: botStatusSchema,
+  status: string(),
 });
 
 export const botsListResponseSchema = object({

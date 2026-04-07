@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { formatDuration, formatRelativeDate } from "@/lib/date-helpers";
-import type { BotListEntry } from "@/lib/schemas/bots";
+import type { BotListEntry, BotStatus } from "@/lib/schemas/bots";
+import { botStatusSchema } from "@/lib/schemas/bots";
 import { cn } from "@/lib/utils";
 
 export const botColorVariants = cva("", {
@@ -61,6 +62,12 @@ export const botColorVariants = cva("", {
     status: "queued",
   },
 });
+
+// Resolve status for color variants: known statuses use their color, error codes use "failed" (red)
+const knownStatuses = new Set<string>(botStatusSchema.options);
+function resolveStatusColor(status: string): BotStatus {
+  return knownStatuses.has(status) ? (status as BotStatus) : "failed";
+}
 
 // Column width configuration shared between columns and skeleton
 export const columnWidths = {
@@ -126,7 +133,7 @@ export const columns: ColumnDef<BotListEntry>[] = [
           <Badge
             className={cn(
               "capitalize",
-              botColorVariants({ status: row.original.status }),
+              botColorVariants({ status: resolveStatusColor(row.original.status) }),
             )}
           >
             {row.original.status.split("_").join(" ")}
