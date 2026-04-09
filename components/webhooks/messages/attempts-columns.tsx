@@ -115,7 +115,7 @@ export const columns: ColumnDef<WebhookMessageAttempt>[] = [
         return <span className="text-muted-foreground">-</span>;
       }
 
-      return <HoverCopyCard text={response} title="Response Body" />;
+      return <HoverCopyCard text={response} title="Response Body" triggerClassName="max-w-[200px] ml-auto" />;
     },
   },
 ];
