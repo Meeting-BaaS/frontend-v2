@@ -26,7 +26,8 @@ export const alertTypeSchema = zodEnum(
     "zoom_credential_error",
     "bot_crash",
     "transcription_failed",
-    "calendar_sync_error"
+    "calendar_sync_error",
+    "webhook_delivery_exhausted"
   ],
   {
     message: "Alert type is required"
@@ -53,7 +54,8 @@ export const ALERT_TYPE_LABELS: Record<AlertType, string> = {
   zoom_credential_error: "Zoom Credential Error",
   bot_crash: "Bot Crash",
   transcription_failed: "Transcription Failed",
-  calendar_sync_error: "Calendar Sync Error"
+  calendar_sync_error: "Calendar Sync Error",
+  webhook_delivery_exhausted: "Webhook Delivery Exhausted"
 }
 
 // Alert types gated by feature flags
@@ -70,7 +72,8 @@ export const OPERATIONAL_ALERT_TYPES: AlertType[] = [
   "zoom_credential_error",
   "bot_crash",
   "transcription_failed",
-  "calendar_sync_error"
+  "calendar_sync_error",
+  "webhook_delivery_exhausted"
 ]
 
 /**

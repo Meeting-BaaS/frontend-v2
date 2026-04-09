@@ -1,6 +1,8 @@
 "use client"
 
-import { Lock, Mail, RotateCw } from "lucide-react"
+import { Info, Lock, Mail, RotateCw } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { ItemHeading } from "@/components/layout/item-heading"
@@ -9,6 +11,13 @@ import { CopyButton } from "@/components/ui/copy-button"
 import { GradientIcon } from "@/components/ui/gradient-icon"
 import { NameValuePair } from "@/components/ui/name-value-pair"
 import { Spinner } from "@/components/ui/spinner"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { AttemptsTable } from "@/components/webhooks/messages/attempts-table"
 import { axiosPostInstance } from "@/lib/api-client"
 import { RESEND_WEBHOOK_MESSAGE } from "@/lib/api-routes"
 import { formatRelativeDate } from "@/lib/date-helpers"
@@ -19,6 +28,38 @@ function isRedactedPayload(
   payload: WebhookMessageDetails["payload"]
 ): payload is { redacted: true; reason: string; bot_id: string | null } {
   return payload !== null && "redacted" in payload && payload.redacted === true
+}
+
+function getBotId(payload: WebhookMessageDetails["payload"]): string | null {
+  if (!payload) return null
+  if (isRedactedPayload(payload)) return payload.bot_id
+  return (payload.data?.bot_id as string) ?? null
+}
+
+function ResendButton({
+  loading,
+  onClick,
+  children
+}: {
+  loading: boolean
+  onClick: () => void
+  children?: React.ReactNode
+}) {
+  return (
+    <Button size="sm" onClick={onClick} disabled={loading}>
+      {loading ? (
+        <>
+          <Spinner />
+          <span>Resending</span>
+        </>
+      ) : (
+        <>
+          <RotateCw /> Resend
+          {children}
+        </>
+      )}
+    </Button>
+  )
 }
 
 interface WebhookMessageDetailsProps {
@@ -32,6 +73,7 @@ export function ViewWebhookMessageDetails({
   endpointId,
   messageId
 }: WebhookMessageDetailsProps) {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   const handleResendMessage = async () => {
@@ -45,6 +87,7 @@ export function ViewWebhookMessageDetails({
     try {
       await axiosPostInstance(RESEND_WEBHOOK_MESSAGE, data)
       toast.success("Webhook message resent successfully")
+      router.refresh()
     } catch (error) {
       console.error("Error resending webhook message", error)
       toast.error(error instanceof Error ? error.message : genericError)
@@ -52,6 +95,9 @@ export function ViewWebhookMessageDetails({
       setLoading(false)
     }
   }
+
+  const isBotCompleted = webhookMessage.eventType === "bot.completed"
+  const botId = getBotId(webhookMessage.payload)
 
   return (
     <section>
@@ -68,18 +114,33 @@ export function ViewWebhookMessageDetails({
           }
         />
         <div className="flex w-full sm:w-auto gap-2 flex-row sm:items-center">
-          <Button size="sm" onClick={handleResendMessage} disabled={loading}>
-            {loading ? (
-              <>
-                <Spinner />
-                <span>Resending</span>
-              </>
-            ) : (
-              <>
-                <RotateCw /> Resend
-              </>
-            )}
-          </Button>
+          {isBotCompleted ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ResendButton loading={loading} onClick={handleResendMessage}>
+                    <Info className="ml-1 size-3.5 text-muted-foreground" />
+                  </ResendButton>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-sm">
+                  <p>
+                    This replays the original payload. Download URLs may have expired.
+                    For fresh URLs, use{" "}
+                    {botId ? (
+                      <Link href={`/bots/${botId}`} className="underline font-medium">
+                        Resend Webhook
+                      </Link>
+                    ) : (
+                      <span className="font-medium">Resend Webhook</span>
+                    )}{" "}
+                    on the Bot Details page.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <ResendButton loading={loading} onClick={handleResendMessage} />
+          )}
         </div>
       </div>
 
@@ -91,13 +152,14 @@ export function ViewWebhookMessageDetails({
         />
         <NameValuePair
           title="Bot ID"
-          value={
-            isRedactedPayload(webhookMessage.payload)
-              ? (webhookMessage.payload.bot_id ?? "N/A")
-              : ((webhookMessage.payload?.data?.bot_id as string) ?? "N/A")
-          }
+          value={botId ?? "N/A"}
         />
       </div>
+
+      {webhookMessage.attempts && webhookMessage.attempts.length > 0 && (
+        <AttemptsTable attempts={webhookMessage.attempts} />
+      )}
+
       <div className="mt-10 flex flex-col gap-2">
         <div className="text-muted-foreground text-xs uppercase">Payload</div>
         {isRedactedPayload(webhookMessage.payload) ? (

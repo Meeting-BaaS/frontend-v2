@@ -1,4 +1,5 @@
 import {
+  differenceInSeconds,
   format,
   formatDistanceToNow,
   intervalToDuration,
@@ -96,6 +97,21 @@ export const formatDuration = (seconds: number) => {
   }
   return `${secs}s`;
 };
+
+/**
+ * Formats the duration between two ISO date strings as a human-readable string
+ * @param from - ISO timestamp string for the start
+ * @param to - ISO timestamp string for the end
+ * @returns Formatted duration string (e.g., "5s", "2m 30s", "1h 5m") or null if from is not provided
+ */
+export function formatDurationBetweenDates(
+  from: string | undefined,
+  to: string,
+): string | null {
+  if (!from) return null;
+  const seconds = differenceInSeconds(parseISO(to), parseISO(from));
+  return formatDuration(Math.max(0, seconds));
+}
 
 /**
  * Formats a future date to show relative time (e.g., "in 2 days", "in 3 hours")
