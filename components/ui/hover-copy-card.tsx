@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { CopyButton } from "@/components/ui/copy-button"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { cn } from "@/lib/utils"
 
 interface HoverCopyCardProps {
   /** The full text to display in the hover card and copy to clipboard */
@@ -19,18 +20,18 @@ export function HoverCopyCard({
   text,
   title = "Details",
   triggerClassName = "max-w-[200px]",
-  contentClassName = "w-100"
+  contentClassName = "w-80"
 }: HoverCopyCardProps) {
   return (
     <HoverCard openDelay={200}>
       <HoverCardTrigger asChild>
         <span
-          className={`truncate block cursor-pointer first-letter:capitalize ${triggerClassName}`}
+          className={cn("truncate block cursor-pointer first-letter:capitalize", triggerClassName)}
         >
           {text}
         </span>
       </HoverCardTrigger>
-      <HoverCardContent className={`${contentClassName} relative`}>
+      <HoverCardContent className={cn("relative", contentClassName)}>
         <div className="space-y-1">
           <h4 className="font-semibold text-sm">{title}</h4>
           <div className="max-h-[200px] overflow-y-auto pr-2">

@@ -36,6 +36,32 @@ function getBotId(payload: WebhookMessageDetails["payload"]): string | null {
   return (payload.data?.bot_id as string) ?? null
 }
 
+function ResendButton({
+  loading,
+  onClick,
+  children
+}: {
+  loading: boolean
+  onClick: () => void
+  children?: React.ReactNode
+}) {
+  return (
+    <Button size="sm" onClick={onClick} disabled={loading}>
+      {loading ? (
+        <>
+          <Spinner />
+          <span>Resending</span>
+        </>
+      ) : (
+        <>
+          <RotateCw /> Resend
+          {children}
+        </>
+      )}
+    </Button>
+  )
+}
+
 interface WebhookMessageDetailsProps {
   endpointId: string
   messageId: string
@@ -92,19 +118,9 @@ export function ViewWebhookMessageDetails({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="sm" onClick={handleResendMessage} disabled={loading}>
-                    {loading ? (
-                      <>
-                        <Spinner />
-                        <span>Resending</span>
-                      </>
-                    ) : (
-                      <>
-                        <RotateCw /> Resend
-                        <Info className="ml-1 size-3.5 text-muted-foreground" />
-                      </>
-                    )}
-                  </Button>
+                  <ResendButton loading={loading} onClick={handleResendMessage}>
+                    <Info className="ml-1 size-3.5 text-muted-foreground" />
+                  </ResendButton>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-xs text-sm">
                   <p>
@@ -123,18 +139,7 @@ export function ViewWebhookMessageDetails({
               </Tooltip>
             </TooltipProvider>
           ) : (
-            <Button size="sm" onClick={handleResendMessage} disabled={loading}>
-              {loading ? (
-                <>
-                  <Spinner />
-                  <span>Resending</span>
-                </>
-              ) : (
-                <>
-                  <RotateCw /> Resend
-                </>
-              )}
-            </Button>
+            <ResendButton loading={loading} onClick={handleResendMessage} />
           )}
         </div>
       </div>

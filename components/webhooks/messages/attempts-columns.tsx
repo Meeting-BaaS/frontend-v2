@@ -1,6 +1,6 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, Row, Table } from "@tanstack/react-table";
 import type { VariantProps } from "class-variance-authority";
 import { Badge, type badgeVariants } from "@/components/ui/badge";
 import { HoverCopyCard } from "@/components/ui/hover-copy-card";
@@ -22,6 +22,28 @@ const triggerTypeMap: Record<number, string> = {
   0: "Scheduled",
   1: "Manual",
 };
+
+/**
+ * Computes the backoff duration for a scheduled attempt by finding the
+ * previous scheduled attempt (filtered by triggerType, ordered by attemptNumber).
+ * Returns null for manual resends or the first scheduled attempt.
+ */
+function getScheduledBackoff(
+  row: Row<WebhookMessageAttempt>,
+  table: Table<WebhookMessageAttempt>,
+): string | null {
+  if (row.original.triggerType === 1) return null;
+
+  const scheduledAttempts = table
+    .getRowModel()
+    .rows.filter((r) => r.original.triggerType === 0)
+    .sort((a, b) => a.original.attemptNumber - b.original.attemptNumber);
+
+  const currentIdx = scheduledAttempts.findIndex((r) => r.id === row.id);
+  const prevScheduled = currentIdx > 0 ? scheduledAttempts[currentIdx - 1] : undefined;
+
+  return formatDurationBetweenDates(prevScheduled?.original.timestamp, row.original.timestamp);
+}
 
 export const columnWidths = {
   index: "w-[5%] min-w-[40px]",
@@ -64,12 +86,7 @@ export const columns: ColumnDef<WebhookMessageAttempt>[] = [
     header: "Backoff",
     meta: { className: columnWidths.backoff },
     cell: ({ row, table }) => {
-      const rows = table.getRowModel().rows;
-      const prevRow = rows[row.index - 1];
-      const backoff = formatDurationBetweenDates(
-        prevRow?.original.timestamp,
-        row.original.timestamp,
-      );
+      const backoff = getScheduledBackoff(row, table);
       return backoff ?? <span className="text-muted-foreground">-</span>;
     },
   },

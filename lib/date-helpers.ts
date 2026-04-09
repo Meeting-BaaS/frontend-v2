@@ -102,7 +102,7 @@ export const formatDuration = (seconds: number) => {
  * Formats the duration between two ISO date strings as a human-readable string
  * @param from - ISO timestamp string for the start
  * @param to - ISO timestamp string for the end
- * @returns Formatted duration string (e.g., "5s", "2m 30s", "1h 5m") or "-" if from is not provided
+ * @returns Formatted duration string (e.g., "5s", "2m 30s", "1h 5m") or null if from is not provided
  */
 export function formatDurationBetweenDates(
   from: string | undefined,
