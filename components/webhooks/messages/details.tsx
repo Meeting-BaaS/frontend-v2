@@ -2,6 +2,7 @@
 
 import { Info, Lock, Mail, RotateCw } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { ItemHeading } from "@/components/layout/item-heading"
@@ -46,6 +47,7 @@ export function ViewWebhookMessageDetails({
   endpointId,
   messageId
 }: WebhookMessageDetailsProps) {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   const handleResendMessage = async () => {
@@ -59,6 +61,7 @@ export function ViewWebhookMessageDetails({
     try {
       await axiosPostInstance(RESEND_WEBHOOK_MESSAGE, data)
       toast.success("Webhook message resent successfully")
+      router.refresh()
     } catch (error) {
       console.error("Error resending webhook message", error)
       toast.error(error instanceof Error ? error.message : genericError)
