@@ -83,11 +83,12 @@ export const botStatusSchema = zodEnum([
   "GENERAL_ERROR",
   // Transcription errors
   "TRANSCRIPTION_FAILED",
+  // Pre-recording stop (all bot types)
+  "EXITING_MEETING_BEFORE_RECORD",
   // Zoom-specific errors
   "WAITING_FOR_HOST_TIMEOUT",
   "RECORDING_RIGHTS_NOT_GRANTED",
   "CANNOT_REQUEST_RECORDING_RIGHT",
-  "EXITING_MEETING_BEFORE_RECORD",
   "MEETING_ENDED_PREMATURELY",
   "SET_ZOOM_ID_AND_PWD_TOGETHER",
   "CANNOT_GET_JWT_TOKEN",
