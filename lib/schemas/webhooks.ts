@@ -121,7 +121,7 @@ export const webhookMessageDetails = object({
     object({
       data: record(string(), zodUnknown()),
       event: string(),
-      extra: record(string(), zodUnknown()).nullable(),
+      extra: record(string(), zodUnknown()).nullable().optional(),
     }),
     object({
       redacted: literal(true),
