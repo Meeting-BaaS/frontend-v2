@@ -30,6 +30,8 @@ export const speechToTextProviderSchema = zodEnum([
   "assemblyai",
   "speechmatics",
   "soniox",
+  "elevenlabs",
+  "openai",
   "none",
 ]);
 
