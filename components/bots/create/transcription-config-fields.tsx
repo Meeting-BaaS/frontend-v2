@@ -25,7 +25,6 @@ const SUPPORTED_PROVIDERS: FieldMetadataProvider[] = [
   "assemblyai",
   "speechmatics",
   "soniox",
-  "openai",
 ]
 
 function getProviderFields(

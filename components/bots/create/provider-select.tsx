@@ -15,7 +15,6 @@ const PROVIDERS = [
   { value: "speechmatics", label: "Speechmatics" },
   { value: "soniox", label: "Soniox" },
   { value: "elevenlabs", label: "ElevenLabs" },
-  { value: "openai", label: "OpenAI" },
 ] as const
 
 interface ProviderSelectProps {

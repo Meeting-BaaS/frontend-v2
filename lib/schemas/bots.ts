@@ -31,7 +31,6 @@ export const speechToTextProviderSchema = zodEnum([
   "speechmatics",
   "soniox",
   "elevenlabs",
-  "openai",
   "none",
 ]);
 

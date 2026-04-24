@@ -7,7 +7,6 @@ export const transcriptionProviderSchema = zodEnum([
   "speechmatics",
   "soniox",
   "elevenlabs",
-  "openai",
 ])
 
 export type TranscriptionProvider = output<typeof transcriptionProviderSchema>
