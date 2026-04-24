@@ -1,9 +1,9 @@
 "use client"
 
+import { PROVIDERS } from "@meeting-baas/voice-router/providers"
 import {
   PROVIDER_FIELDS,
   type FieldMetadata,
-  type FieldMetadataProvider,
 } from "@meeting-baas/voice-router/field-metadata"
 import { useEffect } from "react"
 import type { Control, FieldPath, FieldValues, PathValue } from "react-hook-form"
@@ -19,20 +19,16 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-const SUPPORTED_PROVIDERS: FieldMetadataProvider[] = [
-  "gladia",
-  "deepgram",
-  "assemblyai",
-  "speechmatics",
-  "soniox",
-]
+const SUPPORTED_PROVIDERS: readonly string[] = PROVIDERS.filter(
+  (p) => p in PROVIDER_FIELDS
+)
 
 function getProviderFields(
   provider: string,
   mode: "transcription" | "streaming",
 ): FieldMetadata[] {
   if (!(provider in PROVIDER_FIELDS)) return []
-  const entry = PROVIDER_FIELDS[provider as FieldMetadataProvider]
+  const entry = PROVIDER_FIELDS[provider as keyof typeof PROVIDER_FIELDS]
   if (mode === "streaming" && "streaming" in entry) {
     return entry.streaming as unknown as FieldMetadata[]
   }
@@ -78,6 +74,7 @@ export function TranscriptionConfigFields<T extends FieldValues>({
               <ProviderSelect
                 value={field.value as string}
                 onChange={field.onChange}
+                mode={mode === "streaming" ? "streaming" : "batch"}
               />
             </FormControl>
             <FormMessage />
@@ -89,7 +86,7 @@ export function TranscriptionConfigFields<T extends FieldValues>({
         apiKeyName={apiKeyName}
         regionName={regionName}
       />
-      {SUPPORTED_PROVIDERS.includes(provider as FieldMetadataProvider) && (
+      {SUPPORTED_PROVIDERS.includes(provider) && (
         <FormField
           control={control}
           name={customParamsName}

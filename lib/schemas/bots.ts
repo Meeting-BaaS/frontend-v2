@@ -15,6 +15,7 @@ import {
   enum as zodEnum,
   unknown as zodUnknown,
 } from "zod";
+import { BATCH_PROVIDERS } from "@meeting-baas/voice-router/providers";
 import { isDateBefore } from "@/lib/date-helpers";
 import { CursorSchema } from "@/lib/schemas/common";
 
@@ -24,15 +25,8 @@ export const recordingModeSchema = zodEnum([
   "speaker_view",
   "gallery_view",
 ]);
-export const speechToTextProviderSchema = zodEnum([
-  "gladia",
-  "deepgram",
-  "assemblyai",
-  "speechmatics",
-  "soniox",
-  "elevenlabs",
-  "none",
-]);
+// Derived from voice-router — single source of truth for provider lists
+export const speechToTextProviderSchema = zodEnum([...BATCH_PROVIDERS, "none"]);
 
 // All possible bot statuses (event codes)
 // These are the event_code values sent by bots to /bot-process/update-status

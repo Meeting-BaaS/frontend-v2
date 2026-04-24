@@ -10,14 +10,6 @@ import { TranscriptionConfigFields } from "@/components/bots/create/transcriptio
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
   Form,
   FormControl,
   FormDescription,
@@ -129,7 +121,7 @@ export function CreateBotForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Sticky submit bar */}
-        <div className="sticky top-0 z-10 -mx-4 md:-mx-10 lg:-mx-20 px-4 md:px-10 lg:px-20 py-3 bg-background/80 backdrop-blur-sm border-b flex items-center justify-between gap-4">
+        <div className="sticky -top-8 z-10 -mx-4 md:-mx-10 lg:-mx-20 -mt-8 px-4 md:px-10 lg:px-20 py-3 bg-background/80 backdrop-blur-sm border-b flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <h2 className="text-base sm:text-lg font-semibold">Create Bot</h2>
             {errorCount > 0 && (
@@ -151,135 +143,131 @@ export function CreateBotForm() {
         </div>
 
         {/* Basic Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Info</CardTitle>
-            <CardDescription>
+        <section className="space-y-4 pb-8 border-b">
+          <div>
+            <h3 className="text-base font-medium">Basic Info</h3>
+            <p className="text-sm text-muted-foreground">
               Name your bot and specify the meeting to join
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <FormField
-              control={form.control}
-              name="bot_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bot Name <span className="text-baas-primary-500">*</span></FormLabel>
-                  <FormControl>
-                    <Input placeholder="My Meeting Bot" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="meeting_url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Meeting URL <span className="text-baas-primary-500">*</span></FormLabel>
-                  <FormControl>
-                    <Input
-                      type="url"
-                      placeholder="https://zoom.us/j/... or meet.google.com/..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="recording_mode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Recording Mode</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-wrap gap-1.5">
-                      {([
-                        { value: "speaker_view", label: "Speaker View" },
-                        { value: "gallery_view", label: "Gallery View" },
-                        { value: "audio_only", label: "Audio Only" },
-                      ] as const).map((opt) => (
-                        <button key={opt.value} type="button" onClick={() => field.onChange(opt.value)}>
-                          <Badge variant={field.value === opt.value ? "primary" : "outline"} className="cursor-pointer">
-                            {opt.label}
-                          </Badge>
-                        </button>
-                      ))}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
+            </p>
+          </div>
+          <FormField
+            control={form.control}
+            name="bot_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bot Name <span className="text-baas-primary-500">*</span></FormLabel>
+                <FormControl>
+                  <Input placeholder="My Meeting Bot" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="meeting_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Meeting URL <span className="text-baas-primary-500">*</span></FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://zoom.us/j/... or meet.google.com/..."
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="recording_mode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Recording Mode</FormLabel>
+                <FormControl>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([
+                      { value: "speaker_view", label: "Speaker View" },
+                      { value: "gallery_view", label: "Gallery View" },
+                      { value: "audio_only", label: "Audio Only" },
+                    ] as const).map((opt) => (
+                      <button key={opt.value} type="button" onClick={() => field.onChange(opt.value)}>
+                        <Badge variant={field.value === opt.value ? "primary" : "outline"} className="cursor-pointer">
+                          {opt.label}
+                        </Badge>
+                      </button>
+                    ))}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </section>
 
         {/* Post-Meeting Transcription */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Post-Meeting Transcription</CardTitle>
-            <CardDescription>
-              Transcribe the recording after the meeting ends
-            </CardDescription>
-            <CardAction>
-              <FormField
-                control={form.control}
-                name="transcription_enabled"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </CardAction>
-          </CardHeader>
+        <section className="space-y-4 pb-8 border-b">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-base font-medium">Post-Meeting Transcription</h3>
+              <p className="text-sm text-muted-foreground">
+                Transcribe the recording after the meeting ends
+              </p>
+            </div>
+            <FormField
+              control={form.control}
+              name="transcription_enabled"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
           {transcriptionEnabled && (
-            <CardContent className="space-y-4">
-              <TranscriptionConfigFields
-                control={form.control}
-                providerName="transcription_provider"
-                apiKeyName="transcription_api_key"
-                regionName="transcription_region"
-                customParamsName="transcription_custom_params"
-              />
-            </CardContent>
+            <TranscriptionConfigFields
+              control={form.control}
+              providerName="transcription_provider"
+              apiKeyName="transcription_api_key"
+              regionName="transcription_region"
+              customParamsName="transcription_custom_params"
+            />
           )}
-        </Card>
+        </section>
 
         {/* Live Streaming */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Live Streaming</CardTitle>
-            <CardDescription>
-              Stream real-time transcription or raw audio during the meeting
-            </CardDescription>
-            <CardAction>
-              <FormField
-                control={form.control}
-                name="streaming_enabled"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </CardAction>
-          </CardHeader>
+        <section className="space-y-4 pb-8 border-b">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-base font-medium">Live Streaming</h3>
+              <p className="text-sm text-muted-foreground">
+                Stream real-time transcription or raw audio during the meeting
+              </p>
+            </div>
+            <FormField
+              control={form.control}
+              name="streaming_enabled"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
           {streamingEnabled && (
-            <CardContent className="space-y-4">
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="streaming_mode"
@@ -404,36 +392,36 @@ export function CreateBotForm() {
                   />
                 </div>
               )}
-            </CardContent>
+            </div>
           )}
-        </Card>
+        </section>
 
         {/* Callback */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Callback</CardTitle>
-            <CardDescription>
-              Receive a webhook when the bot completes or fails
-            </CardDescription>
-            <CardAction>
-              <FormField
-                control={form.control}
-                name="callback_enabled"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </CardAction>
-          </CardHeader>
+        <section className="space-y-4 pb-8 border-b">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-base font-medium">Callback</h3>
+              <p className="text-sm text-muted-foreground">
+                Receive a webhook when the bot completes or fails
+              </p>
+            </div>
+            <FormField
+              control={form.control}
+              name="callback_enabled"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
           {callbackEnabled && (
-            <CardContent className="space-y-4">
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="callback_url"
@@ -493,32 +481,32 @@ export function CreateBotForm() {
                   )}
                 />
               </div>
-            </CardContent>
+            </div>
           )}
-        </Card>
+        </section>
 
         {/* Advanced */}
-        <Card>
-          <CardHeader>
-            <button
-              type="button"
-              onClick={() => setAdvancedOpen(!advancedOpen)}
-              className="flex w-full items-center gap-2 text-left"
-            >
-              <CardTitle className="flex-1">Advanced</CardTitle>
-              <ChevronDown
-                className={cn(
-                  "h-4 w-4 text-muted-foreground transition-transform",
-                  advancedOpen && "rotate-180",
-                )}
-              />
-            </button>
-            <CardDescription>
-              Entry message, timeouts, and extra configuration
-            </CardDescription>
-          </CardHeader>
+        <section className="space-y-4 pb-8">
+          <button
+            type="button"
+            onClick={() => setAdvancedOpen(!advancedOpen)}
+            className="flex w-full items-center justify-between gap-2 text-left"
+          >
+            <div>
+              <h3 className="text-base font-medium">Advanced</h3>
+              <p className="text-sm text-muted-foreground">
+                Entry message, timeouts, and extra configuration
+              </p>
+            </div>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
+                advancedOpen && "rotate-180",
+              )}
+            />
+          </button>
           {advancedOpen && (
-            <CardContent className="space-y-4">
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="entry_message"
@@ -648,9 +636,9 @@ export function CreateBotForm() {
                   </FormItem>
                 )}
               />
-            </CardContent>
+            </div>
           )}
-        </Card>
+        </section>
 
       </form>
     </Form>

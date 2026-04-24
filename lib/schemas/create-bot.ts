@@ -1,15 +1,12 @@
 import { boolean, number, object, type output, record, string, enum as zodEnum, unknown as zodUnknown } from "zod"
+import { BATCH_PROVIDERS, STREAMING_PROVIDERS } from "@meeting-baas/voice-router/providers"
 
-export const transcriptionProviderSchema = zodEnum([
-  "gladia",
-  "deepgram",
-  "assemblyai",
-  "speechmatics",
-  "soniox",
-  "elevenlabs",
-])
+// Derived from voice-router — single source of truth for provider lists
+export const batchTranscriptionProviderSchema = zodEnum(BATCH_PROVIDERS)
+export const streamingTranscriptionProviderSchema = zodEnum(STREAMING_PROVIDERS)
 
-export type TranscriptionProvider = output<typeof transcriptionProviderSchema>
+export type BatchTranscriptionProvider = output<typeof batchTranscriptionProviderSchema>
+export type StreamingTranscriptionProvider = output<typeof streamingTranscriptionProviderSchema>
 
 export const recordingModeSchema = zodEnum([
   "audio_only",
@@ -31,7 +28,7 @@ export const createBotFormSchema = object({
 
   // Transcription
   transcription_enabled: boolean(),
-  transcription_provider: transcriptionProviderSchema,
+  transcription_provider: batchTranscriptionProviderSchema,
   transcription_api_key: string(),
   transcription_region: string(),
   transcription_custom_params: record(string(), zodUnknown()),
@@ -43,7 +40,7 @@ export const createBotFormSchema = object({
   streaming_output_url: string(),
   streaming_audio_frequency: audioFrequencySchema,
   // Streaming transcription (when mode=transcription)
-  streaming_transcription_provider: transcriptionProviderSchema,
+  streaming_transcription_provider: streamingTranscriptionProviderSchema,
   streaming_transcription_api_key: string(),
   streaming_transcription_region: string(),
   streaming_transcription_custom_params: record(string(), zodUnknown()),
