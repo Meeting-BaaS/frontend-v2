@@ -39,7 +39,6 @@ interface TranscriptionConfigFieldsProps<T extends FieldValues> {
   control: Control<T>
   providerName: FieldPath<T>
   apiKeyName: FieldPath<T>
-  regionName: FieldPath<T>
   customParamsName: FieldPath<T>
   mode?: "transcription" | "streaming"
   disabled?: boolean
@@ -49,7 +48,6 @@ export function TranscriptionConfigFields<T extends FieldValues>({
   control,
   providerName,
   apiKeyName,
-  regionName,
   customParamsName,
   mode = "transcription",
   disabled,
@@ -84,7 +82,6 @@ export function TranscriptionConfigFields<T extends FieldValues>({
       <ByokFields
         control={control}
         apiKeyName={apiKeyName}
-        regionName={regionName}
       />
       {SUPPORTED_PROVIDERS.includes(provider) && (
         <FormField

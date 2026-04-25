@@ -58,7 +58,6 @@ export function CreateBotForm() {
       transcription_enabled: true,
       transcription_provider: "gladia",
       transcription_api_key: "",
-      transcription_region: "",
       transcription_custom_params: {},
       streaming_enabled: false,
       streaming_mode: "transcription",
@@ -67,7 +66,6 @@ export function CreateBotForm() {
       streaming_audio_frequency: "24000",
       streaming_transcription_provider: "gladia",
       streaming_transcription_api_key: "",
-      streaming_transcription_region: "",
       streaming_transcription_custom_params: {},
       callback_enabled: false,
       callback_url: "",
@@ -236,7 +234,6 @@ export function CreateBotForm() {
               control={form.control}
               providerName="transcription_provider"
               apiKeyName="transcription_api_key"
-              regionName="transcription_region"
               customParamsName="transcription_custom_params"
             />
           )}
@@ -386,7 +383,6 @@ export function CreateBotForm() {
                     control={form.control}
                     providerName="streaming_transcription_provider"
                     apiKeyName="streaming_transcription_api_key"
-                    regionName="streaming_transcription_region"
                     customParamsName="streaming_transcription_custom_params"
                     mode="streaming"
                   />

@@ -40,9 +40,6 @@ export function transformCreateBotFormToPayload(values: CreateBotFormValues) {
     if (values.transcription_api_key.trim()) {
       config["api_key"] = values.transcription_api_key.trim()
     }
-    if (values.transcription_region.trim()) {
-      config["region"] = values.transcription_region.trim()
-    }
     if (Object.keys(values.transcription_custom_params).length > 0) {
       config["custom_params"] = values.transcription_custom_params
     }
@@ -69,9 +66,6 @@ export function transformCreateBotFormToPayload(values: CreateBotFormValues) {
       }
       if (values.streaming_transcription_api_key.trim()) {
         txConfig["api_key"] = values.streaming_transcription_api_key.trim()
-      }
-      if (values.streaming_transcription_region.trim()) {
-        txConfig["region"] = values.streaming_transcription_region.trim()
       }
       if (Object.keys(values.streaming_transcription_custom_params).length > 0) {
         txConfig["custom_params"] = values.streaming_transcription_custom_params
