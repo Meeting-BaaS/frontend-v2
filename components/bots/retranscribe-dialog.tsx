@@ -67,7 +67,6 @@ export function RetranscribeDialog({
         useOverride: true,
         provider: "gladia",
         api_key: "",
-        region: "",
         custom_params: {},
       });
     }
@@ -84,7 +83,6 @@ export function RetranscribeDialog({
     useOverride: boolean;
     provider?: string;
     api_key?: string;
-    region?: string;
     custom_params?: Record<string, unknown>;
   }) => {
     if (loading) return;
@@ -97,7 +95,6 @@ export function RetranscribeDialog({
             transcription: {
               provider: data.provider,
               api_key: data.api_key || null,
-              region: data.region || null,
               custom_params:
                 data.custom_params &&
                 Object.keys(data.custom_params).length > 0
@@ -189,7 +186,6 @@ export function RetranscribeDialog({
                 control={form.control as never}
                 providerName="provider"
                 apiKeyName="api_key"
-                regionName="region"
                 customParamsName="custom_params"
                 disabled={!useOverride}
               />

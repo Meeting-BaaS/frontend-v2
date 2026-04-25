@@ -270,7 +270,6 @@ export const retranscribeFormSchema = discriminatedUnion("useOverride", [
     useOverride: literal(true),
     provider: speechToTextProviderSchema.exclude(["none"]),
     api_key: string().optional(),
-    region: string().optional(),
     custom_params: record(string(), zodUnknown()).optional(),
   }),
   object({
