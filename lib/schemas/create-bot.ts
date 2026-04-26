@@ -60,8 +60,8 @@ export const createBotFormSchema = object({
   (data) => !data.callback_enabled || data.callback_url.trim().length > 0,
   { message: "Callback URL is required when callback is enabled", path: ["callback_url"] },
 ).refine(
-  (data) => !data.streaming_enabled || !data.streaming_mode || data.streaming_mode !== "transcription" || data.streaming_output_url.trim().length > 0,
-  { message: "Output URL is required for transcription streaming", path: ["streaming_output_url"] },
+  (data) => !data.streaming_enabled || data.streaming_mode !== "audio" || data.streaming_output_url.trim().length > 0,
+  { message: "Output URL is required for audio streaming", path: ["streaming_output_url"] },
 )
 
 export type CreateBotFormValues = output<typeof createBotFormSchema>

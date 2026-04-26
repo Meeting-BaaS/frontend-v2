@@ -321,14 +321,14 @@ export function CreateBotForm() {
                   name="streaming_output_url"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Output URL {streamingMode === "transcription" && <span className="text-baas-primary-500">*</span>}</FormLabel>
+                      <FormLabel>Output URL {streamingMode === "audio" && <span className="text-baas-primary-500">*</span>}</FormLabel>
                       <FormControl>
                         <Input
                           type="url"
                           placeholder={
                             streamingMode === "audio"
                               ? "wss://..."
-                              : "https://..."
+                              : "https://... (optional)"
                           }
                           {...field}
                         />
@@ -336,7 +336,7 @@ export function CreateBotForm() {
                       <FormDescription>
                         {streamingMode === "audio"
                           ? "WebSocket URL where the bot sends raw audio"
-                          : "HTTP URL where transcript events are POSTed"}
+                          : "Optional HTTP URL where transcript events are forwarded"}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
