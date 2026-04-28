@@ -36,6 +36,7 @@ export function transformCreateBotFormToPayload(values: CreateBotFormValues) {
   if (values.transcription_enabled) {
     const config: Record<string, unknown> = {
       provider: values.transcription_provider,
+      region: values.transcription_region || null,
     }
     if (values.transcription_api_key.trim()) {
       config["api_key"] = values.transcription_api_key.trim()
@@ -63,6 +64,7 @@ export function transformCreateBotFormToPayload(values: CreateBotFormValues) {
     if (values.streaming_mode === "transcription") {
       const txConfig: Record<string, unknown> = {
         provider: values.streaming_transcription_provider,
+        region: values.streaming_transcription_region || null,
       }
       if (values.streaming_transcription_api_key.trim()) {
         txConfig["api_key"] = values.streaming_transcription_api_key.trim()

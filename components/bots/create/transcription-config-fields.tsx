@@ -1,6 +1,6 @@
 "use client"
 
-import { PROVIDERS } from "@meeting-baas/voice-router/providers"
+import { PROVIDERS, BATCH_PROVIDER_REGIONS, STREAMING_PROVIDER_REGIONS } from "@meeting-baas/voice-router/providers"
 import {
   PROVIDER_FIELDS,
   type FieldMetadata,
@@ -18,6 +18,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const SUPPORTED_PROVIDERS: readonly string[] = PROVIDERS.filter(
   (p) => p in PROVIDER_FIELDS
@@ -35,9 +42,18 @@ function getProviderFields(
   return entry.transcription as unknown as FieldMetadata[]
 }
 
+function getRegionsForProvider(
+  provider: string,
+  mode: "transcription" | "streaming",
+): readonly string[] | null {
+  const map = mode === "streaming" ? STREAMING_PROVIDER_REGIONS : BATCH_PROVIDER_REGIONS
+  return (map as Record<string, readonly string[]>)[provider] ?? null
+}
+
 interface TranscriptionConfigFieldsProps<T extends FieldValues> {
   control: Control<T>
   providerName: FieldPath<T>
+  regionName?: FieldPath<T>
   apiKeyName: FieldPath<T>
   customParamsName: FieldPath<T>
   mode?: "transcription" | "streaming"
@@ -47,6 +63,7 @@ interface TranscriptionConfigFieldsProps<T extends FieldValues> {
 export function TranscriptionConfigFields<T extends FieldValues>({
   control,
   providerName,
+  regionName,
   apiKeyName,
   customParamsName,
   mode = "transcription",
@@ -55,10 +72,15 @@ export function TranscriptionConfigFields<T extends FieldValues>({
   const provider = useWatch({ control, name: providerName }) as string
   const { setValue } = useFormContext<T>()
 
-  // Reset custom_params when provider changes
+  const regions = getRegionsForProvider(provider, mode)
+
+  // Reset custom_params and region when provider changes
   useEffect(() => {
     setValue(customParamsName, {} as PathValue<T, FieldPath<T>>)
-  }, [provider, setValue, customParamsName])
+    if (regionName) {
+      setValue(regionName, "" as PathValue<T, FieldPath<T>>)
+    }
+  }, [provider, setValue, customParamsName, regionName])
 
   return (
     <>
@@ -79,6 +101,35 @@ export function TranscriptionConfigFields<T extends FieldValues>({
           </FormItem>
         )}
       />
+      {regionName && regions && regions.length > 0 && (
+        <FormField
+          control={control}
+          name={regionName}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Region</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value as string}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a region" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {regions.map((r) => (
+                    <SelectItem key={r} value={r}>
+                      {r}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
       <ByokFields
         control={control}
         apiKeyName={apiKeyName}

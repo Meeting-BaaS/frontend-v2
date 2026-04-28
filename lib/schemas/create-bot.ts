@@ -29,6 +29,7 @@ export const createBotFormSchema = object({
   // Transcription
   transcription_enabled: boolean(),
   transcription_provider: batchTranscriptionProviderSchema,
+  transcription_region: string(),
   transcription_api_key: string(),
   transcription_custom_params: record(string(), zodUnknown()),
 
@@ -40,6 +41,7 @@ export const createBotFormSchema = object({
   streaming_audio_frequency: audioFrequencySchema,
   // Streaming transcription (when mode=transcription)
   streaming_transcription_provider: streamingTranscriptionProviderSchema,
+  streaming_transcription_region: string(),
   streaming_transcription_api_key: string(),
   streaming_transcription_custom_params: record(string(), zodUnknown()),
 
