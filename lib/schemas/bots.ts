@@ -28,6 +28,14 @@ export const recordingModeSchema = zodEnum([
 // Derived from voice-router — single source of truth for provider lists
 export const speechToTextProviderSchema = zodEnum([...BATCH_PROVIDERS, "none"]);
 
+/** Shared transcription override fields used by retranscribe and other dialogs. */
+export const transcriptionOverrideSchema = object({
+  provider: speechToTextProviderSchema.exclude(["none"]),
+  region: string().optional(),
+  api_key: string().optional(),
+  custom_params: record(string(), zodUnknown()).optional(),
+});
+
 // All possible bot statuses (event codes)
 // These are the event_code values sent by bots to /bot-process/update-status
 export const botStatusSchema = zodEnum([
@@ -266,15 +274,8 @@ export type RetryCallbackFormData = output<typeof retryCallbackFormSchema>;
 
 // Retranscribe form schema (for dialog) - discriminated union
 export const retranscribeFormSchema = discriminatedUnion("useOverride", [
-  object({
-    useOverride: literal(true),
-    provider: speechToTextProviderSchema.exclude(["none"]),
-    api_key: string().optional(),
-    custom_params: record(string(), zodUnknown()).optional(),
-  }),
-  object({
-    useOverride: literal(false),
-  }),
+  transcriptionOverrideSchema.extend({ useOverride: literal(true) }),
+  object({ useOverride: literal(false) }),
 ]);
 
 export type RetranscribeFormData = output<typeof retranscribeFormSchema>;

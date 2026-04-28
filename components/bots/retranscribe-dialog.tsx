@@ -66,6 +66,7 @@ export function RetranscribeDialog({
       reset({
         useOverride: true,
         provider: "gladia",
+        region: "",
         api_key: "",
         custom_params: {},
       });
@@ -82,6 +83,7 @@ export function RetranscribeDialog({
   const onSubmit = async (data: {
     useOverride: boolean;
     provider?: string;
+    region?: string;
     api_key?: string;
     custom_params?: Record<string, unknown>;
   }) => {
@@ -94,6 +96,7 @@ export function RetranscribeDialog({
         ? {
             transcription: {
               provider: data.provider,
+              region: data.region || null,
               api_key: data.api_key || null,
               custom_params:
                 data.custom_params &&
@@ -185,6 +188,7 @@ export function RetranscribeDialog({
               <TranscriptionConfigFields
                 control={form.control as never}
                 providerName="provider"
+                regionName="region"
                 apiKeyName="api_key"
                 customParamsName="custom_params"
                 disabled={!useOverride}
