@@ -780,7 +780,7 @@ packages:
     resolution: {integrity: sha512-llBRm4dT4Z89aRsm6u2oEZ8tfwL/2l6BwpZ7JcyieouniDECM5AqNgr/y08zalEIvW3RSK4upYyybDcmjXqAow==}
 
   '@meeting-baas/voice-router@file:packages/meeting-baas-voice-router-1.0.0.tgz':
-    resolution: {integrity: sha512-eAi5Us931zHVxblja5iZyBWAuYFP55NzM0afsnV3x41EVWHLXX4Q4ABrWG6XAlI4EmV03wpk/XIXBktQ+KMoBQ==, tarball: file:packages/meeting-baas-voice-router-1.0.0.tgz}
+    resolution: {integrity: sha512-iYJd+8zynnvdTer53p2SfyvK9/TkchehSJg1IbxnCTIbgwzyO00X+L3otgM9d5EZfBQ+TVu3112rTX6Qii6NlA==, tarball: file:packages/meeting-baas-voice-router-1.0.0.tgz}
     version: 1.0.0
     engines: {node: '>=22.16.0', pnpm: '>=10.18.3'}
 
@@ -2833,8 +2833,8 @@ packages:
       jsdom:
         optional: true
 
-  voice-router-dev@0.9.0:
-    resolution: {integrity: sha512-8HyrH3tpXG8lPNsy2f9tCJsk7urgF6WJz78th8OXRYgPHA66Xl0tJqONB+CiAUbmLkNQ7fktcYSANcMz//I8qQ==}
+  voice-router-dev@0.9.4:
+    resolution: {integrity: sha512-FlG1QGjQ5dS+69gvVbJPKZcNByg8yEEJthP7IG96/AN0geNt51lMMLRUsoxQ73rDgVP5cBZNQbrRfwaITPTDrg==}
     engines: {node: '>=20.0.0'}
 
   w3c-xmlserializer@5.0.0:
@@ -3367,7 +3367,7 @@ snapshots:
 
   '@meeting-baas/voice-router@file:packages/meeting-baas-voice-router-1.0.0.tgz':
     dependencies:
-      voice-router-dev: 0.9.0
+      voice-router-dev: 0.9.4
       zod: 4.1.12
     transitivePeerDependencies:
       - bufferutil
@@ -5366,7 +5366,7 @@ snapshots:
       - tsx
       - yaml
 
-  voice-router-dev@0.9.0:
+  voice-router-dev@0.9.4:
     dependencies:
       axios: 1.14.0
       ws: 8.19.0
