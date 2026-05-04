@@ -1,71 +1,52 @@
-"use client";
+"use client"
 
-import {
-  AlertTriangle,
-  Coins,
-  FileAudio,
-  FileText,
-  Radio,
-  RefreshCw,
-} from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { Artifacts } from "@/components/bots/artifacts";
-import { BotActions } from "@/components/bots/bot-actions";
-import { JsonPreview } from "@/components/bots/json-preview";
-import { RetryCallbackDialog } from "@/components/bots/retry-callback-dialog";
-import { StatusHistory } from "@/components/bots/status-history";
-import { GoogleMeetLogo } from "@/components/icons/google-meet";
-import { MicrosoftTeamsLogo } from "@/components/icons/microsoft-teams";
-import { ZoomLogo } from "@/components/icons/zoom";
-import { DocsButton } from "@/components/layout/docs-button";
-import { ItemHeading } from "@/components/layout/item-heading";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { GradientIcon } from "@/components/ui/gradient-icon";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { NameValuePair } from "@/components/ui/name-value-pair";
-import { Separator } from "@/components/ui/separator";
-import { formatDuration, formatRelativeDate } from "@/lib/date-helpers";
-import type { BotDetails } from "@/lib/schemas/bots";
-import { readableRecordingMode } from "@/lib/utils";
+import { AlertTriangle, Coins, FileAudio, FileText, Radio, RefreshCw } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
+import { Artifacts } from "@/components/bots/artifacts"
+import { BotActions } from "@/components/bots/bot-actions"
+import { JsonPreview } from "@/components/bots/json-preview"
+import { RetryCallbackDialog } from "@/components/bots/retry-callback-dialog"
+import { StatusHistory } from "@/components/bots/status-history"
+import { GoogleMeetLogo } from "@/components/icons/google-meet"
+import { MicrosoftTeamsLogo } from "@/components/icons/microsoft-teams"
+import { ZoomLogo } from "@/components/icons/zoom"
+import { DocsButton } from "@/components/layout/docs-button"
+import { ItemHeading } from "@/components/layout/item-heading"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { GradientIcon } from "@/components/ui/gradient-icon"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { NameValuePair } from "@/components/ui/name-value-pair"
+import { Separator } from "@/components/ui/separator"
+import { formatDuration, formatRelativeDate } from "@/lib/date-helpers"
+import type { BotDetails } from "@/lib/schemas/bots"
+import { readableRecordingMode } from "@/lib/utils"
 
 interface BotDetailsProps {
-  botDetails: BotDetails;
-  botUuid: string;
+  botDetails: BotDetails
+  botUuid: string
 }
 
 export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
-  const [openRetryDialog, setOpenRetryDialog] = useState(false);
-  const botDuration = botDetails.duration
-    ? parseInt(botDetails.duration, 10)
-    : 0;
+  const [openRetryDialog, setOpenRetryDialog] = useState(false)
+  const botDuration = botDetails.duration ? Number.parseInt(botDetails.duration, 10) : 0
 
   // Format token values for display (returns precision string as-is)
   const formatTokenValue = (value: string | null | undefined): string => {
-    return value ?? "0";
-  };
+    return value ?? "0"
+  }
 
-  const recordingTokens = formatTokenValue(botDetails.recording_tokens);
-  const transcriptionTokens = formatTokenValue(botDetails.transcription_tokens);
-  const byokTranscriptionTokens = formatTokenValue(
-    botDetails.byok_transcription_tokens,
-  );
-  const inputStreamingTokens = formatTokenValue(
-    botDetails.streaming_input_tokens,
-  );
-  const outputStreamingTokens = formatTokenValue(
-    botDetails.streaming_output_tokens,
-  );
-  const totalTokens = formatTokenValue(botDetails.total_tokens);
+  const recordingTokens = formatTokenValue(botDetails.recording_tokens)
+  const transcriptionTokens = formatTokenValue(botDetails.transcription_tokens)
+  const byokTranscriptionTokens = formatTokenValue(botDetails.byok_transcription_tokens)
+  const inputStreamingTokens = formatTokenValue(botDetails.streaming_input_tokens)
+  const outputStreamingTokens = formatTokenValue(botDetails.streaming_output_tokens)
+  const totalTokens = formatTokenValue(botDetails.total_tokens)
 
   // Determine which transcription token to show (only one is used)
   const transcriptionTokenValue =
-    transcriptionTokens !== "0" ? transcriptionTokens : byokTranscriptionTokens;
+    transcriptionTokens !== "0" ? transcriptionTokens : byokTranscriptionTokens
 
   return (
     <section>
@@ -89,11 +70,7 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
         />
         <div className="flex w-full sm:w-auto gap-2 flex-row sm:items-center">
           <DocsButton uriSuffix="api-v2/reference/bots/get-bot-details" />
-          <BotActions
-            botDetails={botDetails}
-            botUuid={botUuid}
-            buttonVariant="outline"
-          />
+          <BotActions botDetails={botDetails} botUuid={botUuid} buttonVariant="outline" />
         </div>
       </div>
 
@@ -103,9 +80,7 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
           <AlertTriangle />
           <AlertTitle>Callback Error</AlertTitle>
           <AlertDescription className="space-y-2">
-            <p>
-              We faced an error when trying to hit the configured callback URL.
-            </p>
+            <p>We faced an error when trying to hit the configured callback URL.</p>
             <div className="space-y-1 text-sm">
               <p>
                 <strong>Code:</strong> {botDetails.callback_error.error}
@@ -138,9 +113,7 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
               {botDetails.open_support_tickets === 1 ? "" : "s"} for this bot.
             </p>
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/support-center?bot_uuid=${botUuid}`}>
-                View tickets
-              </Link>
+              <Link href={`/support-center?bot_uuid=${botUuid}`}>View tickets</Link>
             </Button>
           </AlertDescription>
         </Alert>
@@ -196,9 +169,7 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
                     <div className="flex items-center gap-1 text-muted-foreground text-sm">
                       <FileText className="size-3" />
                       <span>
-                        {transcriptionTokenValue
-                          ? "Transcription"
-                          : "BYOK Transcription"}
+                        {transcriptionTokenValue ? "Transcription" : "BYOK Transcription"}
                       </span>
                       <span className="ml-auto">{transcriptionTokenValue}</span>
                     </div>
@@ -231,11 +202,17 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
           value={botDetails.extra && <JsonPreview data={botDetails.extra} />}
         />
         <NameValuePair
+          title="Participants"
+          value={
+            botDetails.participants && botDetails.participants.length > 0 ? (
+              <JsonPreview data={botDetails.participants} />
+            ) : null
+          }
+        />
+        <NameValuePair
           containerClassName="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4"
           title="Status History"
-          value={
-            <StatusHistory statusHistory={botDetails.status_history ?? []} />
-          }
+          value={<StatusHistory statusHistory={botDetails.status_history ?? []} />}
         />
         <NameValuePair
           containerClassName="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4"
@@ -249,5 +226,5 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
         onOpenChange={setOpenRetryDialog}
       />
     </section>
-  );
+  )
 }

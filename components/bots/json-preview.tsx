@@ -1,36 +1,42 @@
-"use client";
+"use client"
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { CopyButton } from "@/components/ui/copy-button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { CopyButton } from "@/components/ui/copy-button"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 interface JsonPreviewProps {
-  data: Record<string, unknown> | null;
+  data: Record<string, unknown> | unknown[] | null
 }
 
-const MAX_PREVIEW_LENGTH = 20;
+const MAX_PREVIEW_LENGTH = 20
 
 export function JsonPreview({ data }: JsonPreviewProps) {
-  if (!data || Object.keys(data).length === 0) {
-    return <span className="text-muted-foreground text-xs">N/A</span>;
+  if (!data) {
+    return <span className="text-muted-foreground text-xs">N/A</span>
   }
 
-  // Get the first entry for preview
-  const [firstKey, firstValue] = Object.entries(data)[0] ?? [];
-  if (!firstKey) return null;
+  const isArray = Array.isArray(data)
+  const itemCount = isArray ? data.length : Object.keys(data).length
+  if (itemCount === 0) {
+    return <span className="text-muted-foreground text-xs">N/A</span>
+  }
 
-  const valueStr = JSON.stringify(firstValue);
-  const preview = `{ ${firstKey}: ${valueStr} }`;
+  let preview: string
+  let hasMore: boolean
+  if (isArray) {
+    preview = `[${itemCount} item${itemCount === 1 ? "" : "s"}]`
+    hasMore = false
+  } else {
+    const [firstKey, firstValue] = Object.entries(data)[0] ?? []
+    if (!firstKey) return null
+    const valueStr = JSON.stringify(firstValue)
+    preview = `{ ${firstKey}: ${valueStr} }`
+    hasMore = itemCount > 1
+  }
   const truncatedPreview =
-    preview.length > MAX_PREVIEW_LENGTH
-      ? preview.substring(0, MAX_PREVIEW_LENGTH - 3)
-      : preview;
-  const hasMoreKeys = Object.keys(data).length > 1;
+    preview.length > MAX_PREVIEW_LENGTH ? preview.substring(0, MAX_PREVIEW_LENGTH - 3) : preview
+  const hasMoreKeys = hasMore
 
   return (
     <HoverCard openDelay={200}>
@@ -50,16 +56,11 @@ export function JsonPreview({ data }: JsonPreviewProps) {
               </p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="-mt-3 -mr-3 h-8 w-8 shrink-0"
-            asChild
-          >
+          <Button variant="ghost" size="icon" className="-mt-3 -mr-3 h-8 w-8 shrink-0" asChild>
             <CopyButton text={JSON.stringify(data, null, 2)} />
           </Button>
         </div>
       </HoverCardContent>
     </HoverCard>
-  );
+  )
 }
