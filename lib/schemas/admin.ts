@@ -145,6 +145,14 @@ export const adminBotDetailsSchema = object({
   openSupportTickets: number().describe(
     "Number of open support tickets for the bot",
   ),
+  participants: array(
+    object({
+      name: string(),
+      id: number().int().nullable(),
+      display_name: string().optional(),
+      profile_picture: string().optional(),
+    }),
+  ).nullable(),
 });
 
 export type AdminBotDetails = output<typeof adminBotDetailsSchema>;
