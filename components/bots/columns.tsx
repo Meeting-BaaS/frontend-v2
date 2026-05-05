@@ -39,6 +39,9 @@ export const botColorVariants = cva("", {
       in_waiting_room: SLATE,
       in_waiting_for_host: SLATE,
 
+      // Pickup delayed - Amber (informational warning; bot may still recover)
+      pickup_delayed: AMBER,
+
       // Active call states - Violet
       in_call_not_recording: VIOLET,
 

@@ -59,6 +59,8 @@ export const zoomCredentialSchema = object({
   credential_type: zoomCredentialTypeSchema,
   zoom_user_id: nullable(string()),
   zoom_account_id: nullable(string()),
+  zoom_email: nullable(string()).optional(),
+  zoom_display_name: nullable(string()).optional(),
   scopes: nullable(string()),
   state: zoomCredentialStateSchema,
   last_error_message: nullable(string()),

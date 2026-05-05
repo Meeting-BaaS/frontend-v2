@@ -103,12 +103,20 @@ export const columns: ColumnDef<ZoomCredential>[] = [
     },
     cell: ({ row }) => {
       const zoomUserId = row.original.zoom_user_id
+      const zoomEmail = row.original.zoom_email
       if (!zoomUserId) {
         return <span className="text-muted-foreground">-</span>
       }
       return (
         <div className="flex items-center gap-1 group">
-          <span className="truncate max-w-[150px] text-sm">{zoomUserId}</span>
+          <div className="flex flex-col min-w-0">
+            <span className="truncate max-w-[150px] text-sm">{zoomUserId}</span>
+            {zoomEmail && (
+              <span className="truncate max-w-[150px] text-muted-foreground text-xs">
+                {zoomEmail}
+              </span>
+            )}
+          </div>
           <Button
             variant="ghost"
             size="icon"

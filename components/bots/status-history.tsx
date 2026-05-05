@@ -45,6 +45,13 @@ const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
     color: "var(--color-slate-500)",
     badgeVariant: "secondary",
   },
+  pickup_delayed: {
+    icon: AlertCircle,
+    description:
+      "Bot has stayed queued longer than the expected pickup window. Informational — the bot may still proceed normally to joining_call.",
+    color: "var(--color-amber-500)",
+    badgeVariant: "outline",
+  },
   joining_call: {
     icon: Send,
     description: "Bot is joining the meeting",

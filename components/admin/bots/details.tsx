@@ -290,6 +290,16 @@ export function AdminBotDetails({ botDetails, botUuid }: AdminBotDetailsProps) {
               )
             }
           />
+          <NameValuePair
+            title="Participants"
+            value={
+              botDetails.participants && botDetails.participants.length > 0 ? (
+                <JsonPreview data={botDetails.participants} />
+              ) : (
+                <span className="text-muted-foreground">-</span>
+              )
+            }
+          />
         </div>
       </div>
 

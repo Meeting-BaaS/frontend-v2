@@ -22,6 +22,7 @@ export const STATUS_GROUPS: { label: string; statuses: BotStatus[] }[] = [
     label: "Active",
     statuses: [
       "queued",
+      "pickup_delayed",
       "joining_call",
       "in_waiting_room",
       "in_waiting_for_host",

@@ -13,28 +13,21 @@ import {
   url,
   uuid,
   enum as zodEnum,
-  unknown as zodUnknown,
-} from "zod";
-import { isDateBefore } from "@/lib/date-helpers";
-import { CursorSchema } from "@/lib/schemas/common";
+  unknown as zodUnknown
+} from "zod"
+import { isDateBefore } from "@/lib/date-helpers"
+import { CursorSchema } from "@/lib/schemas/common"
 
-export const meetingPlatformSchema = zodEnum(["zoom", "meet", "teams"]);
-export const recordingModeSchema = zodEnum([
-  "audio_only",
-  "speaker_view",
-  "gallery_view",
-]);
-export const speechToTextProviderSchema = zodEnum([
-  "gladia",
-  "assembly",
-  "none",
-]);
+export const meetingPlatformSchema = zodEnum(["zoom", "meet", "teams"])
+export const recordingModeSchema = zodEnum(["audio_only", "speaker_view", "gallery_view"])
+export const speechToTextProviderSchema = zodEnum(["gladia", "assembly", "none"])
 
 // All possible resolved statuses (lifecycle statuses + error codes)
 // Used by BFF/admin list endpoints where resolved_status is returned
 export const botStatusSchema = zodEnum([
   // Backend-set statuses
   "queued",
+  "pickup_delayed",
   "transcribing",
   "completed",
   "failed",
@@ -104,8 +97,8 @@ export const botStatusSchema = zodEnum([
   "DAILY_BOT_CAP_REACHED",
   "BOT_ALREADY_EXISTS",
   // Unknown fallback
-  "UNKNOWN_ERROR",
-]);
+  "UNKNOWN_ERROR"
+])
 
 const artifactTypeSchema = zodEnum([
   "audio",
@@ -114,16 +107,16 @@ const artifactTypeSchema = zodEnum([
   "raw_transcription",
   "transcription",
   "screenshots",
-  "chat_messages",
-]);
+  "chat_messages"
+])
 
 const artifactErrorCodeSchema = zodEnum([
   "FILE_NOT_FOUND",
   "UPLOAD_FAILED",
   "FILE_TOO_SMALL",
   "UNKNOWN_ERROR",
-  "NOT_SUPPORTED",
-]);
+  "NOT_SUPPORTED"
+])
 
 // Artifact schema (snake_case to match BFF API)
 const artifactSchema = object({
@@ -134,12 +127,12 @@ const artifactSchema = object({
   uploaded_at: iso.datetime().nullable(),
   type: artifactTypeSchema,
   error_code: artifactErrorCodeSchema.nullable(),
-  error_message: string().nullable(),
-});
+  error_message: string().nullable()
+})
 
 export const artifactWithSignedUrlSchema = artifactSchema.extend({
-  signed_url: string().nullable(),
-});
+  signed_url: string().nullable()
+})
 
 // Frontend query params (camelCase for URL/search params)
 export const ListBotsRequestQuerySchema = object({
@@ -148,40 +141,40 @@ export const ListBotsRequestQuerySchema = object({
   createdAfter: iso.datetime().nullable().default(null),
   cursor: CursorSchema,
   meetingPlatform: preprocess((value) => {
-    if (value == null) return null;
+    if (value == null) return null
     if (typeof value === "string") {
       return value
         .split(",")
         .map((s) => s.trim())
-        .filter((s) => s.length > 0);
+        .filter((s) => s.length > 0)
     }
-    return value;
+    return value
   }, array(meetingPlatformSchema).min(1).nullable().default(null)),
   status: preprocess((value) => {
-    if (value == null) return null;
+    if (value == null) return null
     if (typeof value === "string") {
       return value
         .split(",")
         .map((s) => s.trim())
-        .filter((s) => s.length > 0);
+        .filter((s) => s.length > 0)
     }
-    return value;
-  }, array(botStatusSchema).min(1).nullable().default(null)),
+    return value
+  }, array(botStatusSchema).min(1).nullable().default(null))
 })
   .refine(
     (data) => {
       // Only validate if both dates are provided
       if (data.createdAfter && data.createdBefore) {
-        return isDateBefore(data.createdAfter, data.createdBefore);
+        return isDateBefore(data.createdAfter, data.createdBefore)
       }
-      return true;
+      return true
     },
     {
       message: "createdAfter must be before createdBefore",
-      path: ["createdAfter"],
-    },
+      path: ["createdAfter"]
+    }
   )
-  .nullable();
+  .nullable()
 
 // Bot list entry (snake_case to match BFF API)
 // Simplified schema - only includes fields returned by BFF list bots endpoint
@@ -191,39 +184,31 @@ export const botListEntry = object({
   meeting_platform: meetingPlatformSchema,
   duration: number().nullable(),
   created_at: iso.datetime(),
-  status: botStatusSchema,
-});
+  status: botStatusSchema
+})
 
 export const botsListResponseSchema = object({
   data: array(botListEntry),
   success: boolean(),
   cursor: string().nullable(),
-  prev_cursor: string().nullable(),
-});
+  prev_cursor: string().nullable()
+})
 
 // Bot status history entry (snake_case to match BFF API)
 export const botStatusHistoryEntry = object({
   status: botStatusSchema,
   updated_at: iso.datetime(),
   error_code: string().nullable(),
-  error_message: string().nullable(),
-});
+  error_message: string().nullable()
+})
 
 export const callbackErrorSchema = object({
-  status_code: number()
-    .nullable()
-    .describe("Status code if the callback failed"),
+  status_code: number().nullable().describe("Status code if the callback failed"),
   error: string().describe("Error code if the callback failed"),
-  message: string().describe(
-    "Human-readable error message if the callback failed",
-  ),
-  attempted_at: iso
-    .datetime()
-    .describe("ISO 8601 timestamp when the callback was attempted"),
-  retries_attempted: number()
-    .nullable()
-    .describe("Number of retries attempted"),
-});
+  message: string().describe("Human-readable error message if the callback failed"),
+  attempted_at: iso.datetime().describe("ISO 8601 timestamp when the callback was attempted"),
+  retries_attempted: number().nullable().describe("Number of retries attempted")
+})
 
 // Bot details schema (snake_case to match BFF API)
 export const botDetailsSchema = object({
@@ -258,34 +243,36 @@ export const botDetailsSchema = object({
   errors: array(record(string(), zodUnknown())).nullable(),
   updated_at: iso.datetime(),
   transcription_ids: array(string()).nullable(),
-  open_support_tickets: number().describe(
-    "Number of open support tickets for the bot",
-  ),
-  api_only_artifact_access: boolean().describe(
-    "Whether artifact access is restricted to API only",
-  ),
-});
+  open_support_tickets: number().describe("Number of open support tickets for the bot"),
+  api_only_artifact_access: boolean().describe("Whether artifact access is restricted to API only"),
+  participants: array(
+    object({
+      name: string(),
+      id: number().int().nullable(),
+      display_name: string().optional(),
+      profile_picture: string().optional()
+    })
+  ).nullable()
+})
 
 export const botDetailsResponseSchema = object({
   data: botDetailsSchema,
-  success: boolean(),
-});
+  success: boolean()
+})
 
-export type MeetingPlatform = output<typeof meetingPlatformSchema>;
-export type RecordingMode = output<typeof recordingModeSchema>;
-export type SpeechToTextProvider = output<typeof speechToTextProviderSchema>;
-export type BotStatus = output<typeof botStatusSchema>;
-export type ListBotsRequestQueryParams = output<
-  typeof ListBotsRequestQuerySchema
->;
-export type BotListEntry = output<typeof botListEntry>;
-export type BotsListResponse = output<typeof botsListResponseSchema>;
-export type BotDetails = output<typeof botDetailsSchema>;
-export type BotStatusHistoryEntry = output<typeof botStatusHistoryEntry>;
-export type BotDetailsResponse = output<typeof botDetailsResponseSchema>;
-export type Artifact = output<typeof artifactSchema>;
-export type ArtifactWithSignedUrl = output<typeof artifactWithSignedUrlSchema>;
-export type CallbackError = output<typeof callbackErrorSchema>;
+export type MeetingPlatform = output<typeof meetingPlatformSchema>
+export type RecordingMode = output<typeof recordingModeSchema>
+export type SpeechToTextProvider = output<typeof speechToTextProviderSchema>
+export type BotStatus = output<typeof botStatusSchema>
+export type ListBotsRequestQueryParams = output<typeof ListBotsRequestQuerySchema>
+export type BotListEntry = output<typeof botListEntry>
+export type BotsListResponse = output<typeof botsListResponseSchema>
+export type BotDetails = output<typeof botDetailsSchema>
+export type BotStatusHistoryEntry = output<typeof botStatusHistoryEntry>
+export type BotDetailsResponse = output<typeof botDetailsResponseSchema>
+export type Artifact = output<typeof artifactSchema>
+export type ArtifactWithSignedUrl = output<typeof artifactWithSignedUrlSchema>
+export type CallbackError = output<typeof callbackErrorSchema>
 
 // Retry callback form schema (for dialog) - discriminated union
 export const retryCallbackFormSchema = discriminatedUnion("useOverride", [
@@ -293,37 +280,33 @@ export const retryCallbackFormSchema = discriminatedUnion("useOverride", [
     useOverride: literal(true),
     url: url("Callback URL must be a valid URL"),
     method: zodEnum(["POST", "PUT"]),
-    secret: string().optional(),
+    secret: string().optional()
   }),
   object({
-    useOverride: literal(false),
-  }),
-]);
+    useOverride: literal(false)
+  })
+])
 
-export type RetryCallbackFormData = output<typeof retryCallbackFormSchema>;
+export type RetryCallbackFormData = output<typeof retryCallbackFormSchema>
 
 // Screenshot schemas
 export const botScreenshotSchema = object({
   screenshot_id: number().int().positive(),
-  url: url(),
-});
+  url: url()
+})
 
 export const getBotScreenshotsRequestQuerySchema = object({
   limit: number().int().positive().max(250).default(50).optional(),
-  cursor: string().nullable().default(null),
-});
+  cursor: string().nullable().default(null)
+})
 
 export const getBotScreenshotsResponseSchema = object({
   success: literal(true),
   data: array(botScreenshotSchema),
   cursor: string().nullable(),
-  prev_cursor: string().nullable(),
-});
+  prev_cursor: string().nullable()
+})
 
-export type BotScreenshot = output<typeof botScreenshotSchema>;
-export type GetBotScreenshotsRequestQuery = output<
-  typeof getBotScreenshotsRequestQuerySchema
->;
-export type GetBotScreenshotsResponse = output<
-  typeof getBotScreenshotsResponseSchema
->;
+export type BotScreenshot = output<typeof botScreenshotSchema>
+export type GetBotScreenshotsRequestQuery = output<typeof getBotScreenshotsRequestQuerySchema>
+export type GetBotScreenshotsResponse = output<typeof getBotScreenshotsResponseSchema>
