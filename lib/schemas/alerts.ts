@@ -21,13 +21,17 @@ export const alertTypeSchema = zodEnum(
     "daily_bot_cap",
     "token_balance",
     "calendar_connections",
+    "meet_login_utilization",
     "bot_join_failed",
     "recording_failed",
     "zoom_credential_error",
     "bot_crash",
     "transcription_failed",
     "calendar_sync_error",
-    "webhook_delivery_exhausted"
+    "webhook_delivery_exhausted",
+    "meet_login_unavailable",
+    "meet_login_required",
+    "meet_workspace_invalidated"
   ],
   {
     message: "Alert type is required"
@@ -49,20 +53,27 @@ export const ALERT_TYPE_LABELS: Record<AlertType, string> = {
   daily_bot_cap: "Daily Bot Cap",
   token_balance: "Token Balance",
   calendar_connections: "Calendar Connections",
+  meet_login_utilization: "Meet Login Utilization",
   bot_join_failed: "Bot Join Failed",
   recording_failed: "Recording Failed",
   zoom_credential_error: "Zoom Credential Error",
   bot_crash: "Bot Crash",
   transcription_failed: "Transcription Failed",
   calendar_sync_error: "Calendar Sync Error",
-  webhook_delivery_exhausted: "Webhook Delivery Exhausted"
+  webhook_delivery_exhausted: "Webhook Delivery Exhausted",
+  meet_login_unavailable: "Meet Login Unavailable",
+  meet_login_required: "Meet Login Required (Anonymous Bot Failed)",
+  meet_workspace_invalidated: "Meet Workspace Auto-Disabled"
 }
 
-// Alert types gated by feature flags
+// Threshold alert types gated by the stripe feature flag (paid-tier features).
+// meet_login_utilization belongs here because authenticated Meet bots are a
+// paid-tier feature (see GOOGLE_MEET_AUTHENTICATED_BOTS.md §14.2).
 export const STRIPE_ALERT_TYPES: AlertType[] = [
   "daily_bot_cap",
   "token_balance",
-  "calendar_connections"
+  "calendar_connections",
+  "meet_login_utilization"
 ]
 
 // Operational alert types — always available
@@ -73,7 +84,10 @@ export const OPERATIONAL_ALERT_TYPES: AlertType[] = [
   "bot_crash",
   "transcription_failed",
   "calendar_sync_error",
-  "webhook_delivery_exhausted"
+  "webhook_delivery_exhausted",
+  "meet_login_unavailable",
+  "meet_login_required",
+  "meet_workspace_invalidated"
 ]
 
 /**
