@@ -14,6 +14,7 @@ import {
 // File validation constants
 export const MAX_SUPPORT_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 export const MAX_SUPPORT_FILES = 5;
+export const MAX_SUPPORT_MESSAGE_LENGTH = 10_000;
 export const ALLOWED_SUPPORT_FILE_TYPES = [
   "image/jpeg",
   "image/jpg",
@@ -72,7 +73,7 @@ export const createSupportTicketFormSchema = object({
     .max(200, "Subject must be less than 200 characters"),
   details: string()
     .min(1, "Please enter a message")
-    .max(2000, "Message must be less than 2000 characters"),
+    .max(MAX_SUPPORT_MESSAGE_LENGTH, `Message must be less than ${MAX_SUPPORT_MESSAGE_LENGTH} characters`),
   botUuid: uuid().optional(),
   files: array(supportTicketFileSchema)
     .max(MAX_SUPPORT_FILES, `Maximum ${MAX_SUPPORT_FILES} files allowed`)
@@ -189,7 +190,7 @@ export type TicketSlugRequestParams = output<
 export const updateTicketFormSchema = object({
   content: string()
     .min(1, "Please enter a message")
-    .max(2000, "Message must be less than 2000 characters"),
+    .max(MAX_SUPPORT_MESSAGE_LENGTH, `Message must be less than ${MAX_SUPPORT_MESSAGE_LENGTH} characters`),
 });
 
 export type UpdateTicketFormData = output<typeof updateTicketFormSchema>;
