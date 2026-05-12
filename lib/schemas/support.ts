@@ -72,7 +72,7 @@ export const createSupportTicketFormSchema = object({
     .max(200, "Subject must be less than 200 characters"),
   details: string()
     .min(1, "Please enter a message")
-    .max(2000, "Message must be less than 2000 characters"),
+    .max(10000, "Message must be less than 10000 characters"),
   botUuid: uuid().optional(),
   files: array(supportTicketFileSchema)
     .max(MAX_SUPPORT_FILES, `Maximum ${MAX_SUPPORT_FILES} files allowed`)
@@ -189,7 +189,7 @@ export type TicketSlugRequestParams = output<
 export const updateTicketFormSchema = object({
   content: string()
     .min(1, "Please enter a message")
-    .max(2000, "Message must be less than 2000 characters"),
+    .max(10000, "Message must be less than 10000 characters"),
 });
 
 export type UpdateTicketFormData = output<typeof updateTicketFormSchema>;
