@@ -49,7 +49,9 @@ export default function SignUpForm({
   const hasSignInMethods = showEmailPassword || providers.length > 0
 
   const loading = Boolean(socialLoading) || isSignUpLoading
-  const callbackURL = redirectTo || "/bots"
+  const callbackURL = redirectTo?.startsWith("http")
+    ? redirectTo
+    : `${env.NEXT_PUBLIC_FRONTEND_BASEURL}${redirectTo || "/bots"}`
   const { watch, trigger } = form
   const termsOfUse = watch("termsOfUse")
   const privacyPolicy = watch("privacyPolicy")
@@ -96,7 +98,7 @@ export default function SignUpForm({
       await authClient.signIn.social(
         {
           provider,
-          callbackURL: `${env.NEXT_PUBLIC_FRONTEND_BASEURL}${callbackURL}`,
+          callbackURL,
           errorCallbackURL: `${env.NEXT_PUBLIC_FRONTEND_BASEURL}/sign-up`,
           requestSignUp: true
         },
@@ -132,7 +134,7 @@ export default function SignUpForm({
           email: data.email,
           name: data.name,
           password: data.password,
-          callbackURL: `${env.NEXT_PUBLIC_FRONTEND_BASEURL}${callbackURL}`
+          callbackURL
         },
         {
           onRequest: () => {
