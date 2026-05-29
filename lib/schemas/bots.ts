@@ -96,6 +96,11 @@ export const botStatusSchema = zodEnum([
   "INSUFFICIENT_TOKENS",
   "DAILY_BOT_CAP_REACHED",
   "BOT_ALREADY_EXISTS",
+  // Meet SAML SSO authenticated bot errors
+  "MEET_LOGIN_UNAVAILABLE",
+  "MEET_LOGIN_REQUIRED",
+  "MEET_LOGIN_FAILED_SAML_REJECTED",
+  "MEET_LOGIN_FAILED_TIMEOUT",
   // Unknown fallback
   "UNKNOWN_ERROR"
 ])

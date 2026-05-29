@@ -117,7 +117,13 @@ export const botColorVariants = cva("", {
       ZOOM_OBF_TOKEN_ERROR: RED,
 
       // Unknown fallback - Red
-      UNKNOWN_ERROR: RED
+      UNKNOWN_ERROR: RED,
+
+      // GOOGLE MEET SSO-specific statuses
+      "MEET_LOGIN_UNAVAILABLE": RED,
+      "MEET_LOGIN_REQUIRED": RED,
+      "MEET_LOGIN_FAILED_SAML_REJECTED": RED,
+      "MEET_LOGIN_FAILED_TIMEOUT": RED,
     }
   },
   defaultVariants: {
