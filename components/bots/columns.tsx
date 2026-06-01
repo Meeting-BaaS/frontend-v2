@@ -53,6 +53,7 @@ export const botColorVariants = cva("", {
       // Paused states - Amber
       recording_paused: AMBER,
       waiting_room_timeout: AMBER,
+      transcription_failed: AMBER,
 
       // Processing state - Violet
       transcribing: VIOLET,
@@ -183,10 +184,29 @@ export const columns: ColumnDef<BotListEntry>[] = [
       className: columnWidths.status
     },
     cell: ({ row }) => {
+      const provider = row.original.speech_to_text_provider
       return (
-        <Badge className={cn(botColorVariants({ status: row.original.status }))}>
-          {formatStatusLabel(row.original.status)}
-        </Badge>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {/* status is string() (can be arbitrary error codes); cva matches known
+              keys and falls back to defaultVariants for the rest */}
+          <Badge
+            className={cn(
+              botColorVariants({
+                status: row.original.status
+              } as Parameters<typeof botColorVariants>[0])
+            )}
+          >
+            {formatStatusLabel(row.original.status)}
+          </Badge>
+          {provider !== "none" && (
+            <Badge
+              variant="outline"
+              className="text-[10px] px-1.5 py-0 font-normal capitalize"
+            >
+              {provider}
+            </Badge>
+          )}
+        </div>
       )
     }
   },

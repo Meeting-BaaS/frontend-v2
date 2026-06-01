@@ -1,9 +1,12 @@
+import { Plus } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 import { TableFilters } from "@/components/bots/filters/table-filters";
 import { BotsTableServer } from "@/components/bots/table-server";
 import { BotsTableSkeleton } from "@/components/bots/table-skeleton";
 import { DocsButton } from "@/components/layout/docs-button";
 import { PageHeading } from "@/components/layout/page-heading";
+import { Button } from "@/components/ui/button";
 import type { ListBotsRequestQueryParams } from "@/lib/schemas/bots";
 
 interface BotsViewProps {
@@ -16,6 +19,12 @@ export function BotsView({ params }: BotsViewProps) {
       <div className="flex items-center flex-col gap-2 sm:flex-row sm:justify-between">
         <PageHeading title="Bots" containerClassName="md:flex-1" />
         <div className="flex w-full sm:w-auto flex-col gap-2 sm:flex-row sm:items-center">
+          <Button asChild>
+            <Link href="/bots/create">
+              <Plus className="mr-2 h-4 w-4" />
+              Create Bot
+            </Link>
+          </Button>
           <DocsButton uriSuffix="api-v2/reference/bots/list-bots" />
         </div>
       </div>

@@ -15,12 +15,22 @@ import {
   enum as zodEnum,
   unknown as zodUnknown
 } from "zod"
+import { BATCH_PROVIDERS } from "@meeting-baas/voice-router/providers"
 import { isDateBefore } from "@/lib/date-helpers"
 import { CursorSchema } from "@/lib/schemas/common"
 
 export const meetingPlatformSchema = zodEnum(["zoom", "meet", "teams"])
 export const recordingModeSchema = zodEnum(["audio_only", "speaker_view", "gallery_view"])
-export const speechToTextProviderSchema = zodEnum(["gladia", "assembly", "none"])
+// Derived from voice-router — single source of truth for provider lists
+export const speechToTextProviderSchema = zodEnum([...BATCH_PROVIDERS, "none"])
+
+/** Shared transcription override fields used by retranscribe and other dialogs. */
+export const transcriptionOverrideSchema = object({
+  provider: speechToTextProviderSchema.exclude(["none"]),
+  region: string().optional(),
+  api_key: string().optional(),
+  custom_params: record(string(), zodUnknown()).optional()
+})
 
 // All possible resolved statuses (lifecycle statuses + error codes)
 // Used by BFF/admin list endpoints where resolved_status is returned
@@ -31,6 +41,7 @@ export const botStatusSchema = zodEnum([
   "transcribing",
   "completed",
   "failed",
+  "transcription_failed", // recording succeeded but transcription failed
 
   // Normal flow statuses (sent by both bots)
   "joining_call",
@@ -178,13 +189,18 @@ export const ListBotsRequestQuerySchema = object({
 
 // Bot list entry (snake_case to match BFF API)
 // Simplified schema - only includes fields returned by BFF list bots endpoint
+// status is string() because resolvedStatus can be a lifecycle status OR an error code
 export const botListEntry = object({
   bot_id: uuid(),
   bot_name: string(),
   meeting_platform: meetingPlatformSchema,
+  speech_to_text_provider: speechToTextProviderSchema,
+  transcription_ids: array(string()).nullable(),
   duration: number().nullable(),
   created_at: iso.datetime(),
-  status: botStatusSchema
+  // Loosened to string(): the list endpoint returns resolved_status which can
+  // carry arbitrary error codes not in botStatusSchema.
+  status: string()
 })
 
 export const botsListResponseSchema = object({
@@ -274,6 +290,14 @@ export type Artifact = output<typeof artifactSchema>
 export type ArtifactWithSignedUrl = output<typeof artifactWithSignedUrlSchema>
 export type CallbackError = output<typeof callbackErrorSchema>
 
+/** Check if a bot has a transcription failure (from errors array, not status) */
+export function hasTranscriptionFailure(
+  errors: Array<Record<string, unknown>> | null | undefined,
+): boolean {
+  if (!errors) return false;
+  return errors.some((e) => e["code"] === "TRANSCRIPTION_FAILED");
+}
+
 // Retry callback form schema (for dialog) - discriminated union
 export const retryCallbackFormSchema = discriminatedUnion("useOverride", [
   object({
@@ -288,6 +312,14 @@ export const retryCallbackFormSchema = discriminatedUnion("useOverride", [
 ])
 
 export type RetryCallbackFormData = output<typeof retryCallbackFormSchema>
+
+// Retranscribe form schema (for dialog) - discriminated union
+export const retranscribeFormSchema = discriminatedUnion("useOverride", [
+  transcriptionOverrideSchema.extend({ useOverride: literal(true) }),
+  object({ useOverride: literal(false) }),
+]);
+
+export type RetranscribeFormData = output<typeof retranscribeFormSchema>;
 
 // Screenshot schemas
 export const botScreenshotSchema = object({
