@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button"
 import { CopyButton } from "@/components/ui/copy-button"
 import { GradientIcon } from "@/components/ui/gradient-icon"
 import { formatDuration, formatRelativeDate } from "@/lib/date-helpers"
-import type { BotListEntry } from "@/lib/schemas/bots"
+import type { BotListEntry, BotStatus } from "@/lib/schemas/bots"
+import { botStatusSchema } from "@/lib/schemas/bots"
 import { cn } from "@/lib/utils"
 
 /** Format a status string for display: "INSUFFICIENT_TOKENS" -> "Insufficient Tokens" */
@@ -50,9 +51,10 @@ export const botColorVariants = cva("", {
       recording_resumed: GREEN,
       recording_succeeded: GREEN,
 
-      // Paused states - Amber
+      // Paused/Warning states - Amber
       recording_paused: AMBER,
       waiting_room_timeout: AMBER,
+      transcription_failed: AMBER,
 
       // Processing state - Violet
       transcribing: VIOLET,
@@ -131,6 +133,12 @@ export const botColorVariants = cva("", {
   }
 })
 
+// Resolve status for color variants: known statuses use their color, error codes use "failed" (red)
+const knownStatuses = new Set<string>(botStatusSchema.options);
+function resolveStatusColor(status: string): BotStatus {
+  return knownStatuses.has(status) ? (status as BotStatus) : "failed";
+}
+
 // Column width configuration shared between columns and skeleton
 export const columnWidths = {
   bot_id: "w-[350px]",
@@ -189,10 +197,18 @@ export const columns: ColumnDef<BotListEntry>[] = [
       className: columnWidths.status
     },
     cell: ({ row }) => {
+      const provider = row.original.speech_to_text_provider;
       return (
-        <Badge className={cn(botColorVariants({ status: row.original.status }))}>
-          {formatStatusLabel(row.original.status)}
-        </Badge>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Badge className={cn(botColorVariants({ status: resolveStatusColor(row.original.status) }))}>
+            {formatStatusLabel(row.original.status)}
+          </Badge>
+          {provider !== "none" && (
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-normal capitalize">
+              {provider}
+            </Badge>
+          )}
+        </div>
       )
     }
   },
