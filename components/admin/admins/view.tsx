@@ -29,7 +29,7 @@ export function AdminAdminsView() {
         }
       })
       if (error) throw new Error(error.message)
-      const users = (data as { users?: AdminListUser[] })?.users ?? []
+      const users = (data as unknown as { users?: AdminListUser[] })?.users ?? []
       setAdmins(users)
     } catch (err) {
       console.error("Failed to fetch admins", err)
@@ -51,7 +51,7 @@ export function AdminAdminsView() {
         }
       })
       if (error) throw new Error(error.message)
-      const users = (data as { users?: AdminListUser[] })?.users ?? []
+      const users = (data as unknown as { users?: AdminListUser[] })?.users ?? []
       setUsersWithRoleUser(users)
     } catch (err) {
       console.error("Failed to fetch users", err)
