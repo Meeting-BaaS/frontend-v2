@@ -28,6 +28,7 @@ export const botStatusSchema = zodEnum([
   // Backend-set statuses
   "queued",
   "pickup_delayed",
+  "awaiting_reconciliation",
   "transcribing",
   "completed",
   "failed",

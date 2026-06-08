@@ -16,10 +16,17 @@ import { cn } from "@/lib/utils"
 
 /** Format a status string for display: "INSUFFICIENT_TOKENS" -> "Insufficient Tokens" */
 const ACRONYMS = new Set(["OOM", "API", "SDK", "JWT", "URL", "OBF"])
+// Friendlier display labels for statuses whose code is internal-sounding.
+const STATUS_LABEL_OVERRIDES: Record<string, string> = {
+  awaiting_reconciliation: "Finalizing"
+}
 export const formatStatusLabel = (status: string) =>
+  STATUS_LABEL_OVERRIDES[status] ??
   status
     .split("_")
-    .map((word) => (ACRONYMS.has(word) ? word : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()))
+    .map((word) =>
+      ACRONYMS.has(word) ? word : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    )
     .join(" ")
 
 // Color classes by category
@@ -54,7 +61,8 @@ export const botColorVariants = cva("", {
       recording_paused: AMBER,
       waiting_room_timeout: AMBER,
 
-      // Processing state - Violet
+      // Processing states - Violet
+      awaiting_reconciliation: VIOLET,
       transcribing: VIOLET,
 
       // Success/Completion - Blue
