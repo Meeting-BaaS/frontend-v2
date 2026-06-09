@@ -185,7 +185,7 @@ export const botListEntry = object({
   meeting_platform: meetingPlatformSchema,
   duration: number().nullable(),
   created_at: iso.datetime(),
-  status: botStatusSchema
+  status: botStatusSchema.catch("UNKNOWN_ERROR")
 })
 
 export const botsListResponseSchema = object({
@@ -197,7 +197,7 @@ export const botsListResponseSchema = object({
 
 // Bot status history entry (snake_case to match BFF API)
 export const botStatusHistoryEntry = object({
-  status: botStatusSchema,
+  status: botStatusSchema.catch("UNKNOWN_ERROR"),
   updated_at: iso.datetime(),
   error_code: string().nullable(),
   error_message: string().nullable()
@@ -230,7 +230,7 @@ export const botDetailsSchema = object({
   ended_at: iso.datetime().nullable(),
   joined_at: iso.datetime().nullable(),
   exited_at: iso.datetime().nullable(),
-  status: botStatusSchema,
+  status: botStatusSchema.catch("UNKNOWN_ERROR"),
   status_history: array(botStatusHistoryEntry).nullable(),
   callback_error: callbackErrorSchema.nullable(),
   has_screenshots: boolean(),
