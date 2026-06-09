@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { format } from "date-fns";
+import { format } from "date-fns"
 import {
   AlertCircle,
   CheckCircle2,
@@ -14,27 +14,23 @@ import {
   PlayCircle,
   Radio,
   Send,
-  XCircle,
-} from "lucide-react";
-import { botColorVariants } from "@/components/bots/columns";
-import { Badge } from "@/components/ui/badge";
-import { GradientIcon } from "@/components/ui/gradient-icon";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { parseDateString } from "@/lib/date-helpers";
-import type { BotStatus, BotStatusHistoryEntry } from "@/lib/schemas/bots";
-import { cn } from "@/lib/utils";
+  UploadCloud,
+  XCircle
+} from "lucide-react"
+import { botColorVariants } from "@/components/bots/columns"
+import { Badge } from "@/components/ui/badge"
+import { GradientIcon } from "@/components/ui/gradient-icon"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { parseDateString } from "@/lib/date-helpers"
+import type { BotStatus, BotStatusHistoryEntry } from "@/lib/schemas/bots"
+import { cn } from "@/lib/utils"
 
 interface StatusConfig {
-  icon: React.ComponentType<{ className?: string }>;
-  description: string;
-  color: string;
-  badgeVariant: "secondary" | "success" | "destructive" | "outline";
+  icon: React.ComponentType<{ className?: string }>
+  description: string
+  color: string
+  badgeVariant: "secondary" | "success" | "destructive" | "outline"
 }
 
 const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
@@ -43,32 +39,32 @@ const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
     icon: Clock,
     description: "Bot is queued and waiting to start",
     color: "var(--color-slate-500)",
-    badgeVariant: "secondary",
+    badgeVariant: "secondary"
   },
   pickup_delayed: {
     icon: AlertCircle,
     description:
       "Bot has stayed queued longer than the expected pickup window. Informational — the bot may still proceed normally to joining_call.",
     color: "var(--color-amber-500)",
-    badgeVariant: "outline",
+    badgeVariant: "outline"
   },
   joining_call: {
     icon: Send,
     description: "Bot is joining the meeting",
     color: "var(--color-slate-500)",
-    badgeVariant: "secondary",
+    badgeVariant: "secondary"
   },
   in_waiting_room: {
     icon: Clock,
     description: "Bot is waiting in the waiting room",
     color: "var(--color-slate-500)",
-    badgeVariant: "secondary",
+    badgeVariant: "secondary"
   },
   in_waiting_for_host: {
     icon: Clock,
     description: "Bot is waiting for the meeting host",
     color: "var(--color-slate-500)",
-    badgeVariant: "secondary",
+    badgeVariant: "secondary"
   },
 
   // Active call states - Violet
@@ -76,7 +72,7 @@ const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
     icon: Radio,
     description: "Bot is in the call but not recording yet",
     color: "var(--color-violet-500)",
-    badgeVariant: "outline",
+    badgeVariant: "outline"
   },
 
   // Recording states - Green
@@ -84,19 +80,19 @@ const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
     icon: Mic,
     description: "Bot is actively recording the meeting",
     color: "var(--color-green-500)",
-    badgeVariant: "success",
+    badgeVariant: "success"
   },
   recording_resumed: {
     icon: PlayCircle,
     description: "Recording has been resumed",
     color: "var(--color-green-500)",
-    badgeVariant: "success",
+    badgeVariant: "success"
   },
   recording_succeeded: {
     icon: Clapperboard,
     description: "Recording completed successfully",
     color: "var(--color-green-500)",
-    badgeVariant: "success",
+    badgeVariant: "success"
   },
 
   // Paused/Warning states - Amber
@@ -104,21 +100,28 @@ const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
     icon: MicOff,
     description: "Recording has been paused",
     color: "var(--color-amber-500)",
-    badgeVariant: "outline",
+    badgeVariant: "outline"
   },
   waiting_room_timeout: {
     icon: AlertCircle,
     description: "Waiting room timeout occurred",
     color: "var(--color-amber-500)",
-    badgeVariant: "outline",
+    badgeVariant: "outline"
   },
 
-  // Processing state - Violet
+  // Processing states - Violet
+  awaiting_reconciliation: {
+    icon: UploadCloud,
+    description:
+      "Finalizing and securely saving your meeting recording. This usually completes on its own in a few minutes.",
+    color: "var(--color-violet-500)",
+    badgeVariant: "outline"
+  },
   transcribing: {
     icon: FileText,
     description: "Transcription has been requested from transcription provider",
     color: "var(--color-violet-500)",
-    badgeVariant: "outline",
+    badgeVariant: "outline"
   },
 
   // Success/Completion - Blue
@@ -126,7 +129,7 @@ const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
     icon: CheckCircle2,
     description: "Bot has completed all tasks successfully",
     color: "var(--color-blue-500)",
-    badgeVariant: "success",
+    badgeVariant: "success"
   },
 
   // Ended states - Slate
@@ -134,7 +137,7 @@ const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
     icon: Circle,
     description: "The call has ended",
     color: "var(--color-slate-500)",
-    badgeVariant: "secondary",
+    badgeVariant: "secondary"
   },
 
   // Error/Rejected states - Red/Destructive
@@ -142,55 +145,55 @@ const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
     icon: XCircle,
     description: "Bot operation failed",
     color: "var(--color-red-500)",
-    badgeVariant: "destructive",
+    badgeVariant: "destructive"
   },
   recording_failed: {
     icon: XCircle,
     description: "Recording failed",
     color: "var(--color-red-500)",
-    badgeVariant: "destructive",
+    badgeVariant: "destructive"
   },
   // Intermediate error statuses (all lead to recording_failed)
   api_request_stop: {
     icon: XCircle,
     description: "Recording stopped via API request",
     color: "var(--color-red-500)",
-    badgeVariant: "destructive",
+    badgeVariant: "destructive"
   },
   bot_rejected: {
     icon: XCircle,
     description: "Bot was rejected from the meeting",
     color: "var(--color-red-500)",
-    badgeVariant: "destructive",
+    badgeVariant: "destructive"
   },
   bot_removed: {
     icon: XCircle,
     description: "Bot was removed from the meeting",
     color: "var(--color-red-500)",
-    badgeVariant: "destructive",
+    badgeVariant: "destructive"
   },
   bot_removed_too_early: {
     icon: XCircle,
     description: "Bot was removed too early",
     color: "var(--color-red-500)",
-    badgeVariant: "destructive",
+    badgeVariant: "destructive"
   },
   invalid_meeting_url: {
     icon: LinkIcon,
     description: "Invalid meeting URL provided",
     color: "var(--color-red-500)",
-    badgeVariant: "destructive",
+    badgeVariant: "destructive"
   },
   meeting_error: {
     icon: AlertCircle,
     description: "An error occurred with the meeting",
     color: "var(--color-red-500)",
-    badgeVariant: "destructive",
-  },
-};
+    badgeVariant: "destructive"
+  }
+}
 
 interface StatusHistoryProps {
-  statusHistory: BotStatusHistoryEntry[];
+  statusHistory: BotStatusHistoryEntry[]
 }
 
 export function StatusHistory({ statusHistory }: StatusHistoryProps) {
@@ -205,11 +208,11 @@ export function StatusHistory({ statusHistory }: StatusHistoryProps) {
             />
           )}
           {statusHistory.map((entry, index) => {
-            const config = statusConfigMap[entry.status as BotStatus];
-            if (!config) return null;
+            const config = statusConfigMap[entry.status as BotStatus]
+            if (!config) return null
 
-            const Icon = config.icon;
-            const updatedAt = parseDateString(entry.updated_at);
+            const Icon = config.icon
+            const updatedAt = parseDateString(entry.updated_at)
 
             return (
               <div
@@ -237,8 +240,8 @@ export function StatusHistory({ statusHistory }: StatusHistoryProps) {
                           className={cn(
                             "capitalize",
                             botColorVariants({
-                              status: entry.status as BotStatus,
-                            }),
+                              status: entry.status as BotStatus
+                            })
                           )}
                         >
                           {entry.status.split("_").join(" ")}
@@ -250,8 +253,7 @@ export function StatusHistory({ statusHistory }: StatusHistoryProps) {
                     {config.description}
                     {entry.error_message ? (
                       <div className="mt-2">
-                        <span className="font-bold">Error:</span>{" "}
-                        {entry.error_message}
+                        <span className="font-bold">Error:</span> {entry.error_message}
                       </div>
                     ) : null}
                   </TooltipContent>
@@ -260,11 +262,11 @@ export function StatusHistory({ statusHistory }: StatusHistoryProps) {
                   {format(updatedAt, "MMM d, h:mm a")}
                 </span>
               </div>
-            );
+            )
           })}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </TooltipProvider>
-  );
+  )
 }
