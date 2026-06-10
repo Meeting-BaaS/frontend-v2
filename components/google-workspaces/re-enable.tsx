@@ -59,7 +59,8 @@ export function ReEnableWorkspaceDialog({
       }
 
       toast.success("Workspace re-enabled successfully")
-      onCancel(false, true)
+      onOpenChange(false)
+      router.refresh()
     } catch (error) {
       console.error("Error re-enabling workspace", error)
       toast.error(error instanceof Error ? error.message : genericError)
