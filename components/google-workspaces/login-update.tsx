@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { SendHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { LoginFormFields } from "@/components/google-workspaces/login-form-fields"
@@ -54,6 +54,14 @@ export function LoginUpdateDialog({
   })
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    if (!open) return
+    form.reset({
+      name: login.name,
+      email_group: login.email_group ?? ""
+    })
+  }, [open, login.name, login.email_group, form])
+
   const onSubmit = async (data: UpdateMeetLoginForm) => {
     if (loading) return
     try {
@@ -87,7 +95,8 @@ export function LoginUpdateDialog({
       }
 
       toast.success("Login updated successfully")
-      onCancel(false, true)
+      onOpenChange(false)
+      router.refresh()
     } catch (error) {
       console.error("Error updating login", error)
       toast.error(error instanceof Error ? error.message : genericError)
