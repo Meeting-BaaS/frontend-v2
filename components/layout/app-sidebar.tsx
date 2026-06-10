@@ -3,6 +3,7 @@
 import {
   Bell,
   Bot,
+  Building2,
   Calendar,
   CalendarClock,
   // ChartColumn,
@@ -73,6 +74,12 @@ const allItems = [
     title: "Credentials",
     url: "/credentials",
     icon: ShieldPlus,
+    featureKey: null
+  },
+  {
+    title: "Google Workspaces",
+    url: "/google-workspaces",
+    icon: Building2,
     featureKey: null
   },
   {

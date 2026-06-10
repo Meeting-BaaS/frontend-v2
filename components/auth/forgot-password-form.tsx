@@ -30,22 +30,22 @@ export default function ForgotPasswordForm() {
   const onSubmit = async (data: ForgotPasswordFormData) => {
     if (isForgotPasswordLoading) return;
     try {
-      await authClient.forgetPassword(
+      await authClient.requestPasswordReset(
         {
           email: data.email,
           redirectTo: `${env.NEXT_PUBLIC_FRONTEND_BASEURL}/reset-password`,
         },
         {
-          onRequest: (_ctx) => {
+          onRequest: () => {
             setIsForgotPasswordLoading(true);
           },
-          onResponse: (_ctx) => {
+          onResponse: () => {
             setIsForgotPasswordLoading(false);
           },
           onSuccess: () => {
             toast.success("Password reset email sent");
           },
-          onError: (ctx) => {
+          onError: (ctx: { error: { message?: string } }) => {
             toast.error(ctx.error.message || genericError);
           },
         },

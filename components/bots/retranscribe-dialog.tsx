@@ -122,7 +122,7 @@ export function RetranscribeDialog({
   };
 
   const onCancel = (updatedOpen: boolean) => {
-    if (updatedOpen && loading) {
+    if (!updatedOpen && loading) {
       return;
     }
     reset({

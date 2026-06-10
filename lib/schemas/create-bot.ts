@@ -36,8 +36,8 @@ export const createBotFormSchema = object({
   // Streaming
   streaming_enabled: boolean(),
   streaming_mode: streamingModeSchema,
-  streaming_input_url: string(),
-  streaming_output_url: string(),
+  streaming_input_url: string().url("Input URL must be a valid URL").or(string().length(0)),
+  streaming_output_url: string().url("Output URL must be a valid URL").or(string().length(0)),
   streaming_audio_frequency: audioFrequencySchema,
   // Streaming transcription (when mode=transcription)
   streaming_transcription_provider: streamingTranscriptionProviderSchema,
@@ -47,7 +47,7 @@ export const createBotFormSchema = object({
 
   // Callback
   callback_enabled: boolean(),
-  callback_url: string(),
+  callback_url: string().url("Callback URL must be a valid URL").or(string().length(0)),
   callback_secret: string(),
   callback_method: callbackMethodSchema,
 
@@ -61,6 +61,9 @@ export const createBotFormSchema = object({
 }).refine(
   (data) => !data.callback_enabled || data.callback_url.trim().length > 0,
   { message: "Callback URL is required when callback is enabled", path: ["callback_url"] },
+).refine(
+  (data) => !data.streaming_enabled || data.streaming_input_url.trim().length > 0,
+  { message: "Input URL is required when streaming is enabled", path: ["streaming_input_url"] },
 ).refine(
   (data) => !data.streaming_enabled || data.streaming_mode !== "audio" || data.streaming_output_url.trim().length > 0,
   { message: "Output URL is required for audio streaming", path: ["streaming_output_url"] },
