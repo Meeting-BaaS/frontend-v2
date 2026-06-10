@@ -48,8 +48,9 @@ export function DeleteWorkspaceDialog({
     try {
       setLoading(true)
       await axiosDeleteInstance(DELETE_MEET_WORKSPACE(workspace.workspace_id))
+      setTypedText("")
+      onOpenChange(false)
       router.refresh()
-      onCancel(false)
       toast.success("Workspace deleted successfully")
     } catch (error) {
       console.error("Error deleting workspace", error)
