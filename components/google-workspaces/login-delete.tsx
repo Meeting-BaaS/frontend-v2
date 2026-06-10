@@ -44,8 +44,9 @@ export function LoginDeleteDialog({ open, onOpenChange, login }: LoginDeleteDial
     try {
       setLoading(true)
       await axiosDeleteInstance(DELETE_MEET_LOGIN(login.credential_id))
+      setTypedText("")
+      onOpenChange(false)
       router.refresh()
-      onCancel(false)
       toast.success("Login deleted successfully")
     } catch (error) {
       console.error("Error deleting login", error)
