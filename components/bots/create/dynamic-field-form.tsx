@@ -203,7 +203,7 @@ function DynamicField({ field, value, onChange }: DynamicFieldProps) {
         <Switch
           id={id}
           checked={value === true}
-          onCheckedChange={(checked) => onChange(checked || undefined)}
+          onCheckedChange={(checked) => onChange(checked)}
         />
       </div>
     )
