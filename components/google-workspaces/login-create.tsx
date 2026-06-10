@@ -79,7 +79,9 @@ export function LoginCreateDialog({
       }
 
       toast.success("Login created successfully")
-      onCancel(false, true)
+      form.reset()
+      onOpenChange(false)
+      router.refresh()
     } catch (error) {
       console.error("Error creating login", error)
       toast.error(error instanceof Error ? error.message : genericError)
