@@ -134,7 +134,7 @@ export type CreateMeetLoginRequest = output<typeof createMeetLoginRequestSchema>
  * separate confirmation action (no form). Empty-string email_group clears it.
  */
 export const updateMeetLoginFormSchema = object({
-  name: optional(nameFieldSchema),
+  name: optional(union([nameFieldSchema, literal("")])),
   email_group: optional(union([emailGroupFieldSchema, literal("")])),
   extra: optional(nullable(extraFieldSchema))
 })
