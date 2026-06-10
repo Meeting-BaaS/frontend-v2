@@ -72,7 +72,9 @@ export function RotateWorkspaceKeypairDialog({
       }
 
       toast.success("Keypair rotated successfully")
-      onCancel(false, true)
+      form.reset()
+      onOpenChange(false)
+      router.refresh()
     } catch (error) {
       console.error("Error rotating keypair", error)
       toast.error(error instanceof Error ? error.message : genericError)
