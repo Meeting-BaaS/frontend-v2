@@ -26,8 +26,7 @@ export function transformCreateBotFormToPayload(values: CreateBotFormValues) {
     try {
       payload["extra"] = JSON.parse(values.extra_json)
     } catch {
-      // Transformer shouldn't throw; server will reject invalid JSON
-      payload["extra"] = null
+      throw new Error("Extra JSON must be valid JSON")
     }
   }
 
