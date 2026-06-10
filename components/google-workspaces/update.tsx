@@ -70,7 +70,9 @@ export function UpdateWorkspaceDialog({
       }
 
       toast.success("Workspace updated successfully")
-      onCancel(false, true)
+      form.reset()
+      onOpenChange(false)
+      router.refresh()
     } catch (error) {
       console.error("Error updating workspace", error)
       toast.error(error instanceof Error ? error.message : genericError)
