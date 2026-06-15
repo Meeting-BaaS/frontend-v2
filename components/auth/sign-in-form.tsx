@@ -44,7 +44,9 @@ export default function SignInForm({
 
   useEffect(() => setCallbackError(error), [error])
   const loading = Boolean(socialLoading) || isSignInLoading
-  const callbackURL = redirectTo || "/bots"
+  const callbackURL = redirectTo?.startsWith("http")
+    ? redirectTo
+    : `${env.NEXT_PUBLIC_FRONTEND_BASEURL}${redirectTo || "/bots"}`
 
   const onProviderSignIn = async (provider: ProviderName) => {
     if (socialLoading) return
@@ -52,7 +54,7 @@ export default function SignInForm({
       await authClient.signIn.social(
         {
           provider,
-          callbackURL: `${env.NEXT_PUBLIC_FRONTEND_BASEURL}${callbackURL}`,
+          callbackURL,
           errorCallbackURL: `${env.NEXT_PUBLIC_FRONTEND_BASEURL}/sign-in`
         },
         {
@@ -82,7 +84,7 @@ export default function SignInForm({
         {
           email: data.email,
           password: data.password,
-          callbackURL: `${env.NEXT_PUBLIC_FRONTEND_BASEURL}${callbackURL}`
+          callbackURL
         },
         {
           onRequest: () => {

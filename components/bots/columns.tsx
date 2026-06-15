@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button"
 import { CopyButton } from "@/components/ui/copy-button"
 import { GradientIcon } from "@/components/ui/gradient-icon"
 import { formatDuration, formatRelativeDate } from "@/lib/date-helpers"
-import type { BotListEntry } from "@/lib/schemas/bots"
+import type { BotListEntry, BotStatus } from "@/lib/schemas/bots"
+import { botStatusSchema } from "@/lib/schemas/bots"
 import { cn } from "@/lib/utils"
 
 /** Format a status string for display: "INSUFFICIENT_TOKENS" -> "Insufficient Tokens" */
@@ -57,9 +58,10 @@ export const botColorVariants = cva("", {
       recording_resumed: GREEN,
       recording_succeeded: GREEN,
 
-      // Paused states - Amber
+      // Paused/Warning states - Amber
       recording_paused: AMBER,
       waiting_room_timeout: AMBER,
+      transcription_failed: AMBER,
 
       // Processing states - Violet
       awaiting_reconciliation: VIOLET,
@@ -125,13 +127,25 @@ export const botColorVariants = cva("", {
       ZOOM_OBF_TOKEN_ERROR: RED,
 
       // Unknown fallback - Red
-      UNKNOWN_ERROR: RED
+      UNKNOWN_ERROR: RED,
+
+      // GOOGLE MEET SSO-specific statuses
+      "MEET_LOGIN_UNAVAILABLE": RED,
+      "MEET_LOGIN_REQUIRED": RED,
+      "MEET_LOGIN_FAILED_SAML_REJECTED": RED,
+      "MEET_LOGIN_FAILED_TIMEOUT": RED,
     }
   },
   defaultVariants: {
     status: "queued"
   }
 })
+
+// Resolve status for color variants: known statuses use their color, error codes use "failed" (red)
+const knownStatuses = new Set<string>(botStatusSchema.options);
+function resolveStatusColor(status: string): BotStatus {
+  return knownStatuses.has(status) ? (status as BotStatus) : "failed";
+}
 
 // Column width configuration shared between columns and skeleton
 export const columnWidths = {
@@ -191,10 +205,18 @@ export const columns: ColumnDef<BotListEntry>[] = [
       className: columnWidths.status
     },
     cell: ({ row }) => {
+      const provider = row.original.speech_to_text_provider;
       return (
-        <Badge className={cn(botColorVariants({ status: row.original.status }))}>
-          {formatStatusLabel(row.original.status)}
-        </Badge>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Badge className={cn(botColorVariants({ status: resolveStatusColor(row.original.status) }))}>
+            {formatStatusLabel(row.original.status)}
+          </Badge>
+          {provider !== "none" && (
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-normal capitalize">
+              {provider}
+            </Badge>
+          )}
+        </div>
       )
     }
   },
