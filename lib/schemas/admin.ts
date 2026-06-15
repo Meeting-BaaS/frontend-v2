@@ -46,7 +46,7 @@ export const adminBotListItemSchema = object({
   endedAt: iso.datetime().nullable(),
   joinedAt: iso.datetime().nullable(),
   exitedAt: iso.datetime().nullable(),
-  status: botStatusSchema,
+  status: botStatusSchema.catch("UNKNOWN_ERROR"),
 });
 
 export type AdminBotListItem = output<typeof adminBotListItemSchema>;
@@ -113,7 +113,7 @@ export const adminBotDetailsSchema = object({
   endedAt: iso.datetime().nullable(),
   joinedAt: iso.datetime().nullable(),
   exitedAt: iso.datetime().nullable(),
-  status: botStatusSchema,
+  status: botStatusSchema.catch("UNKNOWN_ERROR"),
   statusHistory: array(botStatusHistoryEntry).nullable(),
   callbackError: callbackErrorSchema.nullable(),
   artifacts: array(artifactWithSignedUrlSchema).nullable(),
