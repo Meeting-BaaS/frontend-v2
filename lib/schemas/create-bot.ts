@@ -56,7 +56,7 @@ export const createBotFormSchema = object({
   allow_multiple_bots: boolean(),
   waiting_room_timeout: number().min(120).max(1800),
   no_one_joined_timeout: number().min(120).max(1800),
-  silence_timeout: number().min(120).max(1800),
+  silence_timeout: number().min(120).max(3600),
   extra_json: string(),
 }).refine(
   (data) => !data.callback_enabled || data.callback_url.trim().length > 0,
