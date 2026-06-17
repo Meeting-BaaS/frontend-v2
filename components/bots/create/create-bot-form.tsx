@@ -601,14 +601,14 @@ export function CreateBotForm() {
                         <Input
                           type="number"
                           min={120}
-                          max={1800}
+                          max={3600}
                           {...field}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
                           }
                         />
                       </FormControl>
-                      <FormDescription>120-1800 seconds</FormDescription>
+                      <FormDescription>120-3600 seconds</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
