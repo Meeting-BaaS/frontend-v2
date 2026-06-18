@@ -361,6 +361,7 @@ export const listAllSupportTicketsRequestQuerySchema = object({
   teamName: string().trim().nullable().default(null),
   teamId: integerPreprocess(number().int().positive()).nullable().default(null),
   botUuid: uuid().nullable().default(null),
+  ticketId: string().trim().nullable().default(null),
 }).nullable();
 
 export type ListAllSupportTicketsRequestQueryParams = output<

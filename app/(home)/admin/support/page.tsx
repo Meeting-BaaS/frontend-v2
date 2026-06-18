@@ -30,6 +30,7 @@ interface AdminSupportPageProps {
     teamName?: string | string[] | undefined
     teamId?: string | string[] | undefined
     botUuid?: string | string[] | undefined
+    ticketId?: string | string[] | undefined
     limit?: string | string[] | undefined
   }>
 }
