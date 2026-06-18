@@ -318,6 +318,7 @@ export const adminSupportTicketListItemSchema = object({
   status: supportTicketStatusEnum,
   botUuid: uuid().nullable(),
   createdAt: iso.datetime(),
+  updatedAt: iso.datetime(),
   resolvedAt: iso.datetime().nullable(),
 });
 
@@ -362,6 +363,7 @@ export const listAllSupportTicketsRequestQuerySchema = object({
   teamId: integerPreprocess(number().int().positive()).nullable().default(null),
   botUuid: uuid().nullable().default(null),
   ticketId: string().trim().nullable().default(null),
+  sortBy: zodEnum(["createdAt", "updatedAt"]).default("createdAt"),
 }).nullable();
 
 export type ListAllSupportTicketsRequestQueryParams = output<

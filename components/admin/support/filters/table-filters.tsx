@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminModuleFilter } from "@/components/admin/support/filters/module-filter";
+import { SortFilter } from "@/components/admin/support/filters/sort-filter";
 import { AdminStatusFilter } from "@/components/admin/support/filters/status-filter";
 import { TicketIdFilter } from "@/components/admin/support/filters/ticket-id-filter";
 import type { ListAllSupportTicketsRequestQueryParams } from "@/lib/schemas/admin";
@@ -17,6 +18,7 @@ export function AdminSupportTableFilters({
       <AdminStatusFilter status={params?.status ?? null} />
       <AdminModuleFilter module={params?.module ?? null} />
       <TicketIdFilter ticketId={params?.ticketId ?? null} />
+      <SortFilter sortBy={params?.sortBy ?? null} />
     </div>
   );
 }
