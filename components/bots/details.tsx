@@ -165,6 +165,30 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
             )
           }
         />
+        {botDetails.timeout_config && (
+          <>
+            <NameValuePair
+              title="Waiting Room Timeout"
+              value={`${botDetails.timeout_config.waiting_room_timeout}s`}
+            />
+            <NameValuePair
+              title="No One Joined Timeout"
+              value={`${botDetails.timeout_config.no_one_joined_timeout}s`}
+            />
+            <NameValuePair
+              title="Silence Timeout"
+              value={`${botDetails.timeout_config.silence_timeout}s`}
+            />
+            <NameValuePair
+              title="Grace Period"
+              value={
+                botDetails.timeout_config.grace_period > 0
+                  ? `${botDetails.timeout_config.grace_period}s`
+                  : "Disabled"
+              }
+            />
+          </>
+        )}
         <NameValuePair
           title="Transcription Provider"
           valueClassName="capitalize"

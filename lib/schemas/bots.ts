@@ -228,6 +228,12 @@ export const botDetailsSchema = object({
   bot_name: string(),
   meeting_url: string(),
   meeting_platform: meetingPlatformSchema,
+  timeout_config: object({
+    waiting_room_timeout: number().int(),
+    no_one_joined_timeout: number().int(),
+    silence_timeout: number().int(),
+    grace_period: number().int(),
+  }).nullable(),
   recording_mode: recordingModeSchema,
   speech_to_text_provider: speechToTextProviderSchema,
   extra: record(string(), zodUnknown()).nullable(),
