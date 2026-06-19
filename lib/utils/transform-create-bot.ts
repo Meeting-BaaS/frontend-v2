@@ -14,6 +14,7 @@ export function transformCreateBotFormToPayload(values: CreateBotFormValues) {
       waiting_room_timeout: values.waiting_room_timeout,
       no_one_joined_timeout: values.no_one_joined_timeout,
       silence_timeout: values.silence_timeout,
+      grace_period: values.grace_period,
     },
   }
 

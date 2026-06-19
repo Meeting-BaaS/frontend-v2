@@ -78,6 +78,7 @@ export function CreateBotForm() {
       waiting_room_timeout: 600,
       no_one_joined_timeout: 600,
       silence_timeout: 600,
+      grace_period: 0,
       extra_json: "",
     },
   })
@@ -609,6 +610,28 @@ export function CreateBotForm() {
                         />
                       </FormControl>
                       <FormDescription>120-3600 seconds</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="grace_period"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Grace Period</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={600}
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>0-600 seconds (0 = disabled)</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
