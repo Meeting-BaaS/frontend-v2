@@ -14,11 +14,12 @@ import { moduleLabels, statusLabels } from "@/lib/schemas/support";
 
 export const columnWidths = {
   ticketId: "min-w-[150px] max-w-[180px] w-[20%]",
-  teamName: "min-w-[120px] max-w-[150px] w-[15%]",
-  module: "min-w-[100px] max-w-[130px] w-[12%]",
-  status: "min-w-[100px] max-w-[130px] w-[12%]",
-  subject: "min-w-[180px] max-w-[300px] w-[28%]",
-  createdAt: "min-w-[120px] max-w-[150px] w-[13%]",
+  teamName: "min-w-[120px] max-w-[150px] w-[13%]",
+  module: "min-w-[100px] max-w-[130px] w-[10%]",
+  status: "min-w-[100px] max-w-[130px] w-[10%]",
+  subject: "min-w-[180px] max-w-[300px] w-[25%]",
+  createdAt: "min-w-[110px] max-w-[140px] w-[11%]",
+  updatedAt: "min-w-[110px] max-w-[140px] w-[11%]",
 } as const;
 
 export const columns: ColumnDef<AdminSupportTicketListItem>[] = [
@@ -132,6 +133,19 @@ export const columns: ColumnDef<AdminSupportTicketListItem>[] = [
     cell: ({ row }) => (
       <div className="capitalize">
         {formatRelativeDate(row.original.createdAt)}
+      </div>
+    ),
+  },
+  {
+    id: "updatedAt",
+    accessorKey: "updatedAt",
+    header: "Last message",
+    meta: {
+      className: columnWidths.updatedAt,
+    },
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {formatRelativeDate(row.original.updatedAt)}
       </div>
     ),
   },
