@@ -1,3 +1,4 @@
+import { BATCH_PROVIDERS } from "@meeting-baas/voice-router/providers"
 import {
   array,
   boolean,
@@ -15,7 +16,6 @@ import {
   enum as zodEnum,
   unknown as zodUnknown
 } from "zod"
-import { BATCH_PROVIDERS } from "@meeting-baas/voice-router/providers"
 import { isDateBefore } from "@/lib/date-helpers"
 import { CursorSchema } from "@/lib/schemas/common"
 
@@ -35,7 +35,6 @@ export const botStatusSchema = zodEnum([
   "failed", // Set by backend after failure processing
   "transcription_failed", // Set by backend when transcription fails but recording succeeded
   "awaiting_reconciliation",
-
 
   // Normal flow statuses (sent by both bots)
   "joining_call",
@@ -215,6 +214,15 @@ export const botStatusHistoryEntry = object({
   error_message: string().nullable()
 })
 
+const callbackMethodSchema = zodEnum(["POST", "PUT"])
+
+export const callbackConfigSchema = object({
+  enabled: literal(true),
+  url: string(),
+  secret: string().nullable(),
+  method: callbackMethodSchema
+})
+
 export const callbackErrorSchema = object({
   status_code: number().nullable().describe("Status code if the callback failed"),
   error: string().describe("Error code if the callback failed"),
@@ -232,7 +240,7 @@ export const botDetailsSchema = object({
     waiting_room_timeout: number().int(),
     no_one_joined_timeout: number().int(),
     silence_timeout: number().int(),
-    grace_period: number().int(),
+    grace_period: number().int()
   }).nullable(),
   recording_mode: recordingModeSchema,
   speech_to_text_provider: speechToTextProviderSchema,
@@ -271,7 +279,8 @@ export const botDetailsSchema = object({
       display_name: string().optional(),
       profile_picture: string().optional()
     })
-  ).nullable()
+  ).nullable(),
+  callback_config: callbackConfigSchema.nullable()
 })
 
 export const botDetailsResponseSchema = object({
@@ -295,10 +304,10 @@ export type CallbackError = output<typeof callbackErrorSchema>
 
 /** Check if a bot has a transcription failure (from errors array, not status) */
 export function hasTranscriptionFailure(
-  errors: Array<Record<string, unknown>> | null | undefined,
+  errors: Array<Record<string, unknown>> | null | undefined
 ): boolean {
-  if (!errors) return false;
-  return errors.some((e) => e["code"] === "TRANSCRIPTION_FAILED");
+  if (!errors) return false
+  return errors.some((e) => e["code"] === "TRANSCRIPTION_FAILED")
 }
 
 // Retry callback form schema (for dialog) - discriminated union
@@ -322,14 +331,14 @@ export const retranscribeFormSchema = discriminatedUnion("useOverride", [
     useOverride: literal(true),
     provider: speechToTextProviderSchema.exclude(["none"]),
     api_key: string().optional(),
-    custom_params: record(string(), zodUnknown()).optional(),
+    custom_params: record(string(), zodUnknown()).optional()
   }),
   object({
-    useOverride: literal(false),
-  }),
-]);
+    useOverride: literal(false)
+  })
+])
 
-export type RetranscribeFormData = output<typeof retranscribeFormSchema>;
+export type RetranscribeFormData = output<typeof retranscribeFormSchema>
 
 // Screenshot schemas
 export const botScreenshotSchema = object({
