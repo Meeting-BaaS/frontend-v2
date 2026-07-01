@@ -21,7 +21,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { NameValuePair } from "@/components/ui/name-value-pair"
 import { Separator } from "@/components/ui/separator"
 import { formatDuration, formatRelativeDate } from "@/lib/date-helpers"
-import { hasTranscriptionFailure, type BotDetails } from "@/lib/schemas/bots"
+import { type BotDetails, hasTranscriptionFailure } from "@/lib/schemas/bots"
 import { readableRecordingMode } from "@/lib/utils"
 
 interface BotDetailsProps {
@@ -110,8 +110,8 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
           <AlertTitle>Transcription Failed</AlertTitle>
           <AlertDescription className="space-y-2">
             <p>
-              Transcription failed for this bot. You can retry with the same or
-              a different provider.
+              Transcription failed for this bot. You can retry with the same or a different
+              provider.
             </p>
             <Button
               variant="outline"
@@ -145,6 +145,9 @@ export function ViewBotDetails({ botDetails, botUuid }: BotDetailsProps) {
 
       <div className="grid mt-10 md:mt-12 md:space-y-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <NameValuePair title="Meeting URL" value={botDetails.meeting_url} />
+        {botDetails.callback_config?.url && (
+          <NameValuePair title="Callback URL" value={botDetails.callback_config.url} />
+        )}
         <NameValuePair
           title="Recording Mode"
           value={readableRecordingMode(botDetails.recording_mode)}
