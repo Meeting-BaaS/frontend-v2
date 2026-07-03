@@ -6,6 +6,7 @@ import {
   FileAudio,
   FileCode,
   FileText,
+  FolderOpen,
   Radio,
 } from "lucide-react";
 import Link from "next/link";
@@ -37,7 +38,6 @@ interface AdminBotDetailsProps {
 }
 
 export function AdminBotDetails({ botDetails, botUuid }: AdminBotDetailsProps) {
-
   const botDuration = botDetails.duration ?? 0;
 
   // Format token values for display (returns precision string as-is)
@@ -83,6 +83,18 @@ export function AdminBotDetails({ botDetails, botUuid }: AdminBotDetailsProps) {
           }
         />
         <div className="flex w-full sm:w-auto gap-2 flex-row sm:items-center">
+          {botDetails.artifactsFolderUrl && (
+            <Button variant="outline" size="sm" asChild>
+              <a
+                href={botDetails.artifactsFolderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FolderOpen />
+                Artifacts folder
+              </a>
+            </Button>
+          )}
           <AdminBotActions
             botUuid={botUuid}
             teamId={botDetails.teamId}
