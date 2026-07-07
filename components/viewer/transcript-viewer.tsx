@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, Loader2 } from "lucide-react";
+import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { scroller } from "react-scroll";
 import { HighlightedWord } from "@/components/viewer/highlighted-word";
@@ -12,6 +13,7 @@ interface TranscriptViewerProps {
   onTimeChange: (time: number) => void;
   isLoading?: boolean;
   error?: string | null;
+  headerAction?: ReactNode;
 }
 
 export function TranscriptViewer({
@@ -20,6 +22,7 @@ export function TranscriptViewer({
   onTimeChange,
   isLoading = false,
   error = null,
+  headerAction,
 }: TranscriptViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeWordId, setActiveWordId] = useState<number | null>(null);
@@ -81,7 +84,10 @@ export function TranscriptViewer({
       id="transcript-container"
       className="relative mx-4 h-full max-h-[85svh] overflow-y-auto md:mt-6"
     >
-      <h3 className="my-2 font-bold md:mt-0 md:text-lg">Transcript</h3>
+      <div className="my-2 flex items-center justify-between gap-3 md:mt-0">
+        <h3 className="font-bold md:text-lg">Transcript</h3>
+        {headerAction}
+      </div>
 
       {isLoading && (
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
