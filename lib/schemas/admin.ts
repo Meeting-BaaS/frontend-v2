@@ -124,6 +124,7 @@ export const adminBotDetailsSchema = object({
   errorCode: string().nullable(),
   errorMessage: string().nullable(),
   logFileUrl: url().nullable(),
+  artifactsFolderUrl: url().nullable(),
   allowMultipleBots: boolean(),
   audioFrequency: number().nullable(),
   speechToTextApiKeyConfigured: boolean().nullable(),

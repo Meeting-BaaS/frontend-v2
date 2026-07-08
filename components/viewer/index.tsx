@@ -1,19 +1,100 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { TranscriptViewer } from "@/components/viewer/transcript-viewer";
 import { VideoPlayer } from "@/components/viewer/video-player";
-import type { OutputTranscription, Transcript } from "@/types/viewer.types";
+import type {
+  DiarizationSegment,
+  OutputTranscription,
+  Transcript,
+} from "@/types/viewer.types";
 
 interface ViewerProps {
   videoUrl: string;
   transcriptionUrl: string | null;
+  diarizationUrl?: string | null;
+  canToggleSpeakerSource?: boolean;
 }
 
-export function Viewer({ videoUrl, transcriptionUrl }: ViewerProps) {
+const SPEAKER_MATCH_WINDOW_SECONDS = 1;
+
+function isDiarizationSegment(value: unknown): value is DiarizationSegment {
+  if (!value || typeof value !== "object") return false;
+
+  const segment = value as Record<string, unknown>;
+  return (
+    typeof segment.speaker === "string" &&
+    typeof segment.start_time === "number" &&
+    typeof segment.end_time === "number"
+  );
+}
+
+function parseDiarizationJsonl(content: string): DiarizationSegment[] {
+  return content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line) => {
+      try {
+        const parsed = JSON.parse(line) as unknown;
+        return isDiarizationSegment(parsed) ? [parsed] : [];
+      } catch {
+        return [];
+      }
+    });
+}
+
+function findObservedSpeaker(
+  transcript: Transcript,
+  segments: DiarizationSegment[],
+): string | null {
+  const midpoint = (transcript.start_time + transcript.end_time) / 2;
+  let bestMatch: string | null = null;
+  let minTimeDiff = Number.POSITIVE_INFINITY;
+
+  for (const segment of segments) {
+    const segmentStart = segment.start_time - SPEAKER_MATCH_WINDOW_SECONDS;
+    const segmentEnd = segment.end_time + SPEAKER_MATCH_WINDOW_SECONDS;
+
+    if (midpoint >= segmentStart && midpoint <= segmentEnd) {
+      const segmentMidpoint = (segment.start_time + segment.end_time) / 2;
+      const timeDiff = Math.abs(midpoint - segmentMidpoint);
+
+      if (timeDiff < minTimeDiff) {
+        minTimeDiff = timeDiff;
+        bestMatch = segment.speaker;
+      }
+    }
+  }
+
+  return bestMatch;
+}
+
+function applyObservedSpeakers(
+  transcripts: Transcript[],
+  segments: DiarizationSegment[],
+): Transcript[] {
+  return transcripts.map((transcript) => ({
+    ...transcript,
+    speaker: findObservedSpeaker(transcript, segments) ?? "Unknown",
+  }));
+}
+
+export function Viewer({
+  videoUrl,
+  transcriptionUrl,
+  diarizationUrl = null,
+  canToggleSpeakerSource = false,
+}: ViewerProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [seekTime, setSeekTime] = useState<number | undefined>(undefined);
   const [transcripts, setTranscripts] = useState<Transcript[]>([]);
+  const [observedSpeakerSegments, setObservedSpeakerSegments] = useState<
+    DiarizationSegment[]
+  >([]);
+  const [useObservedSpeakers, setUseObservedSpeakers] = useState(false);
   const [isLoadingTranscript, setIsLoadingTranscript] = useState(true);
   const [transcriptError, setTranscriptError] = useState<string | null>(null);
 
@@ -73,6 +154,7 @@ export function Viewer({ videoUrl, transcriptionUrl }: ViewerProps) {
               id: utteranceIndex + 1,
               speaker: utterance.speaker || "Unknown",
               start_time: utterance.start, // Start time of this speaker segment
+              end_time: utterance.end,
               words, // All words in this segment (each with their own timestamps)
             };
           },
@@ -101,6 +183,73 @@ export function Viewer({ videoUrl, transcriptionUrl }: ViewerProps) {
     };
   }, [transcriptionUrl]);
 
+  useEffect(() => {
+    if (!canToggleSpeakerSource || !diarizationUrl) {
+      setObservedSpeakerSegments([]);
+      setUseObservedSpeakers(false);
+      return;
+    }
+
+    let cancelled = false;
+    const observedSpeakerUrl = diarizationUrl;
+    setObservedSpeakerSegments([]);
+    setUseObservedSpeakers(false);
+
+    async function loadDiarization() {
+      try {
+        const response = await fetch(observedSpeakerUrl);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch diarization: ${response.statusText}`);
+        }
+
+        const content = await response.text();
+        if (cancelled) return;
+
+        setObservedSpeakerSegments(parseDiarizationJsonl(content));
+      } catch (error) {
+        if (cancelled) return;
+        console.error("Failed to load diarization", error);
+        setObservedSpeakerSegments([]);
+        setUseObservedSpeakers(false);
+      }
+    }
+
+    loadDiarization();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [canToggleSpeakerSource, diarizationUrl]);
+
+  const displayedTranscripts = useMemo(() => {
+    if (!useObservedSpeakers || observedSpeakerSegments.length === 0) {
+      return transcripts;
+    }
+
+    return applyObservedSpeakers(transcripts, observedSpeakerSegments);
+  }, [observedSpeakerSegments, transcripts, useObservedSpeakers]);
+
+  const canUseObservedSpeakers =
+    canToggleSpeakerSource &&
+    observedSpeakerSegments.length > 0 &&
+    transcripts.length > 0;
+
+  const speakerSourceControl = canUseObservedSpeakers ? (
+    <div className="flex shrink-0 items-center gap-2">
+      <Switch
+        id="observed-speakers"
+        checked={useObservedSpeakers}
+        onCheckedChange={setUseObservedSpeakers}
+      />
+      <Label
+        htmlFor="observed-speakers"
+        className="whitespace-nowrap text-muted-foreground text-xs"
+      >
+        Observed speakers
+      </Label>
+    </div>
+  ) : null;
+
   const handleProgress = (state: {
     played: number;
     playedSeconds: number;
@@ -126,11 +275,12 @@ export function Viewer({ videoUrl, transcriptionUrl }: ViewerProps) {
         </div>
         <div className="w-full border-t md:w-1/4 md:border-t-0 md:border-l">
           <TranscriptViewer
-            transcripts={transcripts}
+            transcripts={displayedTranscripts}
             currentTime={currentTime}
             onTimeChange={handleTimeChange}
             isLoading={isLoadingTranscript}
             error={transcriptError}
+            headerAction={speakerSourceControl}
           />
         </div>
       </div>

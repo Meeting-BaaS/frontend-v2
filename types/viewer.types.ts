@@ -11,7 +11,14 @@ export interface Transcript {
   id: number;
   speaker: string;
   start_time: number;
+  end_time: number;
   words: Word[];
+}
+
+export interface DiarizationSegment {
+  speaker: string;
+  start_time: number;
+  end_time: number;
 }
 
 export interface OutputTranscription {

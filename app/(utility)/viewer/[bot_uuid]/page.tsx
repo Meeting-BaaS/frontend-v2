@@ -61,6 +61,7 @@ export default async function ViewerPage({ params }: ViewerPageProps) {
   // Fetch bot details - use admin API if user is admin, otherwise use regular API
   let videoArtifact: ArtifactWithSignedUrl | undefined
   let transcriptionArtifact: ArtifactWithSignedUrl | undefined
+  let diarizationArtifact: ArtifactWithSignedUrl | undefined
 
   if (isAdmin) {
     const adminBotDetails = await axiosGetInstance<GetAdminBotDetailsResponse>(
@@ -80,6 +81,10 @@ export default async function ViewerPage({ params }: ViewerPageProps) {
 
     transcriptionArtifact = adminBotDetails.data.artifacts?.find(
       (artifact) => artifact.type === "transcription" && artifact.uploaded && artifact.signed_url
+    )
+
+    diarizationArtifact = adminBotDetails.data.artifacts?.find(
+      (artifact) => artifact.type === "diarization" && artifact.uploaded && artifact.signed_url
     )
   } else {
     const botDetails = await axiosGetInstance<{
@@ -123,6 +128,8 @@ export default async function ViewerPage({ params }: ViewerPageProps) {
     <Viewer
       videoUrl={videoArtifact.signed_url}
       transcriptionUrl={transcriptionArtifact?.signed_url ?? null}
+      diarizationUrl={diarizationArtifact?.signed_url ?? null}
+      canToggleSpeakerSource={isAdmin}
     />
   )
 }

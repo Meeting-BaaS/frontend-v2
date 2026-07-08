@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
-import { axiosPostInstance } from "@/lib/api-client";
+import { type APIError, axiosPostInstance } from "@/lib/api-client";
 import { RETRY_CALLBACK } from "@/lib/api-routes";
 import { genericError } from "@/lib/errors";
 import { retryCallbackFormSchema } from "@/lib/schemas/bots";
@@ -119,7 +119,23 @@ export function RetryCallbackDialog({
       onCancel(false);
     } catch (error) {
       console.error("Error retrying callback", error);
-      toast.error(error instanceof Error ? error.message : genericError);
+      if (error instanceof Error && "errorResponse" in error) {
+        const apiError = error as APIError;
+        const code = apiError.errorResponse.code;
+        if (code === "FST_ERR_CALLBACK_NOT_CONFIGURED") {
+          toast.error(
+            "No callback configured for this bot. Provide a callback URL or enable callbacks when creating bots.",
+          );
+        } else if (code === "FST_ERR_BOT_STATUS") {
+          toast.error(
+            "Bot is not in a completed or failed state yet. Wait for the bot to finish first.",
+          );
+        } else {
+          toast.error(apiError.message || genericError);
+        }
+      } else {
+        toast.error(error instanceof Error ? error.message : genericError);
+      }
     } finally {
       setLoading(false);
     }
