@@ -171,6 +171,29 @@ export const UPDATE_MEET_LOGIN = (credentialId: string) =>
 export const DELETE_MEET_LOGIN = (credentialId: string) =>
   `${BFF_MEET_LOGINS_BASE_PATH}/${credentialId}`
 
+// Teams Workspaces routes (BFF - reuses public API handlers with snake_case)
+export const BFF_TEAMS_WORKSPACES_BASE_PATH = `${BFF_BASE_PATH}/teams-workspaces`
+export const LIST_TEAMS_WORKSPACES = `${BFF_TEAMS_WORKSPACES_BASE_PATH}`
+export const CREATE_TEAMS_WORKSPACE = `${BFF_TEAMS_WORKSPACES_BASE_PATH}`
+export const GET_TEAMS_WORKSPACE = (workspaceId: string) =>
+  `${BFF_TEAMS_WORKSPACES_BASE_PATH}/${workspaceId}`
+export const UPDATE_TEAMS_WORKSPACE = (workspaceId: string) =>
+  `${BFF_TEAMS_WORKSPACES_BASE_PATH}/${workspaceId}`
+export const DELETE_TEAMS_WORKSPACE = (workspaceId: string) =>
+  `${BFF_TEAMS_WORKSPACES_BASE_PATH}/${workspaceId}`
+
+// Teams Logins routes (BFF - reuses public API handlers with snake_case)
+export const BFF_TEAMS_LOGINS_BASE_PATH = `${BFF_BASE_PATH}/teams-logins`
+export const LIST_TEAMS_LOGINS = `${BFF_TEAMS_LOGINS_BASE_PATH}`
+export const CREATE_TEAMS_LOGIN = `${BFF_TEAMS_LOGINS_BASE_PATH}`
+export const GET_TEAMS_LOGIN_UTILIZATION = `${BFF_TEAMS_LOGINS_BASE_PATH}/utilization`
+export const GET_TEAMS_LOGIN = (credentialId: string) =>
+  `${BFF_TEAMS_LOGINS_BASE_PATH}/${credentialId}`
+export const UPDATE_TEAMS_LOGIN = (credentialId: string) =>
+  `${BFF_TEAMS_LOGINS_BASE_PATH}/${credentialId}`
+export const DELETE_TEAMS_LOGIN = (credentialId: string) =>
+  `${BFF_TEAMS_LOGINS_BASE_PATH}/${credentialId}`
+
 // Admin routes
 export const ADMIN_BASE_PATH = `${BASE_PATH}/admin`
 export const ADMIN_BOTS_BASE_PATH = `${ADMIN_BASE_PATH}/bots`
