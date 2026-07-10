@@ -24,7 +24,18 @@ export async function AdminSupportTableServer({
       headers: {
         Cookie: cookieStore.toString(),
       },
-      params: params ?? undefined,
+      params: {
+        cursor: params?.cursor ?? null,
+        status: params?.status?.join(",") ?? null,
+        module: params?.module?.join(",") ?? null,
+        type: params?.type?.join(",") ?? null,
+        teamName: params?.teamName ?? null,
+        teamId: params?.teamId ?? null,
+        botUuid: params?.botUuid ?? null,
+        ticketId: params?.ticketId ?? null,
+        sortBy: params?.sortBy ?? "createdAt",
+        limit: params?.limit ?? 50,
+      },
     },
   );
 
