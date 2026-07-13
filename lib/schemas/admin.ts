@@ -207,6 +207,26 @@ export const listAllTeamsResponseSchema = object({
 
 export type ListAllTeamsResponse = output<typeof listAllTeamsResponseSchema>;
 
+// A negotiated volume commitment: a fixed monthly token grant at a fixed per-token
+// rate, with usage beyond the balance billed in arrears at that same rate. Null for
+// teams on off-the-shelf token-pack pricing, which is most of them.
+export const adminCommitmentSchema = object({
+  id: number(),
+  teamId: number(),
+  monthlyTokens: string(),
+  pricePerTokenCents: string(),
+  monthlyAmountCents: number(),
+  stripeSubscriptionId: string(),
+  stripePriceId: string(),
+  rollover: boolean(),
+  entitlementPlan: string(),
+  activeFrom: iso.datetime(),
+  activeTo: iso.datetime().nullable(),
+  notes: string().nullable(),
+});
+
+export type AdminCommitment = output<typeof adminCommitmentSchema>;
+
 export const adminTeamDetailsSchema = object({
   teamId: number().int().positive(),
   teamName: string(),
@@ -246,6 +266,7 @@ export const adminTeamDetailsSchema = object({
   reminderEnabled: boolean(),
   deleted: boolean(),
   deletedAt: iso.datetime().nullable(),
+  commitment: adminCommitmentSchema.nullable(),
 });
 
 export type AdminTeamDetails = output<typeof adminTeamDetailsSchema>;
@@ -264,11 +285,65 @@ export const updateRateLimitsRequestSchema = object({
   dailyBotCap: number().int().positive(),
   calendarIntegrationsLimit: number().int().positive(),
   dataRetentionDays: number().int().positive(),
+  byokTranscriptionEnabled: boolean().optional(),
 });
 
 export type UpdateRateLimitsRequest = output<
   typeof updateRateLimitsRequestSchema
 >;
+
+// The recurring charge and the contract rate have to describe the same deal. They
+// won't agree to the cent (2632 tokens x 19c = $500.08, while the Stripe price is a
+// round $500), so allow a little slack. This is here to catch a unit slip — dollars
+// entered where cents are expected — not to enforce exact arithmetic. The backend
+// applies the same tolerance; checking here just surfaces it before the round trip.
+const COMMITMENT_AMOUNT_TOLERANCE = 0.01;
+
+export const upsertCommitmentRequestSchema = object({
+  monthlyTokens: number().positive(),
+  pricePerTokenCents: number().positive(),
+  monthlyAmountCents: number().int().positive(),
+  stripeSubscriptionId: string().trim().min(1, "Stripe subscription ID is required"),
+  stripePriceId: string().trim().min(1, "Stripe price ID is required"),
+  rollover: boolean(),
+  entitlementPlan: zodEnum(["payg", "pro", "scale", "enterprise"]),
+  notes: string().trim().optional(),
+}).refine(
+  (data) => {
+    const expected = data.monthlyTokens * data.pricePerTokenCents;
+    return Math.abs(data.monthlyAmountCents - expected) / expected <= COMMITMENT_AMOUNT_TOLERANCE;
+  },
+  {
+    message:
+      "Monthly amount does not match tokens x rate. Both are in cents — check you haven't entered dollars.",
+    path: ["monthlyAmountCents"],
+  },
+);
+
+export type UpsertCommitmentRequest = output<
+  typeof upsertCommitmentRequestSchema
+>;
+
+export const upsertCommitmentResponseSchema = object({
+  success: literal(true),
+  data: object({
+    message: string(),
+    commitment: adminCommitmentSchema,
+  }),
+});
+
+export type UpsertCommitmentResponse = output<
+  typeof upsertCommitmentResponseSchema
+>;
+
+export const endCommitmentResponseSchema = object({
+  success: literal(true),
+  data: object({
+    message: string(),
+  }),
+});
+
+export type EndCommitmentResponse = output<typeof endCommitmentResponseSchema>;
 
 export const updateRateLimitsResponseSchema = object({
   success: literal(true),

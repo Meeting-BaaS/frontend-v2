@@ -2,15 +2,18 @@
 
 import {
   AlertTriangle,
+  FileSignature,
   Gift,
   Infinity as InfinityIcon,
   MoreHorizontal,
-  RotateCcw
+  RotateCcw,
+  Trash2
 } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
+import { CommitmentDialog } from "@/components/admin/teams/commitment-dialog"
 import { adminMembersColumns } from "@/components/admin/teams/members-columns"
 import { RateLimitsDialog } from "@/components/admin/teams/rate-limits-dialog"
 import { TokenOperationsDialog } from "@/components/admin/teams/token-operations-dialog"
@@ -20,16 +23,26 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DataTable } from "@/components/ui/data-table"
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { NameValuePair } from "@/components/ui/name-value-pair"
+import { Spinner } from "@/components/ui/spinner"
 import { TeamAvatar } from "@/components/ui/team-avatar"
 import { useDataTable } from "@/hooks/use-data-table"
-import { axiosPostInstance } from "@/lib/api-client"
-import { ADMIN_REVERT_TEAM_DELETION } from "@/lib/api-routes"
+import { axiosDeleteInstance, axiosPostInstance } from "@/lib/api-client"
+import { ADMIN_REVERT_TEAM_DELETION, ADMIN_TEAM_COMMITMENT } from "@/lib/api-routes"
 import { formatISODateString, formatRelativeDate } from "@/lib/date-helpers"
 import { genericError } from "@/lib/errors"
 import type { AdminTeamDetails as AdminTeamDetailsType } from "@/lib/schemas/admin"
@@ -44,7 +57,12 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
   const router = useRouter()
   const [rateLimitsOpen, setRateLimitsOpen] = useState(false)
   const [tokenOperationsOpen, setTokenOperationsOpen] = useState(false)
+  const [commitmentOpen, setCommitmentOpen] = useState(false)
+  const [endCommitmentOpen, setEndCommitmentOpen] = useState(false)
   const [revertLoading, setRevertLoading] = useState(false)
+  const [endCommitmentLoading, setEndCommitmentLoading] = useState(false)
+
+  const { commitment } = teamDetails
 
   const handleRevertDeletion = async () => {
     if (revertLoading) return
@@ -57,6 +75,21 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
       toast.error(error instanceof Error ? error.message : genericError)
     } finally {
       setRevertLoading(false)
+    }
+  }
+
+  const handleEndCommitment = async () => {
+    if (endCommitmentLoading) return
+    try {
+      setEndCommitmentLoading(true)
+      await axiosDeleteInstance(ADMIN_TEAM_COMMITMENT(teamId))
+      toast.success("Commitment ended. Entitlement caps were left unchanged.")
+      router.refresh()
+      setEndCommitmentOpen(false)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : genericError)
+    } finally {
+      setEndCommitmentLoading(false)
     }
   }
 
@@ -121,6 +154,17 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
               <DropdownMenuItem onClick={() => setTokenOperationsOpen(true)}>
                 <Gift /> Refund/Gift Tokens
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setCommitmentOpen(true)}>
+                <FileSignature /> {commitment ? "Edit Commitment" : "Set Commitment"}
+              </DropdownMenuItem>
+              {commitment && (
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => setEndCommitmentOpen(true)}
+                >
+                  <Trash2 /> End Commitment
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -186,6 +230,34 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
         />
         <NameValuePair title="SVIX App ID" value={teamDetails.svixAppId} />
         <NameValuePair title="Stripe Customer ID" value={teamDetails.stripeCustomerId ?? "-"} />
+        {commitment && (
+          <>
+            <NameValuePair
+              title="Contract Rate"
+              value={
+                <span className="flex items-center gap-2">
+                  ${(Number.parseFloat(commitment.pricePerTokenCents) / 100).toFixed(2)}/hour
+                  <Badge variant="secondary">Committed</Badge>
+                </span>
+              }
+            />
+            <NameValuePair
+              title="Monthly Commitment"
+              value={`${Number.parseFloat(commitment.monthlyTokens).toLocaleString()} tokens — $${(
+                commitment.monthlyAmountCents / 100
+              ).toFixed(2)}/month`}
+            />
+            <NameValuePair
+              title="Rollover"
+              value={commitment.rollover ? "Unused tokens carry forward" : "Use it or lose it"}
+            />
+            <NameValuePair
+              title="Commitment Since"
+              valueClassName="capitalize"
+              value={formatRelativeDate(commitment.activeFrom)}
+            />
+          </>
+        )}
         <NameValuePair
           containerClassName="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4"
           title="Team Members"
@@ -210,6 +282,41 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
         open={tokenOperationsOpen}
         onOpenChange={setTokenOperationsOpen}
       />
+      <CommitmentDialog
+        teamId={teamId}
+        commitment={commitment}
+        open={commitmentOpen}
+        onOpenChange={setCommitmentOpen}
+      />
+
+      <Dialog open={endCommitmentOpen} onOpenChange={setEndCommitmentOpen}>
+        <DialogContent className="sm:max-w-md" showCloseButton={!endCommitmentLoading}>
+          <DialogHeader>
+            <DialogTitle>End commitment?</DialogTitle>
+            <DialogDescription>
+              This team stops receiving its monthly token grant and stops being billed for
+              overage at the contract rate. Cancel the Stripe subscription separately — this
+              does not touch it. Entitlement caps are left as they are, so the team keeps
+              working; lower them from Change Rate Limits if you want them downgraded.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline" disabled={endCommitmentLoading}>
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={handleEndCommitment}
+              disabled={endCommitmentLoading}
+              aria-busy={endCommitmentLoading}
+            >
+              {endCommitmentLoading ? <Spinner /> : "End Commitment"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
