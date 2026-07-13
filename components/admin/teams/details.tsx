@@ -158,10 +158,7 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
                 <FileSignature /> {commitment ? "Edit Commitment" : "Set Commitment"}
               </DropdownMenuItem>
               {commitment && (
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => setEndCommitmentOpen(true)}
-                >
+                <DropdownMenuItem variant="destructive" onClick={() => setEndCommitmentOpen(true)}>
                   <Trash2 /> End Commitment
                 </DropdownMenuItem>
               )}
@@ -294,10 +291,10 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
           <DialogHeader>
             <DialogTitle>End commitment?</DialogTitle>
             <DialogDescription>
-              This team stops receiving its monthly token grant and stops being billed for
-              overage at the contract rate. Cancel the Stripe subscription separately — this
-              does not touch it. Entitlement caps are left as they are, so the team keeps
-              working; lower them from Change Rate Limits if you want them downgraded.
+              This team stops receiving its monthly token grant and stops being billed for overage
+              at the contract rate. Cancel the Stripe subscription separately — this does not touch
+              it. Entitlement caps are left as they are, so the team keeps working; lower them from
+              Change Rate Limits if you want them downgraded.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
