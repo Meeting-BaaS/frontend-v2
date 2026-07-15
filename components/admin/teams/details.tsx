@@ -83,7 +83,9 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
     try {
       setEndCommitmentLoading(true)
       await axiosDeleteInstance(ADMIN_TEAM_COMMITMENT(teamId))
-      toast.success("Commitment ended. Entitlement caps were left unchanged.")
+      toast.success(
+        "Commitment ended and Stripe subscription cancelled. Entitlement caps were left unchanged."
+      )
       router.refresh()
       setEndCommitmentOpen(false)
     } catch (error) {
@@ -291,10 +293,10 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
           <DialogHeader>
             <DialogTitle>End commitment?</DialogTitle>
             <DialogDescription>
-              This team stops receiving its monthly token grant and stops being billed for overage
-              at the contract rate. Cancel the Stripe subscription separately — this does not touch
-              it. Entitlement caps are left as they are, so the team keeps working; lower them from
-              Change Rate Limits if you want them downgraded.
+              The backing Stripe subscription is cancelled immediately and the team stops receiving
+              its monthly token grant and being billed for overage at the contract rate. Entitlement
+              caps are left as they are, so the team keeps working; lower them from Change Rate
+              Limits if you want them downgraded.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
