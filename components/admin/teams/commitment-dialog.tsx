@@ -166,7 +166,9 @@ export function CommitmentDialog({
   }
 
   const handleOpenChange = (open: boolean) => {
-    if (!open) {
+    // Reset on open, not close: a save refreshes the page and changes the
+    // commitment prop, so values captured at the previous open are stale by now.
+    if (open) {
       form.reset(defaultValues)
     }
     onOpenChange(open)
