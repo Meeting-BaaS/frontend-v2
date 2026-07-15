@@ -191,9 +191,12 @@ export const ADMIN_UPDATE_RATE_LIMITS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/update-rate-limits`
 export const ADMIN_TOKEN_OPERATIONS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/token-operations`
-// POST creates or replaces the team's contract pricing, DELETE ends it
+// POST records existing-subscription terms, DELETE ends the commitment
 export const ADMIN_TEAM_COMMITMENT = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/commitment`
+// POST creates the Stripe price + subscription for us, then records the commitment
+export const ADMIN_PROVISION_TEAM_COMMITMENT = (teamId: number) =>
+  `${ADMIN_TEAMS_BASE_PATH}/${teamId}/commitment/provision`
 export const ADMIN_CREATE_SUPPORT_TICKET = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/support-tickets/create`
 export const ADMIN_SUPPORT_BASE_PATH = `${ADMIN_BASE_PATH}/support`

@@ -299,6 +299,38 @@ export type UpdateRateLimitsRequest = output<
 // applies the same tolerance; checking here just surfaces it before the round trip.
 const COMMITMENT_AMOUNT_TOLERANCE = 0.01;
 
+const amountMatchesTokensAndRate = (data: {
+  monthlyTokens: number;
+  pricePerTokenCents: number;
+  monthlyAmountCents: number;
+}) => {
+  const expected = data.monthlyTokens * data.pricePerTokenCents;
+  return (
+    Math.abs(data.monthlyAmountCents - expected) / expected <=
+    COMMITMENT_AMOUNT_TOLERANCE
+  );
+};
+
+const AMOUNT_MISMATCH_ISSUE = {
+  message:
+    "Monthly amount does not match tokens x rate. Both are in cents — check you haven't entered dollars.",
+  path: ["monthlyAmountCents"],
+};
+
+export const entitlementPlanSchema = zodEnum([
+  "payg",
+  "pro",
+  "scale",
+  "enterprise",
+]);
+
+export const commitmentCollectionMethodSchema = zodEnum([
+  "charge_automatically",
+  "send_invoice",
+]);
+
+// Recording the terms of a Stripe subscription that already exists (its IDs pasted
+// in). Used when editing, or when sales set the subscription up by hand.
 export const upsertCommitmentRequestSchema = object({
   monthlyTokens: number().positive(),
   pricePerTokenCents: number().positive(),
@@ -306,23 +338,70 @@ export const upsertCommitmentRequestSchema = object({
   stripeSubscriptionId: string().trim().min(1, "Stripe subscription ID is required"),
   stripePriceId: string().trim().min(1, "Stripe price ID is required"),
   rollover: boolean(),
-  entitlementPlan: zodEnum(["payg", "pro", "scale", "enterprise"]),
+  entitlementPlan: entitlementPlanSchema,
   notes: string().trim().optional(),
-}).refine(
-  (data) => {
-    const expected = data.monthlyTokens * data.pricePerTokenCents;
-    return Math.abs(data.monthlyAmountCents - expected) / expected <= COMMITMENT_AMOUNT_TOLERANCE;
-  },
-  {
-    message:
-      "Monthly amount does not match tokens x rate. Both are in cents — check you haven't entered dollars.",
-    path: ["monthlyAmountCents"],
-  },
-);
+}).refine(amountMatchesTokensAndRate, AMOUNT_MISMATCH_ISSUE);
 
 export type UpsertCommitmentRequest = output<
   typeof upsertCommitmentRequestSchema
 >;
+
+// Creating the Stripe price + subscription for us, so no IDs — just how it should
+// collect payment.
+export const provisionCommitmentRequestSchema = object({
+  monthlyTokens: number().positive(),
+  pricePerTokenCents: number().positive(),
+  monthlyAmountCents: number().int().positive(),
+  rollover: boolean(),
+  entitlementPlan: entitlementPlanSchema,
+  notes: string().trim().optional(),
+  collectionMethod: commitmentCollectionMethodSchema,
+  daysUntilDue: number().int().positive().max(365),
+}).refine(amountMatchesTokensAndRate, AMOUNT_MISMATCH_ISSUE);
+
+export type ProvisionCommitmentRequest = output<
+  typeof provisionCommitmentRequestSchema
+>;
+
+// One form drives both flows. `mode` decides which endpoint fires and which fields
+// are required — Stripe IDs for "manual", collection terms for "provision".
+export const commitmentFormSchema = object({
+  mode: zodEnum(["provision", "manual"]),
+  monthlyTokens: number().positive(),
+  pricePerTokenCents: number().positive(),
+  monthlyAmountCents: number().int().positive(),
+  rollover: boolean(),
+  entitlementPlan: entitlementPlanSchema,
+  notes: string().trim().optional(),
+  // manual mode only
+  stripeSubscriptionId: string().trim().optional(),
+  stripePriceId: string().trim().optional(),
+  // provision mode only
+  collectionMethod: commitmentCollectionMethodSchema,
+  daysUntilDue: number().int().positive().max(365),
+}).superRefine((data, ctx) => {
+  if (!amountMatchesTokensAndRate(data)) {
+    ctx.addIssue({ code: "custom", ...AMOUNT_MISMATCH_ISSUE });
+  }
+  if (data.mode === "manual") {
+    if (!data.stripeSubscriptionId?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Stripe subscription ID is required",
+        path: ["stripeSubscriptionId"],
+      });
+    }
+    if (!data.stripePriceId?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Stripe price ID is required",
+        path: ["stripePriceId"],
+      });
+    }
+  }
+});
+
+export type CommitmentFormValues = output<typeof commitmentFormSchema>;
 
 export const upsertCommitmentResponseSchema = object({
   success: literal(true),
