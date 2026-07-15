@@ -35,8 +35,10 @@ import {
   type AdminCommitment,
   type CommitmentFormValues,
   commitmentFormSchema,
+  entitlementPlanSchema,
   type ProvisionCommitmentRequest,
-  type UpsertCommitmentRequest
+  type UpsertCommitmentRequest,
+  upsertCommitmentResponseSchema
 } from "@/lib/schemas/admin"
 
 interface CommitmentDialogProps {
@@ -46,7 +48,18 @@ interface CommitmentDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
-const ENTITLEMENT_PLANS = ["payg", "pro", "scale", "enterprise"] as const
+const ENTITLEMENT_PLANS = entitlementPlanSchema.options
+
+// An empty or partially-typed field must not become NaN in form state — NaN
+// renders literally as "NaN" in the input. Undefined leaves the field blank and
+// zod reports it as required on submit.
+const numericFieldValue = (raw: string, parse: (value: string) => number) => {
+  if (raw === "") {
+    return undefined
+  }
+  const parsed = parse(raw)
+  return Number.isNaN(parsed) ? undefined : parsed
+}
 
 export function CommitmentDialog({
   teamId,
@@ -68,7 +81,7 @@ export function CommitmentDialog({
         pricePerTokenCents: Number.parseFloat(commitment.pricePerTokenCents),
         monthlyAmountCents: commitment.monthlyAmountCents,
         rollover: commitment.rollover,
-        entitlementPlan: commitment.entitlementPlan as CommitmentFormValues["entitlementPlan"],
+        entitlementPlan: commitment.entitlementPlan,
         notes: commitment.notes ?? "",
         stripeSubscriptionId: commitment.stripeSubscriptionId,
         stripePriceId: commitment.stripePriceId,
@@ -132,7 +145,11 @@ export function CommitmentDialog({
           collectionMethod: data.collectionMethod,
           daysUntilDue: data.daysUntilDue
         }
-        await axiosPostInstance(ADMIN_PROVISION_TEAM_COMMITMENT(teamId), payload, undefined)
+        await axiosPostInstance(
+          ADMIN_PROVISION_TEAM_COMMITMENT(teamId),
+          payload,
+          upsertCommitmentResponseSchema
+        )
         toast.success(
           "Commitment created and Stripe subscription provisioned. First invoice is on its way."
         )
@@ -147,7 +164,7 @@ export function CommitmentDialog({
           entitlementPlan: data.entitlementPlan,
           notes: data.notes
         }
-        await axiosPostInstance(ADMIN_TEAM_COMMITMENT(teamId), payload, undefined)
+        await axiosPostInstance(ADMIN_TEAM_COMMITMENT(teamId), payload, upsertCommitmentResponseSchema)
         toast.success(
           isEdit
             ? "Commitment updated. Entitlement caps re-applied."
@@ -238,7 +255,7 @@ export function CommitmentDialog({
                           {...field}
                           id="monthlyTokens"
                           value={field.value ?? ""}
-                          onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
+                          onChange={(e) => field.onChange(numericFieldValue(e.target.value, Number.parseFloat))}
                           disabled={loading}
                         />
                       </FormControl>
@@ -261,7 +278,7 @@ export function CommitmentDialog({
                           {...field}
                           id="pricePerTokenCents"
                           value={field.value ?? ""}
-                          onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
+                          onChange={(e) => field.onChange(numericFieldValue(e.target.value, Number.parseFloat))}
                           disabled={loading}
                         />
                       </FormControl>
@@ -283,7 +300,7 @@ export function CommitmentDialog({
                           {...field}
                           id="monthlyAmountCents"
                           value={field.value ?? ""}
-                          onChange={(e) => field.onChange(Number.parseInt(e.target.value, 10))}
+                          onChange={(e) => field.onChange(numericFieldValue(e.target.value, (v) => Number.parseInt(v, 10)))}
                           disabled={loading}
                         />
                       </FormControl>
@@ -295,7 +312,7 @@ export function CommitmentDialog({
 
               {monthlyTokens > 0 && ratePerHour > 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  {monthlyTokens.toLocaleString()} hours at{" "}
+                  {monthlyTokens.toLocaleString("en-US")} hours at{" "}
                   <span className="font-medium text-foreground">
                     ${ratePerHour.toFixed(2)}/hour
                   </span>{" "}
@@ -410,7 +427,7 @@ export function CommitmentDialog({
                                 id="daysUntilDue"
                                 value={field.value ?? ""}
                                 onChange={(e) =>
-                                  field.onChange(Number.parseInt(e.target.value, 10))
+                                  field.onChange(numericFieldValue(e.target.value, (v) => Number.parseInt(v, 10)))
                                 }
                                 disabled={loading}
                               />

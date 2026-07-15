@@ -199,6 +199,10 @@ export const listAllTeamsResponseSchema = object({
 
 export type ListAllTeamsResponse = output<typeof listAllTeamsResponseSchema>
 
+export const entitlementPlanSchema = zodEnum(["payg", "pro", "scale", "enterprise"])
+
+export type EntitlementPlan = output<typeof entitlementPlanSchema>
+
 // A negotiated volume commitment: a fixed monthly token grant at a fixed per-token
 // rate, with usage beyond the balance billed in arrears at that same rate. Null for
 // teams on off-the-shelf token-pack pricing, which is most of them.
@@ -211,7 +215,7 @@ export const adminCommitmentSchema = object({
   stripeSubscriptionId: string(),
   stripePriceId: string(),
   rollover: boolean(),
-  entitlementPlan: string(),
+  entitlementPlan: entitlementPlanSchema,
   activeFrom: iso.datetime(),
   activeTo: iso.datetime().nullable(),
   notes: string().nullable()
@@ -301,8 +305,6 @@ const AMOUNT_MISMATCH_ISSUE = {
     "Monthly amount does not match tokens x rate. Both are in cents — check you haven't entered dollars.",
   path: ["monthlyAmountCents"]
 }
-
-export const entitlementPlanSchema = zodEnum(["payg", "pro", "scale", "enterprise"])
 
 export const commitmentCollectionMethodSchema = zodEnum(["charge_automatically", "send_invoice"])
 

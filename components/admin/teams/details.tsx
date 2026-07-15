@@ -242,7 +242,7 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
             />
             <NameValuePair
               title="Monthly Commitment"
-              value={`${Number.parseFloat(commitment.monthlyTokens).toLocaleString()} tokens — $${(
+              value={`${Number.parseFloat(commitment.monthlyTokens).toLocaleString("en-US")} tokens — $${(
                 commitment.monthlyAmountCents / 100
               ).toFixed(2)}/month`}
             />
