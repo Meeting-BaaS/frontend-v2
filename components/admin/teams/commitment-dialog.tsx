@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm, useWatch } from "react-hook-form"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -13,62 +13,53 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Form, FormControl, FormField } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+  DialogTitle
+} from "@/components/ui/dialog"
+import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Form, FormControl, FormField } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { axiosPostInstance } from "@/lib/api-client";
-import {
-  ADMIN_PROVISION_TEAM_COMMITMENT,
-  ADMIN_TEAM_COMMITMENT,
-} from "@/lib/api-routes";
-import { genericError } from "@/lib/errors";
+  SelectValue
+} from "@/components/ui/select"
+import { Spinner } from "@/components/ui/spinner"
+import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+import { axiosPostInstance } from "@/lib/api-client"
+import { ADMIN_PROVISION_TEAM_COMMITMENT, ADMIN_TEAM_COMMITMENT } from "@/lib/api-routes"
+import { genericError } from "@/lib/errors"
 import {
   type AdminCommitment,
   type CommitmentFormValues,
   commitmentFormSchema,
   type ProvisionCommitmentRequest,
-  type UpsertCommitmentRequest,
-} from "@/lib/schemas/admin";
+  type UpsertCommitmentRequest
+} from "@/lib/schemas/admin"
 
 interface CommitmentDialogProps {
-  teamId: number;
-  commitment: AdminCommitment | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  teamId: number
+  commitment: AdminCommitment | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-const ENTITLEMENT_PLANS = ["payg", "pro", "scale", "enterprise"] as const;
+const ENTITLEMENT_PLANS = ["payg", "pro", "scale", "enterprise"] as const
 
 export function CommitmentDialog({
   teamId,
   commitment,
   open,
-  onOpenChange,
+  onOpenChange
 }: CommitmentDialogProps) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   // Editing an existing commitment only re-records its terms — changing the rate
   // would need a fresh Stripe price/subscription, so provisioning is create-only.
-  const isEdit = commitment !== null;
+  const isEdit = commitment !== null
 
   const defaultValues: CommitmentFormValues = commitment
     ? {
@@ -77,13 +68,12 @@ export function CommitmentDialog({
         pricePerTokenCents: Number.parseFloat(commitment.pricePerTokenCents),
         monthlyAmountCents: commitment.monthlyAmountCents,
         rollover: commitment.rollover,
-        entitlementPlan:
-          commitment.entitlementPlan as CommitmentFormValues["entitlementPlan"],
+        entitlementPlan: commitment.entitlementPlan as CommitmentFormValues["entitlementPlan"],
         notes: commitment.notes ?? "",
         stripeSubscriptionId: commitment.stripeSubscriptionId,
         stripePriceId: commitment.stripePriceId,
         collectionMethod: "send_invoice",
-        daysUntilDue: 30,
+        daysUntilDue: 30
       }
     : {
         mode: "provision",
@@ -96,40 +86,40 @@ export function CommitmentDialog({
         stripeSubscriptionId: "",
         stripePriceId: "",
         collectionMethod: "send_invoice",
-        daysUntilDue: 30,
-      };
+        daysUntilDue: 30
+      }
 
   const form = useForm<CommitmentFormValues>({
     resolver: zodResolver(commitmentFormSchema),
-    defaultValues,
-  });
+    defaultValues
+  })
 
-  const mode = useWatch({ control: form.control, name: "mode" });
+  const mode = useWatch({ control: form.control, name: "mode" })
   const collectionMethod = useWatch({
     control: form.control,
-    name: "collectionMethod",
-  });
+    name: "collectionMethod"
+  })
   const monthlyTokens = useWatch({
     control: form.control,
-    name: "monthlyTokens",
-  });
+    name: "monthlyTokens"
+  })
   const pricePerTokenCents = useWatch({
     control: form.control,
-    name: "pricePerTokenCents",
-  });
+    name: "pricePerTokenCents"
+  })
   const monthlyAmountCents = useWatch({
     control: form.control,
-    name: "monthlyAmountCents",
-  });
+    name: "monthlyAmountCents"
+  })
 
-  const ratePerHour = pricePerTokenCents ? pricePerTokenCents / 100 : 0;
-  const chargePerMonth = monthlyAmountCents ? monthlyAmountCents / 100 : 0;
+  const ratePerHour = pricePerTokenCents ? pricePerTokenCents / 100 : 0
+  const chargePerMonth = monthlyAmountCents ? monthlyAmountCents / 100 : 0
 
   const onSubmit = async (data: CommitmentFormValues) => {
-    if (loading) return;
+    if (loading) return
 
     try {
-      setLoading(true);
+      setLoading(true)
 
       if (data.mode === "provision") {
         const payload: ProvisionCommitmentRequest = {
@@ -140,16 +130,12 @@ export function CommitmentDialog({
           entitlementPlan: data.entitlementPlan,
           notes: data.notes,
           collectionMethod: data.collectionMethod,
-          daysUntilDue: data.daysUntilDue,
-        };
-        await axiosPostInstance(
-          ADMIN_PROVISION_TEAM_COMMITMENT(teamId),
-          payload,
-          undefined,
-        );
+          daysUntilDue: data.daysUntilDue
+        }
+        await axiosPostInstance(ADMIN_PROVISION_TEAM_COMMITMENT(teamId), payload, undefined)
         toast.success(
-          "Commitment created and Stripe subscription provisioned. First invoice is on its way.",
-        );
+          "Commitment created and Stripe subscription provisioned. First invoice is on its way."
+        )
       } else {
         const payload: UpsertCommitmentRequest = {
           monthlyTokens: data.monthlyTokens,
@@ -159,36 +145,32 @@ export function CommitmentDialog({
           stripePriceId: data.stripePriceId ?? "",
           rollover: data.rollover,
           entitlementPlan: data.entitlementPlan,
-          notes: data.notes,
-        };
-        await axiosPostInstance(
-          ADMIN_TEAM_COMMITMENT(teamId),
-          payload,
-          undefined,
-        );
+          notes: data.notes
+        }
+        await axiosPostInstance(ADMIN_TEAM_COMMITMENT(teamId), payload, undefined)
         toast.success(
           isEdit
             ? "Commitment updated. Entitlement caps re-applied."
-            : "Commitment recorded. Entitlement caps applied.",
-        );
+            : "Commitment recorded. Entitlement caps applied."
+        )
       }
 
-      router.refresh();
-      onOpenChange(false);
+      router.refresh()
+      onOpenChange(false)
     } catch (error) {
-      console.error("Error saving commitment", error);
-      toast.error(error instanceof Error ? error.message : genericError);
+      console.error("Error saving commitment", error)
+      toast.error(error instanceof Error ? error.message : genericError)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      form.reset(defaultValues);
+      form.reset(defaultValues)
     }
-    onOpenChange(open);
-  };
+    onOpenChange(open)
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -197,13 +179,10 @@ export function CommitmentDialog({
         showCloseButton={!loading}
       >
         <DialogHeader>
-          <DialogTitle>
-            {isEdit ? "Edit Commitment" : "Create Commitment"}
-          </DialogTitle>
+          <DialogTitle>{isEdit ? "Edit Commitment" : "Create Commitment"}</DialogTitle>
           <DialogDescription>
-            Contract pricing: a fixed monthly token grant at a negotiated rate. 1
-            token = 1 recorded hour. Usage beyond the balance is billed in arrears
-            at the same rate.
+            Contract pricing: a fixed monthly token grant at a negotiated rate. 1 token = 1 recorded
+            hour. Usage beyond the balance is billed in arrears at the same rate.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -228,12 +207,8 @@ export function CommitmentDialog({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="provision">
-                              Create it for me
-                            </SelectItem>
-                            <SelectItem value="manual">
-                              I already have the IDs
-                            </SelectItem>
+                            <SelectItem value="provision">Create it for me</SelectItem>
+                            <SelectItem value="manual">I already have the IDs</SelectItem>
                           </SelectContent>
                         </Select>
                         <p className="text-xs text-muted-foreground">
@@ -252,9 +227,7 @@ export function CommitmentDialog({
                 name="monthlyTokens"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="monthlyTokens">
-                      Monthly Tokens (= hours)
-                    </FieldLabel>
+                    <FieldLabel htmlFor="monthlyTokens">Monthly Tokens (= hours)</FieldLabel>
                     <FieldContent>
                       <FormControl>
                         <Input
@@ -263,15 +236,11 @@ export function CommitmentDialog({
                           {...field}
                           id="monthlyTokens"
                           value={field.value ?? ""}
-                          onChange={(e) =>
-                            field.onChange(Number.parseFloat(e.target.value))
-                          }
+                          onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
                           disabled={loading}
                         />
                       </FormControl>
-                      <FieldError
-                        errors={fieldState.error ? [fieldState.error] : undefined}
-                      />
+                      <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                     </FieldContent>
                   </Field>
                 )}
@@ -281,9 +250,7 @@ export function CommitmentDialog({
                 name="pricePerTokenCents"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="pricePerTokenCents">
-                      Rate (cents per token)
-                    </FieldLabel>
+                    <FieldLabel htmlFor="pricePerTokenCents">Rate (cents per token)</FieldLabel>
                     <FieldContent>
                       <FormControl>
                         <Input
@@ -292,15 +259,11 @@ export function CommitmentDialog({
                           {...field}
                           id="pricePerTokenCents"
                           value={field.value ?? ""}
-                          onChange={(e) =>
-                            field.onChange(Number.parseFloat(e.target.value))
-                          }
+                          onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
                           disabled={loading}
                         />
                       </FormControl>
-                      <FieldError
-                        errors={fieldState.error ? [fieldState.error] : undefined}
-                      />
+                      <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                     </FieldContent>
                   </Field>
                 )}
@@ -310,9 +273,7 @@ export function CommitmentDialog({
                 name="monthlyAmountCents"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="monthlyAmountCents">
-                      Monthly Charge (cents)
-                    </FieldLabel>
+                    <FieldLabel htmlFor="monthlyAmountCents">Monthly Charge (cents)</FieldLabel>
                     <FieldContent>
                       <FormControl>
                         <Input
@@ -320,15 +281,11 @@ export function CommitmentDialog({
                           {...field}
                           id="monthlyAmountCents"
                           value={field.value ?? ""}
-                          onChange={(e) =>
-                            field.onChange(Number.parseInt(e.target.value, 10))
-                          }
+                          onChange={(e) => field.onChange(Number.parseInt(e.target.value, 10))}
                           disabled={loading}
                         />
                       </FormControl>
-                      <FieldError
-                        errors={fieldState.error ? [fieldState.error] : undefined}
-                      />
+                      <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                     </FieldContent>
                   </Field>
                 )}
@@ -367,11 +324,7 @@ export function CommitmentDialog({
                               disabled={loading}
                             />
                           </FormControl>
-                          <FieldError
-                            errors={
-                              fieldState.error ? [fieldState.error] : undefined
-                            }
-                          />
+                          <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                         </FieldContent>
                       </Field>
                     )}
@@ -381,9 +334,7 @@ export function CommitmentDialog({
                     name="stripePriceId"
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="stripePriceId">
-                          Stripe Price ID
-                        </FieldLabel>
+                        <FieldLabel htmlFor="stripePriceId">Stripe Price ID</FieldLabel>
                         <FieldContent>
                           <FormControl>
                             <Input
@@ -394,11 +345,7 @@ export function CommitmentDialog({
                               disabled={loading}
                             />
                           </FormControl>
-                          <FieldError
-                            errors={
-                              fieldState.error ? [fieldState.error] : undefined
-                            }
-                          />
+                          <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                         </FieldContent>
                       </Field>
                     )}
@@ -413,9 +360,7 @@ export function CommitmentDialog({
                     name="collectionMethod"
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="collectionMethod">
-                          Collection
-                        </FieldLabel>
+                        <FieldLabel htmlFor="collectionMethod">Collection</FieldLabel>
                         <FieldContent>
                           <Select
                             value={field.value}
@@ -423,10 +368,7 @@ export function CommitmentDialog({
                             disabled={loading}
                           >
                             <FormControl>
-                              <SelectTrigger
-                                id="collectionMethod"
-                                className="w-full"
-                              >
+                              <SelectTrigger id="collectionMethod" className="w-full">
                                 <SelectValue />
                               </SelectTrigger>
                             </FormControl>
@@ -444,11 +386,7 @@ export function CommitmentDialog({
                               ? "Requires a default payment method on the customer, or provisioning fails."
                               : "No card needed. Stripe emails a payable invoice each period."}
                           </p>
-                          <FieldError
-                            errors={
-                              fieldState.error ? [fieldState.error] : undefined
-                            }
-                          />
+                          <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                         </FieldContent>
                       </Field>
                     )}
@@ -470,17 +408,13 @@ export function CommitmentDialog({
                                 id="daysUntilDue"
                                 value={field.value ?? ""}
                                 onChange={(e) =>
-                                  field.onChange(
-                                    Number.parseInt(e.target.value, 10),
-                                  )
+                                  field.onChange(Number.parseInt(e.target.value, 10))
                                 }
                                 disabled={loading}
                               />
                             </FormControl>
                             <FieldError
-                              errors={
-                                fieldState.error ? [fieldState.error] : undefined
-                              }
+                              errors={fieldState.error ? [fieldState.error] : undefined}
                             />
                           </FieldContent>
                         </Field>
@@ -495,15 +429,9 @@ export function CommitmentDialog({
                 name="entitlementPlan"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="entitlementPlan">
-                      Entitlement Caps
-                    </FieldLabel>
+                    <FieldLabel htmlFor="entitlementPlan">Entitlement Caps</FieldLabel>
                     <FieldContent>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={loading}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange} disabled={loading}>
                         <FormControl>
                           <SelectTrigger id="entitlementPlan" className="w-full">
                             <SelectValue />
@@ -511,23 +439,17 @@ export function CommitmentDialog({
                         </FormControl>
                         <SelectContent>
                           {ENTITLEMENT_PLANS.map((plan) => (
-                            <SelectItem
-                              key={plan}
-                              value={plan}
-                              className="capitalize"
-                            >
+                            <SelectItem key={plan} value={plan} className="capitalize">
                               {plan}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-muted-foreground">
-                        Rate limit, bot cap, calendars, retention and BYOK are set
-                        from this plan. The team is not charged for it.
+                        Rate limit, bot cap, calendars, retention and BYOK are set from this plan.
+                        The team is not charged for it.
                       </p>
-                      <FieldError
-                        errors={fieldState.error ? [fieldState.error] : undefined}
-                      />
+                      <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                     </FieldContent>
                   </Field>
                 )}
@@ -540,8 +462,8 @@ export function CommitmentDialog({
                     <FieldContent>
                       <FieldLabel htmlFor="rollover">Rollover</FieldLabel>
                       <p className="text-xs text-muted-foreground">
-                        Unused tokens carry forward. Off means the balance resets
-                        to the monthly grant each period.
+                        Unused tokens carry forward. Off means the balance resets to the monthly
+                        grant each period.
                       </p>
                     </FieldContent>
                     <FormControl>
@@ -571,9 +493,7 @@ export function CommitmentDialog({
                           disabled={loading}
                         />
                       </FormControl>
-                      <FieldError
-                        errors={fieldState.error ? [fieldState.error] : undefined}
-                      />
+                      <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
                     </FieldContent>
                   </Field>
                 )}
@@ -599,5 +519,5 @@ export function CommitmentDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -60,9 +60,9 @@ export const TEST_ALERT_RULE = `${ALERTS_BASE_PATH}/test`
 export const LIST_ALERT_HISTORY = `${ALERTS_BASE_PATH}/history`
 
 // Bots routes (BFF - reuses public API handlers with snake_case)
-export const BFF_BOTS_BASE_PATH = `${BFF_BASE_PATH}/bots`;
-export const LIST_BOTS = `${BFF_BOTS_BASE_PATH}`;
-export const CREATE_BOT = `${BFF_BOTS_BASE_PATH}`;
+export const BFF_BOTS_BASE_PATH = `${BFF_BASE_PATH}/bots`
+export const LIST_BOTS = `${BFF_BOTS_BASE_PATH}`
+export const CREATE_BOT = `${BFF_BOTS_BASE_PATH}`
 // Note: bot_id is passed as a path parameter, not in the route constant
 export const GET_BOT_DETAILS = (botId: string) => `${BFF_BOTS_BASE_PATH}/${botId}`
 export const GET_BOT_STATUS = (botId: string) => `${BFF_BOTS_BASE_PATH}/${botId}/status`
@@ -70,11 +70,9 @@ export const GET_BOT_SCREENSHOTS = (botId: string) => `${BFF_BOTS_BASE_PATH}/${b
 export const LEAVE_BOT = (botId: string) => `${BFF_BOTS_BASE_PATH}/${botId}/leave`
 export const DELETE_BOT_DATA = (botId: string) => `${BFF_BOTS_BASE_PATH}/${botId}/delete-data`
 export const RESEND_FINAL_WEBHOOK = (botId: string) =>
-  `${BFF_BOTS_BASE_PATH}/${botId}/resend-webhook`;
-export const RETRY_CALLBACK = (botId: string) =>
-  `${BFF_BOTS_BASE_PATH}/${botId}/retry-callback`;
-export const RETRANSCRIBE_BOT = (botId: string) =>
-  `${BFF_BOTS_BASE_PATH}/${botId}/retranscribe`;
+  `${BFF_BOTS_BASE_PATH}/${botId}/resend-webhook`
+export const RETRY_CALLBACK = (botId: string) => `${BFF_BOTS_BASE_PATH}/${botId}/retry-callback`
+export const RETRANSCRIBE_BOT = (botId: string) => `${BFF_BOTS_BASE_PATH}/${botId}/retranscribe`
 
 // Scheduled bots routes (BFF - reuses public API handlers with snake_case)
 export const BFF_SCHEDULED_BOTS_BASE_PATH = `${BFF_BASE_PATH}/bots/scheduled`
