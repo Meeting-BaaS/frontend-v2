@@ -120,16 +120,24 @@ export function CommitmentDialog({
     control: form.control,
     name: "pricePerTokenCents"
   })
+  const monthlyAmountCents = useWatch({
+    control: form.control,
+    name: "monthlyAmountCents"
+  })
 
-  // The monthly charge is not entered — it is tokens x rate, always. Keeping it in
-  // form state (rather than only computing it at submit) means the request payload
-  // and the amount-consistency guard both see the derived value.
-  const monthlyAmountCents =
+  // Provision creates the Stripe price for us, so the charge is simply tokens x rate
+  // — derive it and hide the field. Manual mode records an EXISTING subscription
+  // whose real amount may be a round figure ($500.00 vs 2632 x $0.19 = $500.08), so
+  // there the operator enters it and it must NOT be overwritten. Deriving in both
+  // modes would silently rewrite a manual commitment's real amount on edit.
+  const derivedAmountCents =
     monthlyTokens > 0 && pricePerTokenCents > 0 ? Math.round(monthlyTokens * pricePerTokenCents) : 0
 
   useEffect(() => {
-    form.setValue("monthlyAmountCents", monthlyAmountCents, { shouldValidate: true })
-  }, [form, monthlyAmountCents])
+    if (mode === "provision") {
+      form.setValue("monthlyAmountCents", derivedAmountCents, { shouldValidate: true })
+    }
+  }, [form, mode, derivedAmountCents])
 
   const ratePerHour = pricePerTokenCents ? pricePerTokenCents / 100 : 0
   const chargePerMonth = monthlyAmountCents ? monthlyAmountCents / 100 : 0
@@ -312,13 +320,43 @@ export function CommitmentDialog({
                     ${chargePerMonth.toFixed(2)}/month
                   </span>{" "}
                   <span className="text-muted-foreground">
-                    ({monthlyAmountCents.toLocaleString("en-US")} cents)
+                    ({(monthlyAmountCents ?? 0).toLocaleString("en-US")} cents)
                   </span>
                 </p>
               ) : null}
 
               {mode === "manual" && (
                 <>
+                  <FormField
+                    control={form.control}
+                    name="monthlyAmountCents"
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="monthlyAmountCents">Monthly Charge (cents)</FieldLabel>
+                        <FieldContent>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              id="monthlyAmountCents"
+                              value={field.value ?? ""}
+                              onChange={(e) =>
+                                field.onChange(
+                                  numericFieldValue(e.target.value, (v) => Number.parseInt(v, 10))
+                                )
+                              }
+                              disabled={loading}
+                            />
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground">
+                            The existing subscription's real amount (e.g. a round 50000 = $500.00).
+                            Defaults to tokens × rate but keep it matching Stripe.
+                          </p>
+                          <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+                        </FieldContent>
+                      </Field>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="stripeSubscriptionId"
