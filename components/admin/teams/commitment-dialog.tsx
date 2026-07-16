@@ -320,7 +320,7 @@ export function CommitmentDialog({
                     ${chargePerMonth.toFixed(2)}/month
                   </span>{" "}
                   <span className="text-muted-foreground">
-                    ({monthlyAmountCents.toLocaleString("en-US")} cents)
+                    ({(monthlyAmountCents ?? 0).toLocaleString("en-US")} cents)
                   </span>
                 </p>
               ) : null}
