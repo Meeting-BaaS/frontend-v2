@@ -13,6 +13,7 @@ import {
   MicOff,
   PlayCircle,
   Radio,
+  RefreshCw,
   Send,
   UploadCloud,
   XCircle
@@ -140,6 +141,17 @@ const statusConfigMap: Partial<Record<BotStatus, StatusConfig>> = {
     badgeVariant: "secondary"
   },
 
+  // Retrying - Amber (non-terminal; a failed attempt is being re-queued for a
+  // fresh pod / fresh exit IP. NOT a failure — a terminal status follows only if
+  // all retries are exhausted).
+  retrying: {
+    icon: RefreshCw,
+    description:
+      "A previous attempt failed and the bot is being re-queued to try again (a fresh pod on a fresh network path). This is not a failure — the bot will report a final status only if all retries are exhausted.",
+    color: "var(--color-amber-500)",
+    badgeVariant: "outline"
+  },
+
   // Transcription failure - Amber (recording succeeded, transcription failed)
   transcription_failed: {
     icon: AlertCircle,
@@ -222,6 +234,13 @@ export function StatusHistory({ statusHistory }: StatusHistoryProps) {
             const Icon = config.icon
             const updatedAt = parseDateString(entry.updated_at)
 
+            // For the non-terminal "retrying" status, surface the attempt/cap
+            // (e.g. "Retrying (2/5)") when the payload carries them.
+            const badgeLabel =
+              entry.status === "retrying" && entry.attempt != null && entry.max != null
+                ? `Retrying (${entry.attempt}/${entry.max})`
+                : entry.status.split("_").join(" ")
+
             return (
               <div
                 key={`${entry.status}-${entry.updated_at}-${index}`}
@@ -252,7 +271,7 @@ export function StatusHistory({ statusHistory }: StatusHistoryProps) {
                             })
                           )}
                         >
-                          {entry.status.split("_").join(" ")}
+                          {badgeLabel}
                         </Badge>
                       </div>
                     </button>
