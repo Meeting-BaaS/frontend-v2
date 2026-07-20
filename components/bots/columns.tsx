@@ -19,7 +19,11 @@ import { cn } from "@/lib/utils"
 const ACRONYMS = new Set(["OOM", "API", "SDK", "JWT", "URL", "OBF"])
 // Friendlier display labels for statuses whose code is internal-sounding.
 const STATUS_LABEL_OVERRIDES: Record<string, string> = {
-  awaiting_reconciliation: "Finalizing"
+  awaiting_reconciliation: "Finalizing",
+  // Non-terminal: a failed attempt is being re-queued for another try. The list
+  // view only has the status string (no attempt/max), so show a generic
+  // in-progress label; the status timeline renders "Retrying (N/max)".
+  retrying: "Retrying…"
 }
 export const formatStatusLabel = (status: string) =>
   STATUS_LABEL_OVERRIDES[status] ??
@@ -62,6 +66,9 @@ export const botColorVariants = cva("", {
       recording_paused: AMBER,
       waiting_room_timeout: AMBER,
       transcription_failed: AMBER,
+
+      // Retrying - Amber (non-terminal, in-progress; NOT a failure)
+      retrying: AMBER,
 
       // Processing states - Violet
       awaiting_reconciliation: VIOLET,
