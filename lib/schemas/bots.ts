@@ -57,6 +57,11 @@ export const botStatusSchema = zodEnum([
   "invalid_meeting_url",
   "meeting_error",
 
+  // Non-terminal retry status: a failed attempt is being re-queued (fresh pod /
+  // fresh exit IP). Carries attempt/max in the status-history entry. A terminal
+  // failure error code follows only if all retries are exhausted.
+  "retrying",
+
   // Error codes (from resolved_status for failed bots)
   // Normal end reasons
   "BOT_REMOVED",
@@ -212,7 +217,12 @@ export const botStatusHistoryEntry = object({
   status: botStatusSchema.catch("UNKNOWN_ERROR"),
   updated_at: iso.datetime(),
   error_code: string().nullable(),
-  error_message: string().nullable()
+  error_message: string().nullable(),
+  // Only present for the non-terminal "retrying" status: the attempt number now
+  // being started and the platform cap (e.g. 5 for Zoom). Used to render
+  // "Retrying (N/max)" in the status timeline.
+  attempt: number().optional(),
+  max: number().optional()
 })
 
 const callbackMethodSchema = zodEnum(["POST", "PUT"])

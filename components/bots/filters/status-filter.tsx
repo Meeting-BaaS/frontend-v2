@@ -30,6 +30,7 @@ export const STATUS_GROUPS: { label: string; statuses: BotStatus[] }[] = [
       "in_call_recording",
       "recording_paused",
       "recording_resumed",
+      "retrying",
       "call_ended",
       "recording_succeeded",
       "awaiting_reconciliation",
