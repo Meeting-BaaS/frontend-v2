@@ -37,7 +37,10 @@ export const teamDetails = array(
     role: roleEnum,
     joinedAt: iso.datetime(),
     slug: string(),
-    apiOnlyArtifactAccess: boolean()
+    apiOnlyArtifactAccess: boolean(),
+    // Admin kill switch state — drives the full-width TeamDisabledBanner
+    disabled: boolean(),
+    disabledReason: string().nullable()
   })
 )
 

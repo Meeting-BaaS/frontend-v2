@@ -262,6 +262,9 @@ export const adminTeamDetailsSchema = object({
   reminderEnabled: boolean(),
   deleted: boolean(),
   deletedAt: iso.datetime().nullable(),
+  disabled: boolean(),
+  disabledAt: iso.datetime().nullable(),
+  disabledReason: string().nullable(),
   commitment: adminCommitmentSchema.nullable()
 })
 
@@ -598,3 +601,8 @@ export const adminUserMigrationResponseSchema = object({
 })
 
 export type AdminUserMigrationResponse = output<typeof adminUserMigrationResponseSchema>
+
+export const disableTeamRequestSchema = object({
+  reason: string().trim().min(3, "Give a reason (min 3 characters)").max(500, "Reason too long")
+})
+export type DisableTeamRequest = output<typeof disableTeamRequestSchema>
