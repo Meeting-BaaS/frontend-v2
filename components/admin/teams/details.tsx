@@ -7,6 +7,8 @@ import {
   Infinity as InfinityIcon,
   MoreHorizontal,
   RotateCcw,
+  ShieldCheck,
+  ShieldOff,
   Trash2
 } from "lucide-react"
 import Image from "next/image"
@@ -14,6 +16,7 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { CommitmentDialog } from "@/components/admin/teams/commitment-dialog"
+import { DisableTeamDialog } from "@/components/admin/teams/disable-team-dialog"
 import { adminMembersColumns } from "@/components/admin/teams/members-columns"
 import { RateLimitsDialog } from "@/components/admin/teams/rate-limits-dialog"
 import { TokenOperationsDialog } from "@/components/admin/teams/token-operations-dialog"
@@ -42,7 +45,11 @@ import { Spinner } from "@/components/ui/spinner"
 import { TeamAvatar } from "@/components/ui/team-avatar"
 import { useDataTable } from "@/hooks/use-data-table"
 import { axiosDeleteInstance, axiosPostInstance } from "@/lib/api-client"
-import { ADMIN_REVERT_TEAM_DELETION, ADMIN_TEAM_COMMITMENT } from "@/lib/api-routes"
+import {
+  ADMIN_ENABLE_TEAM,
+  ADMIN_REVERT_TEAM_DELETION,
+  ADMIN_TEAM_COMMITMENT
+} from "@/lib/api-routes"
 import { formatISODateString, formatRelativeDate } from "@/lib/date-helpers"
 import { genericError } from "@/lib/errors"
 import type { AdminTeamDetails as AdminTeamDetailsType } from "@/lib/schemas/admin"
@@ -61,6 +68,8 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
   const [endCommitmentOpen, setEndCommitmentOpen] = useState(false)
   const [revertLoading, setRevertLoading] = useState(false)
   const [endCommitmentLoading, setEndCommitmentLoading] = useState(false)
+  const [disableTeamOpen, setDisableTeamOpen] = useState(false)
+  const [enableLoading, setEnableLoading] = useState(false)
 
   const { commitment } = teamDetails
 
@@ -75,6 +84,20 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
       toast.error(error instanceof Error ? error.message : genericError)
     } finally {
       setRevertLoading(false)
+    }
+  }
+
+  const handleEnableTeam = async () => {
+    if (enableLoading) return
+    try {
+      setEnableLoading(true)
+      await axiosPostInstance(ADMIN_ENABLE_TEAM(teamId), null, undefined)
+      toast.success("Team re-enabled. API access restored.")
+      router.refresh()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : genericError)
+    } finally {
+      setEnableLoading(false)
     }
   }
 
@@ -164,10 +187,47 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
                   <Trash2 /> End Commitment
                 </DropdownMenuItem>
               )}
+              {teamDetails.disabled ? (
+                <DropdownMenuItem onClick={handleEnableTeam} disabled={enableLoading}>
+                  <ShieldCheck /> Enable Team
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem variant="destructive" onClick={() => setDisableTeamOpen(true)}>
+                  <ShieldOff /> Disable Team
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
+
+      {teamDetails.disabled && (
+        <Alert variant="destructive" className="mt-6">
+          <ShieldOff />
+          <AlertTitle>⛔ TEAM DISABLED — all API access blocked</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>
+              Disabled{teamDetails.disabledAt ? ` on ${formatISODateString(teamDetails.disabledAt)}` : ""}.
+              Every API request from this team returns 403 TEAM_DISABLED and scheduled bots are
+              frozen. Running bots finish normally.
+            </p>
+            {teamDetails.disabledReason && (
+              <p>
+                <span className="font-semibold">Reason:</span> {teamDetails.disabledReason}
+              </p>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEnableTeam}
+              disabled={enableLoading}
+              className="mt-2"
+            >
+              <ShieldCheck className="size-4" /> {enableLoading ? "Enabling…" : "Re-enable team"}
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {teamDetails.deleted && teamDetails.deletedAt && (
         <Alert variant="destructive" className="mt-6">
@@ -286,6 +346,12 @@ export function AdminTeamDetails({ teamDetails, teamId }: AdminTeamDetailsProps)
         commitment={commitment}
         open={commitmentOpen}
         onOpenChange={setCommitmentOpen}
+      />
+      <DisableTeamDialog
+        teamId={teamId}
+        teamName={teamDetails.teamName}
+        open={disableTeamOpen}
+        onOpenChange={setDisableTeamOpen}
       />
 
       <Dialog open={endCommitmentOpen} onOpenChange={setEndCommitmentOpen}>

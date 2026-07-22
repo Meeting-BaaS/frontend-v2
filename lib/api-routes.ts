@@ -189,6 +189,8 @@ export const ADMIN_UPDATE_RATE_LIMITS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/update-rate-limits`
 export const ADMIN_TOKEN_OPERATIONS = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/token-operations`
+export const ADMIN_DISABLE_TEAM = (teamId: number) => `${ADMIN_TEAMS_BASE_PATH}/${teamId}/disable`
+export const ADMIN_ENABLE_TEAM = (teamId: number) => `${ADMIN_TEAMS_BASE_PATH}/${teamId}/enable`
 // POST records existing-subscription terms, DELETE ends the commitment
 export const ADMIN_TEAM_COMMITMENT = (teamId: number) =>
   `${ADMIN_TEAMS_BASE_PATH}/${teamId}/commitment`
