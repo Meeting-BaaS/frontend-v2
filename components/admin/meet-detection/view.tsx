@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { PageHeading } from "@/components/layout/page-heading"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -42,12 +42,18 @@ function pctColor(pct: number): string {
 export function AdminMeetDetectionView() {
   const [hours, setHours] = useState<number>(24 * 7)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [stats, setStats] = useState<MeetDetectionStatsResponse["data"] | null>(null)
   const [byTeam, setByTeam] = useState<MeetDetectionByTeamResponse["data"]>([])
   const [byUser, setByUser] = useState<MeetDetectionByUserResponse["data"]>([])
+  // Monotonic request id: only the latest fetch may write state, so a slow
+  // earlier range can't resolve late and clobber a newer one (or its loading).
+  const reqIdRef = useRef(0)
 
   const fetchAll = useCallback(async () => {
+    const reqId = ++reqIdRef.current
     setLoading(true)
+    setError(false)
     const qs = rangeQuery(hours)
     try {
       const [s, t, u] = await Promise.all([
@@ -64,16 +70,18 @@ export function AdminMeetDetectionView() {
           meetDetectionByUserResponseSchema
         )
       ])
+      if (reqId !== reqIdRef.current) return // superseded by a newer range
       setStats(s.data)
       setByTeam(t.data)
       setByUser(u.data)
     } catch (err) {
+      if (reqId !== reqIdRef.current) return
       console.error("Failed to fetch Meet detection telemetry", err)
-      setStats(null)
-      setByTeam([])
-      setByUser([])
+      // Distinct error state — do NOT zero the data, or a failed fetch reads as
+      // a confirmed clean range.
+      setError(true)
     } finally {
-      setLoading(false)
+      if (reqId === reqIdRef.current) setLoading(false)
     }
   }, [hours])
 
@@ -104,6 +112,15 @@ export function AdminMeetDetectionView() {
 
       {loading ? (
         <Spinner />
+      ) : error ? (
+        <div className="flex flex-col items-start gap-3 py-8">
+          <p className="text-sm text-destructive">
+            Failed to load Meet detection telemetry for this range.
+          </p>
+          <Button size="sm" variant="outline" onClick={() => fetchAll()}>
+            Retry
+          </Button>
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
