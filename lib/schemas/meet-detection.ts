@@ -1,12 +1,12 @@
-import { array, boolean, number, object, type output, string } from "zod"
+import { array, boolean, int, number, object, type output, string } from "zod"
 
 export const meetDetectionStatsResponseSchema = object({
   success: boolean(),
   data: object({
-    flagged: number(),
-    notFlagged: number(),
-    total: number(),
-    flaggedPct: number(),
+    flagged: int().nonnegative(),
+    notFlagged: int().nonnegative(),
+    total: int().nonnegative(),
+    flaggedPct: number().nonnegative(),
     from: string(),
     to: string()
   })
@@ -17,11 +17,11 @@ export const meetDetectionByTeamResponseSchema = object({
   success: boolean(),
   data: array(
     object({
-      teamId: number(),
+      teamId: int(),
       teamName: string().nullable(),
-      flagged: number(),
-      total: number(),
-      flaggedPct: number()
+      flagged: int().nonnegative(),
+      total: int().nonnegative(),
+      flaggedPct: number().nonnegative()
     })
   )
 })
@@ -31,11 +31,11 @@ export const meetDetectionByUserResponseSchema = object({
   success: boolean(),
   data: array(
     object({
-      userId: number(),
+      userId: int(),
       email: string().nullable(),
-      flagged: number(),
-      total: number(),
-      flaggedPct: number()
+      flagged: int().nonnegative(),
+      total: int().nonnegative(),
+      flaggedPct: number().nonnegative()
     })
   )
 })
