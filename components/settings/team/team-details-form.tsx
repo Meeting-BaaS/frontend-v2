@@ -40,19 +40,25 @@ interface TeamDetailsFormProps {
 // pinning (bots use a random exit).
 const PROXY_COUNTRIES: { code: string; label: string }[] = [
   { code: "", label: "No pinning (random exit)" },
-  { code: "us", label: "United States" },
-  { code: "gb", label: "United Kingdom" },
-  { code: "ca", label: "Canada" },
-  { code: "de", label: "Germany" },
-  { code: "fr", label: "France" },
-  { code: "nl", label: "Netherlands" },
-  { code: "es", label: "Spain" },
-  { code: "it", label: "Italy" },
   { code: "au", label: "Australia" },
-  { code: "jp", label: "Japan" },
-  { code: "in", label: "India" },
+  { code: "be", label: "Belgium" },
   { code: "br", label: "Brazil" },
-  { code: "sg", label: "Singapore" }
+  { code: "ca", label: "Canada" },
+  { code: "co", label: "Colombia" },
+  { code: "de", label: "Germany" },
+  { code: "es", label: "Spain" },
+  { code: "fr", label: "France" },
+  { code: "gb", label: "United Kingdom" },
+  { code: "hk", label: "Hong Kong" },
+  { code: "ie", label: "Ireland" },
+  { code: "it", label: "Italy" },
+  { code: "jp", label: "Japan" },
+  { code: "nl", label: "Netherlands" },
+  { code: "pl", label: "Poland" },
+  { code: "ro", label: "Romania" },
+  { code: "se", label: "Sweden" },
+  { code: "sg", label: "Singapore" },
+  { code: "us", label: "United States" }
 ]
 // Sentinel for the Select's "no pinning" option (Radix Select forbids value="").
 const NO_PIN = "__none__"
