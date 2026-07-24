@@ -13,9 +13,8 @@ export function RegionPickerAlert() {
       <AlertTitle>New: pick a region for your bots</AlertTitle>
       <AlertDescription>
         <div>
-          <span className="font-bold">Choose which countries your bots join from.</span> Pin your
-          bots' network exit to one or more regions — pick several and they'll fall through to a
-          working one during a provider outage.{" "}
+          <span className="font-bold">Pick a region for your bots.</span> Choose one or more regions
+          for your bots to launch from — match your end users' region and reduce Google flagging.{" "}
           <Link
             href="/settings/team"
             className="underline font-medium text-emerald-700 dark:text-emerald-300"
