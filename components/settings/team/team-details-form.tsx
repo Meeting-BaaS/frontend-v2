@@ -11,6 +11,13 @@ import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useUser } from "@/hooks/use-user"
@@ -25,12 +32,36 @@ interface TeamDetailsFormProps {
   teamId: number
   initialName: string
   initialApiOnlyArtifactAccess: boolean
+  initialProxyExitCountry?: string | null
 }
+
+// Curated list of countries Decodo covers for residential/ISP exits. The API
+// only format-validates (alpha-2); this list is what the UI offers. "" = no
+// pinning (bots use a random exit).
+const PROXY_COUNTRIES: { code: string; label: string }[] = [
+  { code: "", label: "No pinning (random exit)" },
+  { code: "us", label: "United States" },
+  { code: "gb", label: "United Kingdom" },
+  { code: "ca", label: "Canada" },
+  { code: "de", label: "Germany" },
+  { code: "fr", label: "France" },
+  { code: "nl", label: "Netherlands" },
+  { code: "es", label: "Spain" },
+  { code: "it", label: "Italy" },
+  { code: "au", label: "Australia" },
+  { code: "jp", label: "Japan" },
+  { code: "in", label: "India" },
+  { code: "br", label: "Brazil" },
+  { code: "sg", label: "Singapore" }
+]
+// Sentinel for the Select's "no pinning" option (Radix Select forbids value="").
+const NO_PIN = "__none__"
 
 export function TeamDetailsForm({
   teamId,
   initialName,
-  initialApiOnlyArtifactAccess
+  initialApiOnlyArtifactAccess,
+  initialProxyExitCountry
 }: TeamDetailsFormProps) {
   const { updateActiveTeam, activeTeam } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -39,7 +70,8 @@ export function TeamDetailsForm({
     resolver: zodResolver(updateTeamDetailsSchema),
     defaultValues: {
       name: initialName,
-      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess
+      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess,
+      proxyExitCountry: initialProxyExitCountry ?? ""
     }
   })
 
@@ -51,13 +83,15 @@ export function TeamDetailsForm({
   } = form
 
   const apiOnlyArtifactAccess = watch("apiOnlyArtifactAccess")
+  const proxyExitCountry = watch("proxyExitCountry")
 
   useEffect(() => {
     reset({
       name: initialName,
-      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess
+      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess,
+      proxyExitCountry: initialProxyExitCountry ?? ""
     })
-  }, [initialName, initialApiOnlyArtifactAccess, reset])
+  }, [initialName, initialApiOnlyArtifactAccess, initialProxyExitCountry, reset])
 
   const onSubmit = async (data: UpdateTeamDetails) => {
     if (activeTeam.isMember) {
@@ -71,6 +105,7 @@ export function TeamDetailsForm({
 
       const nameChanged = data.name !== initialName
       const artifactAccessChanged = data.apiOnlyArtifactAccess !== initialApiOnlyArtifactAccess
+      const proxyCountryChanged = data.proxyExitCountry !== (initialProxyExitCountry ?? "")
 
       // Perform both updates before updating local state
       const promises: Promise<unknown>[] = []
@@ -88,17 +123,26 @@ export function TeamDetailsForm({
         }))
       }
 
+      if (proxyCountryChanged) {
+        promises.push(axiosPatchInstance(UPDATE_TEAM_FEATURES, {
+          // "" clears the pin; the API accepts null
+          proxyExitCountry: data.proxyExitCountry ? data.proxyExitCountry : null
+        }))
+      }
+
       await Promise.all(promises)
 
       // Only update local state after all API calls succeed
       updateActiveTeam({
         ...(nameChanged && { name: data.name }),
-        ...(artifactAccessChanged && { apiOnlyArtifactAccess: data.apiOnlyArtifactAccess })
+        ...(artifactAccessChanged && { apiOnlyArtifactAccess: data.apiOnlyArtifactAccess }),
+        ...(proxyCountryChanged && { proxyExitCountry: data.proxyExitCountry || null })
       })
 
       reset({
         name: data.name,
-        apiOnlyArtifactAccess: data.apiOnlyArtifactAccess
+        apiOnlyArtifactAccess: data.apiOnlyArtifactAccess,
+        proxyExitCountry: data.proxyExitCountry
       })
 
       toast.success("Team settings updated successfully")
@@ -182,6 +226,41 @@ export function TeamDetailsForm({
               </TooltipProvider>
             </Label>
           </div>
+          <Field>
+            <FieldLabel htmlFor="proxyExitCountry" className="flex items-center gap-2">
+              Bot exit country
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-sm">
+                    Pin the country your bots join meetings from (their residential proxy exit).
+                    Leave as "No pinning" to use a random exit. Only affects Google Meet / Teams /
+                    Zoom web-view bots. Only team admins can change this.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </FieldLabel>
+            <Select
+              value={proxyExitCountry ? proxyExitCountry : NO_PIN}
+              onValueChange={(v) =>
+                setValue("proxyExitCountry", v === NO_PIN ? "" : v, { shouldDirty: true })
+              }
+              disabled={activeTeam.isMember}
+            >
+              <SelectTrigger id="proxyExitCountry" className="w-full md:!w-1/2 lg:!w-2/5">
+                <SelectValue placeholder="No pinning (random exit)" />
+              </SelectTrigger>
+              <SelectContent>
+                {PROXY_COUNTRIES.map((c) => (
+                  <SelectItem key={c.code || NO_PIN} value={c.code || NO_PIN}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
           <Button
             variant="primary"
             type="submit"
