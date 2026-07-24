@@ -242,9 +242,10 @@ export function TeamDetailsForm({
               </TooltipProvider>
             </FieldLabel>
             <FieldDescription>
-              Picking several regions helps the bot find a working one during a provider outage — if
-              your first choice is unavailable, it falls through to the next selected region before
-              using a random exit.
+              <span className="font-medium">Pick several regions where you can.</span> The bot uses
+              your first choice, but automatically falls through to the others if a region is
+              unavailable or its network is getting flagged — so more regions means fewer failed
+              joins.
             </FieldDescription>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
               {PROXY_COUNTRIES.map((c) => {
