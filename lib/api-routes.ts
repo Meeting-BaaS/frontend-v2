@@ -186,6 +186,10 @@ export const ADMIN_MEET_DETECTION_BY_TEAM = (qs = "") =>
   `${ADMIN_MEET_DETECTION_BASE_PATH}/by-team${qs}`
 export const ADMIN_MEET_DETECTION_BY_USER = (qs = "") =>
   `${ADMIN_MEET_DETECTION_BASE_PATH}/by-user${qs}`
+export const ADMIN_MEET_DETECTION_BY_ASN = (qs = "") =>
+  `${ADMIN_MEET_DETECTION_BASE_PATH}/by-asn${qs}`
+export const ADMIN_MEET_DETECTION_TREND = (qs = "") =>
+  `${ADMIN_MEET_DETECTION_BASE_PATH}/trend${qs}`
 export const ADMIN_TEAMS_BASE_PATH = `${ADMIN_BASE_PATH}/teams`
 export const ADMIN_LIST_TEAMS = `${ADMIN_TEAMS_BASE_PATH}/list`
 export const ADMIN_GET_TEAM_DETAILS = (teamId: number) =>
