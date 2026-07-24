@@ -38,7 +38,7 @@ export const teamDetails = array(
     joinedAt: iso.datetime(),
     slug: string(),
     apiOnlyArtifactAccess: boolean(),
-    proxyExitCountry: string().nullish()
+    proxyExitCountry: array(string()).nullish()
   })
 )
 
@@ -112,8 +112,8 @@ export type UpdateTeamName = output<typeof updateTeamNameSchema>
 export const updateTeamDetailsSchema = object({
   name: teamNameSchema,
   apiOnlyArtifactAccess: boolean(),
-  // "" = no pinning (cleared to null on submit); otherwise an ISO alpha-2 code
-  proxyExitCountry: string()
+  // [] = no pinning; otherwise a set of ISO alpha-2 codes
+  proxyExitCountry: array(string())
 })
 
 export type UpdateTeamDetails = output<typeof updateTeamDetailsSchema>

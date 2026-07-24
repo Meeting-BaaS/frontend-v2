@@ -11,13 +11,7 @@ import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useUser } from "@/hooks/use-user"
@@ -32,14 +26,13 @@ interface TeamDetailsFormProps {
   teamId: number
   initialName: string
   initialApiOnlyArtifactAccess: boolean
-  initialProxyExitCountry?: string | null
+  initialProxyExitCountry?: string[] | null
 }
 
 // Curated list of countries Decodo covers for residential/ISP exits. The API
 // only format-validates (alpha-2); this list is what the UI offers. "" = no
 // pinning (bots use a random exit).
 const PROXY_COUNTRIES: { code: string; label: string }[] = [
-  { code: "", label: "No pinning (random exit)" },
   { code: "au", label: "Australia" },
   { code: "be", label: "Belgium" },
   { code: "br", label: "Brazil" },
@@ -60,8 +53,6 @@ const PROXY_COUNTRIES: { code: string; label: string }[] = [
   { code: "sg", label: "Singapore" },
   { code: "us", label: "United States" }
 ]
-// Sentinel for the Select's "no pinning" option (Radix Select forbids value="").
-const NO_PIN = "__none__"
 
 export function TeamDetailsForm({
   teamId,
@@ -77,7 +68,7 @@ export function TeamDetailsForm({
     defaultValues: {
       name: initialName,
       apiOnlyArtifactAccess: initialApiOnlyArtifactAccess,
-      proxyExitCountry: initialProxyExitCountry ?? ""
+      proxyExitCountry: initialProxyExitCountry ?? []
     }
   })
 
@@ -95,7 +86,7 @@ export function TeamDetailsForm({
     reset({
       name: initialName,
       apiOnlyArtifactAccess: initialApiOnlyArtifactAccess,
-      proxyExitCountry: initialProxyExitCountry ?? ""
+      proxyExitCountry: initialProxyExitCountry ?? []
     })
   }, [initialName, initialApiOnlyArtifactAccess, initialProxyExitCountry, reset])
 
@@ -111,7 +102,9 @@ export function TeamDetailsForm({
 
       const nameChanged = data.name !== initialName
       const artifactAccessChanged = data.apiOnlyArtifactAccess !== initialApiOnlyArtifactAccess
-      const proxyCountryChanged = data.proxyExitCountry !== (initialProxyExitCountry ?? "")
+      const initialCountries = [...(initialProxyExitCountry ?? [])].sort()
+      const proxyCountryChanged =
+        JSON.stringify([...data.proxyExitCountry].sort()) !== JSON.stringify(initialCountries)
 
       // Perform both updates before updating local state
       const promises: Promise<unknown>[] = []
@@ -131,8 +124,8 @@ export function TeamDetailsForm({
 
       if (proxyCountryChanged) {
         promises.push(axiosPatchInstance(UPDATE_TEAM_FEATURES, {
-          // "" clears the pin; the API accepts null
-          proxyExitCountry: data.proxyExitCountry ? data.proxyExitCountry : null
+          // [] clears the pin; the API accepts null
+          proxyExitCountry: data.proxyExitCountry.length > 0 ? data.proxyExitCountry : null
         }))
       }
 
@@ -142,7 +135,7 @@ export function TeamDetailsForm({
       updateActiveTeam({
         ...(nameChanged && { name: data.name }),
         ...(artifactAccessChanged && { apiOnlyArtifactAccess: data.apiOnlyArtifactAccess }),
-        ...(proxyCountryChanged && { proxyExitCountry: data.proxyExitCountry || null })
+        ...(proxyCountryChanged && { proxyExitCountry: data.proxyExitCountry })
       })
 
       reset({
@@ -233,39 +226,47 @@ export function TeamDetailsForm({
             </Label>
           </div>
           <Field>
-            <FieldLabel htmlFor="proxyExitCountry" className="flex items-center gap-2">
-              Bot exit country
+            <FieldLabel className="flex items-center gap-2">
+              Bot exit countries
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-sm">
-                    Pin the country your bots join meetings from (their residential proxy exit).
-                    Leave as "No pinning" to use a random exit. Only affects Google Meet / Teams /
-                    Zoom web-view bots. Only team admins can change this.
+                    Pin the countries your bots join meetings from (their residential proxy exit).
+                    Select none to use a random exit. Only affects browser-based bots. Only team
+                    admins can change this.
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </FieldLabel>
-            <Select
-              value={proxyExitCountry ? proxyExitCountry.toLowerCase() : NO_PIN}
-              onValueChange={(v) =>
-                setValue("proxyExitCountry", v === NO_PIN ? "" : v, { shouldDirty: true })
-              }
-              disabled={activeTeam.isMember}
-            >
-              <SelectTrigger id="proxyExitCountry" className="w-full md:!w-1/2 lg:!w-2/5">
-                <SelectValue placeholder="No pinning (random exit)" />
-              </SelectTrigger>
-              <SelectContent>
-                {PROXY_COUNTRIES.map((c) => (
-                  <SelectItem key={c.code || NO_PIN} value={c.code || NO_PIN}>
+            <FieldDescription>
+              Picking several regions helps the bot find a working one during a provider outage — if
+              your first choice is unavailable, it falls through to the next selected region before
+              using a random exit.
+            </FieldDescription>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+              {PROXY_COUNTRIES.map((c) => {
+                const checked = (proxyExitCountry ?? []).includes(c.code)
+                return (
+                  <label key={c.code} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <Checkbox
+                      checked={checked}
+                      disabled={activeTeam.isMember}
+                      onCheckedChange={(v) => {
+                        const current = proxyExitCountry ?? []
+                        const next = v
+                          ? [...current, c.code]
+                          : current.filter((x) => x !== c.code)
+                        setValue("proxyExitCountry", next, { shouldDirty: true })
+                      }}
+                    />
                     {c.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  </label>
+                )
+              })}
+            </div>
           </Field>
           <Button
             variant="primary"
