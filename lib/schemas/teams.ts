@@ -38,7 +38,7 @@ export const teamDetails = array(
     joinedAt: iso.datetime(),
     slug: string(),
     apiOnlyArtifactAccess: boolean(),
-    proxyExitCountry: string().nullable()
+    proxyExitCountry: string().nullish()
   })
 )
 

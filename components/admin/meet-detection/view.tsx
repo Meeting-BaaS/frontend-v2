@@ -189,8 +189,8 @@ export function AdminMeetDetectionView() {
             <CardContent>
               <RankTable
                 rows={byAsn.map((r) => ({
-                  key: String(r.asn),
-                  label: `AS${r.asn}${r.provider ? ` · ${r.provider}` : ""}${r.country ? ` · ${r.country}` : ""}`,
+                  key: r.asn === null ? "unknown" : String(r.asn),
+                  label: `${r.asn === null ? "Unknown network" : `AS${r.asn}`}${r.provider ? ` · ${r.provider}` : ""}${r.country ? ` · ${r.country}` : ""}`,
                   flagged: r.flagged,
                   total: r.total,
                   pct: r.flaggedPct
@@ -276,6 +276,10 @@ function TrendChart({ data }: { data: MeetDetectionTrendResponse["data"] }) {
   if (data.length === 0) {
     return <div className="text-muted-foreground py-4 text-sm">No signals in this range.</div>
   }
+  // Normalize bar heights to the max flagged-rate in the range so realistic
+  // low rates (1-5%) are still visible instead of near-flat stubs. Absolute %
+  // stays in the label + tooltip.
+  const maxPct = Math.max(...data.map((d) => d.flaggedPct), 0)
   return (
     <div className="flex items-end gap-1 h-32">
       {data.map((d) => {
@@ -285,7 +289,8 @@ function TrendChart({ data }: { data: MeetDetectionTrendResponse["data"] }) {
             : d.flaggedPct >= 5
               ? "bg-amber-500"
               : "bg-emerald-500"
-        const heightPct = d.total > 0 ? Math.max(2, d.flaggedPct) : 0
+        const heightPct =
+          d.total > 0 ? Math.max(2, maxPct > 0 ? (d.flaggedPct / maxPct) * 100 : 0) : 0
         return (
           <div
             key={d.day}

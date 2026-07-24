@@ -243,7 +243,7 @@ export function TeamDetailsForm({
               </TooltipProvider>
             </FieldLabel>
             <Select
-              value={proxyExitCountry ? proxyExitCountry : NO_PIN}
+              value={proxyExitCountry ? proxyExitCountry.toLowerCase() : NO_PIN}
               onValueChange={(v) =>
                 setValue("proxyExitCountry", v === NO_PIN ? "" : v, { shouldDirty: true })
               }

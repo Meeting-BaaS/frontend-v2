@@ -45,7 +45,7 @@ export const meetDetectionByAsnResponseSchema = object({
   success: boolean(),
   data: array(
     object({
-      asn: int(),
+      asn: int().nullable(),
       country: string().nullable(),
       provider: string().nullable(),
       flagged: int().nonnegative(),
