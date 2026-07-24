@@ -37,7 +37,8 @@ export const teamDetails = array(
     role: roleEnum,
     joinedAt: iso.datetime(),
     slug: string(),
-    apiOnlyArtifactAccess: boolean()
+    apiOnlyArtifactAccess: boolean(),
+    proxyExitCountry: array(string()).nullish()
   })
 )
 
@@ -110,7 +111,9 @@ export type UpdateTeamName = output<typeof updateTeamNameSchema>
  */
 export const updateTeamDetailsSchema = object({
   name: teamNameSchema,
-  apiOnlyArtifactAccess: boolean()
+  apiOnlyArtifactAccess: boolean(),
+  // [] = no pinning; otherwise a set of ISO alpha-2 codes
+  proxyExitCountry: array(string())
 })
 
 export type UpdateTeamDetails = output<typeof updateTeamDetailsSchema>

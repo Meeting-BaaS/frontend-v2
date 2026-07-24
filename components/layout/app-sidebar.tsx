@@ -9,6 +9,7 @@ import {
   // ChartColumn,
   KeyRound,
   Logs,
+  ScanEye,
   MessageSquare,
   Settings,
   ShieldCheck,
@@ -100,6 +101,12 @@ const allItems = [
 const adminItems = [
   { title: "All Bots", url: "/admin/bots", icon: Bot, featureKey: null },
   { title: "All Teams", url: "/admin/teams", icon: Users, featureKey: null },
+  {
+    title: "Meet Detection",
+    url: "/admin/meet-detection",
+    icon: ScanEye,
+    featureKey: null
+  },
   { title: "Admins", url: "/admin/admins", icon: ShieldCheck, featureKey: null },
   {
     title: "Users",

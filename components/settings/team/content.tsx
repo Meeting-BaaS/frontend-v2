@@ -26,6 +26,7 @@ export function TeamContent({ allTeams, activeTeam }: TeamContentProps) {
             teamId={activeTeam.id}
             initialName={activeTeam.name}
             initialApiOnlyArtifactAccess={activeTeam.apiOnlyArtifactAccess}
+            initialProxyExitCountry={activeTeam.proxyExitCountry}
           />
         </div>
       </div>
