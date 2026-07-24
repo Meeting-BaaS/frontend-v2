@@ -11,6 +11,7 @@ import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useUser } from "@/hooks/use-user"
@@ -25,12 +26,39 @@ interface TeamDetailsFormProps {
   teamId: number
   initialName: string
   initialApiOnlyArtifactAccess: boolean
+  initialProxyExitCountry?: string[] | null
 }
+
+// Curated list of countries Decodo covers for residential/ISP exits. The API
+// only format-validates (alpha-2); this list is what the UI offers. "" = no
+// pinning (bots use a random exit).
+const PROXY_COUNTRIES: { code: string; label: string }[] = [
+  { code: "au", label: "Australia" },
+  { code: "be", label: "Belgium" },
+  { code: "br", label: "Brazil" },
+  { code: "ca", label: "Canada" },
+  { code: "co", label: "Colombia" },
+  { code: "de", label: "Germany" },
+  { code: "es", label: "Spain" },
+  { code: "fr", label: "France" },
+  { code: "gb", label: "United Kingdom" },
+  { code: "hk", label: "Hong Kong" },
+  { code: "ie", label: "Ireland" },
+  { code: "it", label: "Italy" },
+  { code: "jp", label: "Japan" },
+  { code: "nl", label: "Netherlands" },
+  { code: "pl", label: "Poland" },
+  { code: "ro", label: "Romania" },
+  { code: "se", label: "Sweden" },
+  { code: "sg", label: "Singapore" },
+  { code: "us", label: "United States" }
+]
 
 export function TeamDetailsForm({
   teamId,
   initialName,
-  initialApiOnlyArtifactAccess
+  initialApiOnlyArtifactAccess,
+  initialProxyExitCountry
 }: TeamDetailsFormProps) {
   const { updateActiveTeam, activeTeam } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -39,7 +67,8 @@ export function TeamDetailsForm({
     resolver: zodResolver(updateTeamDetailsSchema),
     defaultValues: {
       name: initialName,
-      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess
+      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess,
+      proxyExitCountry: initialProxyExitCountry ?? []
     }
   })
 
@@ -51,13 +80,15 @@ export function TeamDetailsForm({
   } = form
 
   const apiOnlyArtifactAccess = watch("apiOnlyArtifactAccess")
+  const proxyExitCountry = watch("proxyExitCountry")
 
   useEffect(() => {
     reset({
       name: initialName,
-      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess
+      apiOnlyArtifactAccess: initialApiOnlyArtifactAccess,
+      proxyExitCountry: initialProxyExitCountry ?? []
     })
-  }, [initialName, initialApiOnlyArtifactAccess, reset])
+  }, [initialName, initialApiOnlyArtifactAccess, initialProxyExitCountry, reset])
 
   const onSubmit = async (data: UpdateTeamDetails) => {
     if (activeTeam.isMember) {
@@ -71,6 +102,9 @@ export function TeamDetailsForm({
 
       const nameChanged = data.name !== initialName
       const artifactAccessChanged = data.apiOnlyArtifactAccess !== initialApiOnlyArtifactAccess
+      const initialCountries = [...(initialProxyExitCountry ?? [])].sort()
+      const proxyCountryChanged =
+        JSON.stringify([...data.proxyExitCountry].sort()) !== JSON.stringify(initialCountries)
 
       // Perform both updates before updating local state
       const promises: Promise<unknown>[] = []
@@ -88,17 +122,26 @@ export function TeamDetailsForm({
         }))
       }
 
+      if (proxyCountryChanged) {
+        promises.push(axiosPatchInstance(UPDATE_TEAM_FEATURES, {
+          // [] clears the pin; the API accepts null
+          proxyExitCountry: data.proxyExitCountry.length > 0 ? data.proxyExitCountry : null
+        }))
+      }
+
       await Promise.all(promises)
 
       // Only update local state after all API calls succeed
       updateActiveTeam({
         ...(nameChanged && { name: data.name }),
-        ...(artifactAccessChanged && { apiOnlyArtifactAccess: data.apiOnlyArtifactAccess })
+        ...(artifactAccessChanged && { apiOnlyArtifactAccess: data.apiOnlyArtifactAccess }),
+        ...(proxyCountryChanged && { proxyExitCountry: data.proxyExitCountry })
       })
 
       reset({
         name: data.name,
-        apiOnlyArtifactAccess: data.apiOnlyArtifactAccess
+        apiOnlyArtifactAccess: data.apiOnlyArtifactAccess,
+        proxyExitCountry: data.proxyExitCountry
       })
 
       toast.success("Team settings updated successfully")
@@ -182,6 +225,49 @@ export function TeamDetailsForm({
               </TooltipProvider>
             </Label>
           </div>
+          <Field>
+            <FieldLabel className="flex items-center gap-2">
+              Bot exit countries
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-sm">
+                    Pin the countries your bots join meetings from (their residential proxy exit).
+                    Select none to use a random exit. Only affects browser-based bots. Only team
+                    admins can change this.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </FieldLabel>
+            <FieldDescription>
+              Picking several regions helps the bot find a working one during a provider outage — if
+              your first choice is unavailable, it falls through to the next selected region before
+              using a random exit.
+            </FieldDescription>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+              {PROXY_COUNTRIES.map((c) => {
+                const checked = (proxyExitCountry ?? []).includes(c.code)
+                return (
+                  <label key={c.code} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <Checkbox
+                      checked={checked}
+                      disabled={activeTeam.isMember}
+                      onCheckedChange={(v) => {
+                        const current = proxyExitCountry ?? []
+                        const next = v
+                          ? [...current, c.code]
+                          : current.filter((x) => x !== c.code)
+                        setValue("proxyExitCountry", next, { shouldDirty: true })
+                      }}
+                    />
+                    {c.label}
+                  </label>
+                )
+              })}
+            </div>
+          </Field>
           <Button
             variant="primary"
             type="submit"

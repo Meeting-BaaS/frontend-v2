@@ -8,17 +8,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { axiosGetInstance } from "@/lib/api-client"
 import {
+  ADMIN_MEET_DETECTION_BY_ASN,
   ADMIN_MEET_DETECTION_BY_TEAM,
   ADMIN_MEET_DETECTION_BY_USER,
-  ADMIN_MEET_DETECTION_STATS
+  ADMIN_MEET_DETECTION_STATS,
+  ADMIN_MEET_DETECTION_TREND
 } from "@/lib/api-routes"
 import {
+  type MeetDetectionByAsnResponse,
   type MeetDetectionByTeamResponse,
   type MeetDetectionByUserResponse,
   type MeetDetectionStatsResponse,
+  type MeetDetectionTrendResponse,
+  meetDetectionByAsnResponseSchema,
   meetDetectionByTeamResponseSchema,
   meetDetectionByUserResponseSchema,
-  meetDetectionStatsResponseSchema
+  meetDetectionStatsResponseSchema,
+  meetDetectionTrendResponseSchema
 } from "@/lib/schemas/meet-detection"
 
 const RANGES = [
@@ -46,6 +52,8 @@ export function AdminMeetDetectionView() {
   const [stats, setStats] = useState<MeetDetectionStatsResponse["data"] | null>(null)
   const [byTeam, setByTeam] = useState<MeetDetectionByTeamResponse["data"]>([])
   const [byUser, setByUser] = useState<MeetDetectionByUserResponse["data"]>([])
+  const [byAsn, setByAsn] = useState<MeetDetectionByAsnResponse["data"]>([])
+  const [trend, setTrend] = useState<MeetDetectionTrendResponse["data"]>([])
   // Monotonic request id: only the latest fetch may write state, so a slow
   // earlier range can't resolve late and clobber a newer one (or its loading).
   const reqIdRef = useRef(0)
@@ -56,7 +64,7 @@ export function AdminMeetDetectionView() {
     setError(false)
     const qs = rangeQuery(hours)
     try {
-      const [s, t, u] = await Promise.all([
+      const [s, t, u, a, tr] = await Promise.all([
         axiosGetInstance<MeetDetectionStatsResponse>(
           ADMIN_MEET_DETECTION_STATS(qs),
           meetDetectionStatsResponseSchema
@@ -68,12 +76,22 @@ export function AdminMeetDetectionView() {
         axiosGetInstance<MeetDetectionByUserResponse>(
           ADMIN_MEET_DETECTION_BY_USER(qs),
           meetDetectionByUserResponseSchema
+        ),
+        axiosGetInstance<MeetDetectionByAsnResponse>(
+          ADMIN_MEET_DETECTION_BY_ASN(qs),
+          meetDetectionByAsnResponseSchema
+        ),
+        axiosGetInstance<MeetDetectionTrendResponse>(
+          ADMIN_MEET_DETECTION_TREND(qs),
+          meetDetectionTrendResponseSchema
         )
       ])
       if (reqId !== reqIdRef.current) return // superseded by a newer range
       setStats(s.data)
       setByTeam(t.data)
       setByUser(u.data)
+      setByAsn(a.data)
+      setTrend(tr.data)
     } catch (err) {
       if (reqId !== reqIdRef.current) return
       console.error("Failed to fetch Meet detection telemetry", err)
@@ -155,6 +173,32 @@ export function AdminMeetDetectionView() {
             </Card>
           </div>
 
+          <Card>
+            <CardHeader>
+              <CardTitle>Flagged-rate trend (per day)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TrendChart data={trend} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Top flagged networks (ASN)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RankTable
+                rows={byAsn.map((r) => ({
+                  key: r.asn === null ? "unknown" : String(r.asn),
+                  label: `${r.asn === null ? "Unknown network" : `AS${r.asn}`}${r.provider ? ` · ${r.provider}` : ""}${r.country ? ` · ${r.country}` : ""}`,
+                  flagged: r.flagged,
+                  total: r.total,
+                  pct: r.flaggedPct
+                }))}
+              />
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
@@ -221,6 +265,51 @@ function RankTable({ rows }: { rows: RankRow[] }) {
           </span>
         </div>
       ))}
+    </div>
+  )
+}
+
+// Lightweight dependency-free daily flagged-% bar chart. Bar height = flagged
+// rate; color grades green→amber→red like the gauge. Empty days (no signals)
+// render as a faint zero-height slot so gaps are visible.
+function TrendChart({ data }: { data: MeetDetectionTrendResponse["data"] }) {
+  if (data.length === 0) {
+    return <div className="text-muted-foreground py-4 text-sm">No signals in this range.</div>
+  }
+  // Normalize bar heights to the max flagged-rate in the range so realistic
+  // low rates (1-5%) are still visible instead of near-flat stubs. Absolute %
+  // stays in the label + tooltip.
+  const maxPct = Math.max(...data.map((d) => d.flaggedPct), 0)
+  return (
+    <div className="flex items-end gap-1 h-32">
+      {data.map((d) => {
+        const barColor =
+          d.flaggedPct >= 20
+            ? "bg-destructive"
+            : d.flaggedPct >= 5
+              ? "bg-amber-500"
+              : "bg-emerald-500"
+        const heightPct =
+          d.total > 0 ? Math.max(2, maxPct > 0 ? (d.flaggedPct / maxPct) * 100 : 0) : 0
+        return (
+          <div
+            key={d.day}
+            className="flex-1 flex flex-col items-center justify-end h-full min-w-0"
+            title={`${d.day}: ${d.flaggedPct.toFixed(1)}% flagged (${d.flagged}/${d.total})`}
+          >
+            <span className="text-[10px] text-muted-foreground mb-0.5">
+              {d.total > 0 ? `${Math.round(d.flaggedPct)}%` : ""}
+            </span>
+            <div
+              className={`w-full rounded-t ${d.total > 0 ? barColor : "bg-muted"}`}
+              style={{ height: `${heightPct}%` }}
+            />
+            <span className="text-[10px] text-muted-foreground mt-1 truncate w-full text-center">
+              {d.day.slice(5)}
+            </span>
+          </div>
+        )
+      })}
     </div>
   )
 }

@@ -40,3 +40,31 @@ export const meetDetectionByUserResponseSchema = object({
   )
 })
 export type MeetDetectionByUserResponse = output<typeof meetDetectionByUserResponseSchema>
+
+export const meetDetectionByAsnResponseSchema = object({
+  success: boolean(),
+  data: array(
+    object({
+      asn: int().nullable(),
+      country: string().nullable(),
+      provider: string().nullable(),
+      flagged: int().nonnegative(),
+      total: int().nonnegative(),
+      flaggedPct: number().nonnegative()
+    })
+  )
+})
+export type MeetDetectionByAsnResponse = output<typeof meetDetectionByAsnResponseSchema>
+
+export const meetDetectionTrendResponseSchema = object({
+  success: boolean(),
+  data: array(
+    object({
+      day: string(),
+      flagged: int().nonnegative(),
+      total: int().nonnegative(),
+      flaggedPct: number().nonnegative()
+    })
+  )
+})
+export type MeetDetectionTrendResponse = output<typeof meetDetectionTrendResponseSchema>
