@@ -31,7 +31,10 @@ export const alertTypeSchema = zodEnum(
     "webhook_delivery_exhausted",
     "meet_login_unavailable",
     "meet_login_required",
-    "meet_workspace_invalidated"
+    "meet_workspace_invalidated",
+    "teams_login_unavailable",
+    "teams_login_required",
+    "teams_login_invalidated"
   ],
   {
     message: "Alert type is required"
@@ -63,7 +66,10 @@ export const ALERT_TYPE_LABELS: Record<AlertType, string> = {
   webhook_delivery_exhausted: "Webhook Delivery Exhausted",
   meet_login_unavailable: "Meet Login Unavailable",
   meet_login_required: "Meet Login Required (Anonymous Bot Failed)",
-  meet_workspace_invalidated: "Meet Workspace Auto-Disabled"
+  meet_workspace_invalidated: "Meet Workspace Auto-Disabled",
+  teams_login_unavailable: "Teams Login Unavailable",
+  teams_login_required: "Teams Login Required (Anonymous Bot Failed)",
+  teams_login_invalidated: "Teams Account Auto-Disabled"
 }
 
 // Threshold alert types gated by the stripe feature flag (paid-tier features).
@@ -87,7 +93,10 @@ export const OPERATIONAL_ALERT_TYPES: AlertType[] = [
   "webhook_delivery_exhausted",
   "meet_login_unavailable",
   "meet_login_required",
-  "meet_workspace_invalidated"
+  "meet_workspace_invalidated",
+  "teams_login_unavailable",
+  "teams_login_required",
+  "teams_login_invalidated"
 ]
 
 /**

@@ -142,6 +142,14 @@ export const botColorVariants = cva("", {
       "MEET_LOGIN_REQUIRED": RED,
       "MEET_LOGIN_FAILED_SAML_REJECTED": RED,
       "MEET_LOGIN_FAILED_TIMEOUT": RED,
+
+      // MICROSOFT TEAMS login-specific statuses
+      "TEAMS_LOGIN_UNAVAILABLE": RED,
+      "TEAMS_LOGIN_REQUIRED": RED,
+      "TEAMS_LOGIN_FAILED_INVALID_CREDENTIALS": RED,
+      "TEAMS_LOGIN_FAILED_CAPTCHA": RED,
+      "TEAMS_LOGIN_FAILED_MFA_REQUIRED": RED,
+      "TEAMS_LOGIN_FAILED_TIMEOUT": RED,
     }
   },
   defaultVariants: {

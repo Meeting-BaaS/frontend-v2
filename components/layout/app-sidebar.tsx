@@ -84,6 +84,12 @@ const allItems = [
     featureKey: null
   },
   {
+    title: "Microsoft Teams",
+    url: "/microsoft-teams",
+    icon: Users,
+    featureKey: null
+  },
+  {
     title: "Settings",
     url: "/settings",
     icon: Settings,
